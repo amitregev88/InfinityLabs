@@ -2,7 +2,7 @@
 
 size_t Strlen(const char *str);
 
-int Strcmp(const char *string1, const char *string2);
+int Strcmp (const char *str1, const char *str2);
 
 
 int main()
@@ -36,30 +36,20 @@ size_t Strlen(const char *str)
 	return result;
 }
 
-int Strcmp(const char *string1, const char *string2)
+int Strcmp (const char *str1, const char *str2)
 {
-	int i = 0, s1 = 0, s2 = 0;
-	while (string1[i] != '\0') && string2[i] != '\0')
-	{
-		if(string1[i] > string2[i])
-		{
-			s1++;
-		}
-		 
-		if else(string1[i] < string2[i])
-		{
-			s2++;
-		}
-	}
-	if(s1 > s2)
-	{
-	return 1;
-	}
-	else if(s2 > s1)
-	{
-	return -1;
-	}
-return 0;
-}
+	size_t n = 0;
 	
+	while ( (str1[n] != '\0') && (str2[n] != '\0') )
+	{
+		if (str1[n] != str2[n])
+		{
+			return (str1[n] - str2[n]);
+		}
+		else n++;
+		
+	}
+	
+	return (str1[n] - str2[n]); 
+}
 

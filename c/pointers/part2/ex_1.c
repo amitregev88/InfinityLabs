@@ -40,20 +40,25 @@ char* Strncpy(char *dest, const char *src, size_t n)
 
 	return dest;
 	
-/*compare between str1 and str2 for n characters */
+/*compare between str1 and str2 for first n characters */
 	
-int Strncmp(const char *str1, const char *str2 , size_t n)
+int Strncmp(const char *str1, const char *str2, size_t num)
 {
-	size_t i = 0;
-	
-    for (i = 0; i < n && str1[i] && str2[i] != '\0'; i++)
-    {
+	int i = 0;
+	while (num > 0)
+	{
 		if (str1[i] != str2[i])
 		{
-			return (str1[i] - str2[i]);
+			return str1[i] - str2[i];
+		}
+		else 
+		{
+			i++;
+			num--;
 		}
 	}
-return (str1[i] - str2[i]);
+		
+	return str1[i] - str2[i];
 }
 
 /*compare between str1 and str2 -  case-insensitively */
@@ -127,6 +132,27 @@ char *Strcat(char *dest, const char *src)
 }
 
 
+
+/* This function appends n characters from src string to dest string */
+char* Strncat(char* dest, const char* src, size_t num)
+{
+    size_t dest_len = Strlen (dest);
+    char* ptr = dest + dest_len;  // Make `ptr` point to the end of the destination string
+ 
+    
+    while (*src != '\0' && num != 0) // Adding characters of the source to the destination string
+	{	
+        *ptr++ = *src++;
+        num--;
+    }
+ 
+    *ptr = '\0';
+ 
+	return dest;
+}
+ 
+	
+/*Ststr() - This function takes two strings s1 and s2 as an argument and finds the first occurrence of the sub-string s2 in the string s1.*/
 
 
 
