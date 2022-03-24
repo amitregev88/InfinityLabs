@@ -42,23 +42,21 @@ char* Strncpy(char *dest, const char *src, size_t n)
 	
 /*compare between str1 and str2 for first n characters */
 	
-int Strncmp(const char *str1, const char *str2, size_t num)
+int Strncmp(const char *s1, const char *s2, size_t n)
 {
-	int i = 0;
-	while (num > 0)
-	{
-		if (str1[i] != str2[i])
-		{
-			return str1[i] - str2[i];
-		}
-		else 
-		{
-			i++;
-			num--;
-		}
-	}
-		
-	return str1[i] - str2[i];
+	for(int i = 0; i < n; i++)
+    {
+        if(s1[i] == s2[i])
+        {
+            if(i == (n-1)) /* this line checks if i in range of n*/
+                return 0;
+        }
+        
+			if((int) s1[i]>(int) s2[i])
+            return 1;
+        	if((int) s1[i]<(int) s2[i])
+            return -1;
+    }
 }
 
 /*compare between str1 and str2 -  case-insensitively */
@@ -154,10 +152,19 @@ char* Strncat(char* dest, const char* src, size_t num)
 	
 /*Ststr() - This function takes two strings s1 and s2 as an argument and finds the first occurrence of the sub-string s2 in the string s1.*/
 
-
-
-
-	
-	
-
+char* Strstr(const char *str, const char *substr)
+{
+    size_t  substr_len = Strlen(substr);
+    
+    while (*str)
+    {
+        if (*str == *substr)
+        {
+            if (!Strncmp(str, substr, substr_len))
+                    return ((char *)str);
+        }
+        str++;
+    }
+    return (NULL);
+}
 
