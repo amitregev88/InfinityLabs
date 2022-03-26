@@ -1,4 +1,4 @@
- /*Strlen*/
+ /*Strlen*/ 
 size_t Strlen(const char *s)
 {
     size_t count = 0;
@@ -87,10 +87,10 @@ int Strcasecmp(const char *s1, const char *s2)
 }
 
 
-/*The function  searches the occurrence of a specified character in the given string and returns the pointer to it.*/
+/*The function  searches for the first occurrence of a specified character in the given string and returns the pointer to it.*/
 
 
-char *StrChr(const char *str, int c)
+char *Strchr(const char *str, int c)
 {
     while (*str!='\0')
         {
@@ -167,4 +167,27 @@ char* Strstr(const char *str, const char *substr)
     }
     return (NULL);
 }
+/*The Strspn() function returns the length of the initial substring of the string pointed to by str1 that is made up of only those character contained in the string pointed to by str2.*/
+
+size_t Strspn(const char *s const char *accept)
+{
+	size_t counter = 0;
+	const char *iter = s;
+	
+	for (; *iter != '\0'; ++iter)
+	{
+		if (NULL == Strchr(accept, *iter))
+		{
+			break;
+		}
+		else
+		{
+			++counter;
+		}
+	}
+	
+	return counter;
+}
+
+
 

@@ -22,8 +22,8 @@ int main()
 	
 	for(; i < 10 ; i++)
 	{
-		printf("Type: %s  Size: %lu\n",typename[i], datatype[i]);
-	
+		fprintf(stdout, "Type: %s  Size: %lu\n",typename[i], datatype[i]);
+			
 	}
 
 	return 0;
