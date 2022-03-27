@@ -33,7 +33,7 @@ int Ispalindrome(const char *str)
 	size_t j = strlen(str)-1;
 	int flag = 0;
 	
-	while (i <= (int)j)
+	while (i < (int)j)
 	{
 		if (*(str + i) != *(str + j))
 		{

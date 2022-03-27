@@ -105,7 +105,7 @@ char *Strchr(const char *str, int c)
 char *Strdup(const char *src)
 {
     char *str = NULL;
-    size_t len = Strlen(src);
+    size_t len = Strlen(src) + 1;
     
     str = (char *)malloc(len * sizeof(char));
     return Strcpy (str, src); 
