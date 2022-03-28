@@ -7,7 +7,7 @@
 
 int main(int argc, char **argv , char **envp)
 {
-	/*unsigned long int len = sizeof(envp)/sizeof(envp[0]);*/
+
 	
 	
 	char **copy_env = NULL;  /* dynamic allocation for array of pointers length (envp) */
@@ -16,33 +16,41 @@ int main(int argc, char **argv , char **envp)
 	char *dup = NULL;
 	
 	
-	for(i=0;*(envp+i) != NULL;i++)
+	for(i = 0;*(envp + i) != NULL;i++) /* for couting of env variable*/
 	{}
-	copy_env=malloc(i*8);
-	assert(copy_env != NULL);  /*  check success of malloc */
 	
 	
-	while( envp[j] != NULL)
+	
+ 	copy_env = (char **)malloc (sizeof(char *)*i);
+ 	
+ 	assert(copy_env != NULL);  /*  check success of malloc*/
+ 	
+
+	while( envp[j] != NULL)  
 	{
-		dup = (char*)malloc(strlen(envp[i])+1);
-		assert(dup != NULL);  /*  check success of malloc */
+		dup = (char*)malloc(strlen(envp[j]) * sizeof(char) + 1);
+		assert(dup != NULL);  /*  check success of malloc */ 
 		copy_env[j] = strcpy(dup, envp[j]);
 		j++;
-		free(dup);
 		dup = NULL;
 		
 	}
+	
 	
 	copy_env[j] = (char*)NULL;
 	
 	i = 0;
 	
-	while(copy_env[i] != NULL)
+	while (copy_env[i] != NULL)
 	{
 		printf("%s\n", copy_env[i]);
 		i++;
 	}
 	
+	
+	for(i = 0; i < j; i++)
+		free(copy_env[i]); 
+		
 	free(copy_env);	
 	copy_env = NULL;
 	
