@@ -6,7 +6,7 @@ void josephus(int *arr, size_t n, size_t k);
 
 int main()
 {
-	size_t n = 7;  /* number of soliders*/
+	size_t n = 143;  /* number of soliders*/
 	size_t k = 3; /*solider No. that will be killed first*/ 
 	size_t i = 0;
 	/*
@@ -55,7 +55,7 @@ void josephus(int *arr, size_t n, size_t k)
 		}
 	}
 	
-	printf("Soldier No. %d survived in index %d\n", *arr, *arr - 1);
+	printf("Soldier No. %d survived\n", *arr);
 
 }
 
