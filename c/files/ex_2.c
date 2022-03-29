@@ -11,7 +11,7 @@ int main()
 	file = fopen(str_path,"a");
 	if (file == NULL)
 	{
-	printf("Error open file\n");
+	printf("Error open a file\n");
 	exit(1);
 	}
 	
