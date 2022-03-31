@@ -3,7 +3,7 @@
 *Reviewer: Alexander Bor
 *Description:  show on the screen A or T . Esc close the program.
 *Infinity Labs: OL124	
-*************************************************************** */
+****************************************************************/
 
 #include <stdlib.h> /* system */
 #include <stdio.h> 
