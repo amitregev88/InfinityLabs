@@ -345,61 +345,38 @@ return 0;
 
 /*******************************************************************************/
 
-void print_float_binary(float f)
-{
- unsigned int *float_int = (unsigned int )&f;
- int i;
+#include <stdio.h> /* printf, scanf*/
+#include <stdlib.h> /* malloc, free*/
 
- for (i=0; i<64; i++)
-   {
-    if (i==1)
-      printf(" "); / Space after sign field/
-    if (i==12)
-      printf("\t"); / tab after exponent field/
 
-    if ((float_int >> (63-i)) & 1)
-      printf("1");
-    else
-      printf("0");
-   }
- printf("\n");
+void PrintFloatBits(void *f_ptr, size_t size)
+{  
+  int f_pos; 
+  unsigned char *c_ptr = f_ptr;
+
+  while (size > 0) 
+  {
+    --size;
+    for (f_pos = 7 ; f_pos >= 0 ; f_pos--) 
+    {
+      (c_ptr[size] & (1 << f_pos))? printf("1"): printf("0");
+    }
+  }
+  printf("\n");
+  return;
 }
 
-a
-10100111	/original num
-00101001	/>>2
-00000001	/&1
------------------------------------
 
-10100111	/original num
-00001010	/>>4
-00000001	/&1
-
-b
-
-a ^ b | ----> 1 ^ 0 = 1
-
-10
-
-
-
-					10100111 original
-					
-xor					10110111 /after xor
-
-					00010000 / xor with original
-					
-					
-					
-0	0	0			
-
-0	1	1
-
-1	1	0
-
-
-n^(((n >> 2) & 1 ^ (n >> 4) & 1)<<4 | ((n >> 2) & 1 ^ (n >> 4) & 1)<<2)
-
-((n >> 2) & 1 ^ (n >> 4) & 1)
-
-
+ 
+int main()
+{    
+    float num;
+    
+    
+    printf("Please enter a float:\n");
+    scanf("%f", &num); 
+    
+    PrintFloatBits(&num, sizeof (num)); 
+        
+return 0;
+}               
