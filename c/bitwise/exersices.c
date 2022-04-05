@@ -349,34 +349,22 @@ return 0;
 #include <stdlib.h> /* malloc, free*/
 
 
-void PrintFloatBits(void *f_ptr, size_t size)
-{  
-  int f_pos; 
-  unsigned char *c_ptr = f_ptr;
+void print_float_binary(float f)
+{
+ unsigned int *float_int = (unsigned int )&f;
+ int i;
 
-  while (size > 0) 
-  {
-    --size;
-    for (f_pos = 7 ; f_pos >= 0 ; f_pos--) 
-    {
-      (c_ptr[size] & (1 << f_pos))? printf("1"): printf("0");
-    }
-  }
-  printf("\n");
-  return;
-}
+ for (i=0; i<31; i++)
+   {
+    if (i==1)
+      printf(" "); / Space after sign field/
+    if (i==12)
+      printf("\t"); / tab after exponent field/
 
-
- 
-int main()
-{    
-    float num;
-    
-    
-    printf("Please enter a float:\n");
-    scanf("%f", &num); 
-    
-    PrintFloatBits(&num, sizeof (num)); 
-        
-return 0;
-}               
+    if ((float_int >> (31-i)) & 1)
+      printf("1");
+    else
+      printf("0");
+   }
+ printf("\n");
+}         
