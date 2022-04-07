@@ -1,18 +1,28 @@
+/************************************************************************************
+*Author: Amit Regev
+*Reviewer: Sveta Blum
+*Description:  recieve a string from user and append to file.
+**Infinity Labs OL124	
+
+************************************************************************************/
 #include <stdio.h>
-#include <stdlib.h>
+
 
 int main()
 {
 	FILE* file = NULL;
-	char str_path[] = {"/home/amit/git/c/files/readme"};
+	char file_name[20];
 	char string[100];
 	 
+	printf("Enter the file name for edit:\n");
+	fgets(file_name, sizeof(file_name), stdin);
 	
-	file = fopen(str_path,"a");
+	
+	file = fopen(file_name,"a");
 	if (file == NULL)
 	{
-	printf("Error open a file\n");
-	exit(1);
+		printf("Error open a file\n");
+		return(1);
 	}
 	
 	printf("Enter a string:\n");

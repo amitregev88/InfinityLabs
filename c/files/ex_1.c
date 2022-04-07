@@ -1,3 +1,12 @@
+/* ***********************************************************
+*Author: Amit Regev
+*Reviewer: Sveta Blum
+*Description:  the program prints the numbers from array of struct variables  (pointer to  func  and numbers).
+*Infinity Labs OL124	
+***************************************************************/
+
+
+
 #include <stdio.h>
 
 typedef void (*ptrfunc)(int); 
