@@ -1,3 +1,11 @@
+/**************************************
+*Author: Amit Regev
+*Reviewer: Noam Dan Hadad 
+*Description:  implementation memset
+*Infinity Labs OL124	
+***********************************************************/
+
+
 #include<stdio.h>
 
 #define MAX2(a,b) (a > b) ? a : b 

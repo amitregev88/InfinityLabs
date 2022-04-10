@@ -246,11 +246,12 @@ int main()
 */
 /******************the function swap between 3nd and 5th bits*******************/
 /*
+
 int Isswap (unsigned char n)
 {
 	int swapn = 0;
 	
-	swapn = n^(((n >> 2) & 1 ^ (n >> 4) & 1)<<4 | ((n >> 2) & 1 ^ (n >> 4) & 1)<<2);
+	swapn = n^((((n >> 2) & 1) ^ ((n >> 4) & 1))<<4 | (((n >> 2) & 1) ^ ((n >> 4) & 1))<<2);
 	
 	return swapn;
 }
@@ -260,7 +261,7 @@ int main()
 
 	int num = 167;  /*167 = 10100111 binary*/
 	
-/*	printf("%d", Isswap(num));
+/*	printf("%d\n", Isswap(num));
 	
 	return 0;
 

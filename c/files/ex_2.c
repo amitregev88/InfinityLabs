@@ -14,8 +14,8 @@ int main()
 	char file_name[20];
 	char string[100];
 	 
-	printf("Enter the file name for edit:\n");
-	fgets(file_name, sizeof(file_name), stdin);
+	printf("Enter the file name to create:\n");
+	fgets(file_name,20, stdin);
 	
 	
 	file = fopen(file_name,"a");

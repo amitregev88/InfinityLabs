@@ -1,8 +1,13 @@
+/**************************************
+*Author: Amit Regev
+*Reviewer: Noam Dan Hadad 
+*Description:  implementation memset
+*Infinity Labs OL124	
+***********************************************************/
+
 #include<stdio.h>
 #include<stdlib.h> /*malloc*/
 #include <string.h> /*strlen, strcat*/
-
-
 
 
 typedef struct element{

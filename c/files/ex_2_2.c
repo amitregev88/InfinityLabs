@@ -1,6 +1,6 @@
 /************************************************************************************
 *Author: Amit Regev
-*Reviewer: 
+*Reviewer: Sveta Blum
 *Description:  recieve a string from user and append to file with "special input"
 **Infinity Labs OL124	
 
@@ -10,10 +10,10 @@
 #include <stdlib.h>/* exit, system*/
 
 #define MAX_STRING 200
-#define FILE_NAME readme.txt
+
 
 typedef int (*ptr_cmpfunc)(char *s_in);  /*creating a pointer to function type*/ 
-typedef void (*ptr_operfunc)(int flag, char *fname); /*creating a pointer to function type*/ 
+typedef void (*ptr_operfunc)(int flag, char *s_in, char *fname); /*creating a pointer to function type*/ 
 
 typedef struct
 {
@@ -32,11 +32,11 @@ int CompExit(char *s_in);
 int CompBegin(char *s_in);
 int CompDefault(char *s_in);
 /*************************declarations of operation function************************************************/
-void OperRm(int flag, char *fname);
-void OperCount(int flag, char *fname);
-void OperExit(int flag, char *s_in);
-void OperBegin(int flag, char *s_in);
-void OperDefault(int flag, char *s_in);
+void OperRm(int flag, char *s_in, char *fname);
+void OperCount(int flag, char *s_in, char *fname);
+void OperExit(int flag, char *s_in, char *fname);
+void OperBegin(int flag, char *s_in, char *fname);
+void OperDefault(int flag, char *s_in, char *fname);
 int main (int argc, char **argv);
 
 
@@ -45,6 +45,7 @@ int main (int argc, char **argv)
 	char string[MAX_STRING] = {0};
     int i = 0, flag = 0;
     logger log_arry[5];
+    char fname[20];
     
     
     ptr_cmpfunc ptr_comprm = &CompRm;
@@ -58,6 +59,8 @@ int main (int argc, char **argv)
     ptr_operfunc ptr_operexit = &OperExit;
     ptr_operfunc ptr_operbegin = &OperBegin;
     ptr_operfunc ptr_operdefault = &OperDefault;
+    
+          
   
         /* initialization of log arry*/
     log_arry[0].str = string; 
@@ -76,28 +79,34 @@ int main (int argc, char **argv)
     log_arry[4].ptr_cmp = ptr_compdefault;
     log_arry[4].ptr_oper = ptr_operdefault;
 
+	printf("Enter a file name to create\n");
+	fgets(fname,20,stdin);
+	
+	
     while (1)
     {
         printf("Please enter a string and in the end press Enter\n");
         fgets(string, MAX_STRING, stdin);
-    	 
+ 
+    	
     	 for (i = 0; i < 5; ++i)
     	 {
     	      log_arry[i].str = string;
-    	      flag = log_arry[i].ptr_cmp(string);
-    	      log_arry[i].ptr_oper(flag, string);
+    	      flag = log_arry[i].ptr_cmp(log_arry[i].str);
+    	      log_arry[i].ptr_oper(flag, log_arry[i].str,fname);
     	 }     
     }
     
-
-
+	**argv = **argv;
+	argc = argc;
 	return 0;
 }
 
-/*************************definitions of comparison function ************************************************/
+/*************************definitions of comparison function *******************************/
 int CompRm(char *s_in)
 {
-	if(strcmp(s_in,"-remove") == 0)
+	 
+	if(strcmp(s_in,"-remove\n") == 0)
 		return 1;
 	else
 		return 0;
@@ -106,7 +115,7 @@ int CompRm(char *s_in)
 int CompCount(char *s_in)
 {
 	
-	if (strcmp(s_in,"-count") == 0)
+	if (strcmp(s_in,"-count\n") == 0)
 		return 1;
 	else
 		return 0;
@@ -115,7 +124,7 @@ int CompCount(char *s_in)
 int CompExit(char *s_in)
 {
 	
-	if (strcmp(s_in,"-exit") == 0)
+	if (strcmp(s_in,"-exit\n") == 0)
 		return 1;
 	else
 		return 0;
@@ -139,18 +148,25 @@ int CompDefault(char *s_in)
 }
 
 /*************************definitions of operation function ************************************************/
-void OperRm(int flag, char *fname)
+void OperRm(int flag, char *s_in, char *fname)
 {
-	if (flag)
-		system("rm FILE_NAME");
-}
-
+	s_in = s_in;
 	
-void OperCount(int flag, char *fname)
-{
 	if (flag)
 	{
-		FILE *fp = fopen("FILE_NAME", "r");
+		remove (fname);
+		printf ("File %s removed succesfully\n", fname);
+	}
+	
+}
+
+void OperCount(int flag, char *s_in, char *fname)
+{
+	s_in = s_in;
+	
+	if (flag)
+	{
+		FILE *fp = fopen(fname, "r");
 		char c;
 		int counter = 0;
 		
@@ -169,22 +185,27 @@ void OperCount(int flag, char *fname)
 	
 		fclose(fp);
 	}
+	
 }
 
 	
-void OperExit(int flag, char *s_in)
+void OperExit(int flag, char *s_in, char *fname)
 {
+	s_in = s_in;
+	fname = fname;
+	
     if(flag)
     {
         exit(0);
     }
+    
 }
 
-void OperBegin(int flag, char *s_in)
+void OperBegin(int flag, char *s_in, char *fname)
 {
 	if (flag)
 	{
-		FILE *fp = fopen("FILE_NAME", "r");
+		FILE *fp = fopen(fname, "r");
 		FILE *fp2 = fopen ("temp.txt", "w");
 		char temp_char;
 		
@@ -204,10 +225,10 @@ void OperBegin(int flag, char *s_in)
 		fclose (fp2);
 		
 		/*	removing the original file  */
-		remove("FILE_NAME");
+		remove(fname);
 		
 		/*	open again the FILE_NAME add a *str in the beginning and then copy the temp.txt to it*/
-		fp = fopen ("FILE_NAME", "a+");
+		fp = fopen (fname, "a+");
 		fp2 = fopen ("temp.txt", "r");
 		
 		if (fp == NULL || fp2 == NULL)
@@ -229,23 +250,25 @@ void OperBegin(int flag, char *s_in)
 		fclose (fp2);
 		remove ("temp.txt");
 	}
+	
 }
 
-void OperDefault(int flag, char *s_in)
+void OperDefault(int flag, char *s_in, char *fname)
 {
     if(flag)
     {
-		FILE *fp = fopen("FILE_NAME", "a");
+		FILE *fp = fopen(fname, "a");
          
 		if (fp == NULL)
 			{
-				fprintf (stderr,"Failed to open the file %s\n", "FILE_NAME");
+				fprintf (stderr,"Failed to open the file %s\n", fname);
 				exit(1);
 			}
         
 		fputs(s_in, fp);      
         fclose(fp);        
     }
+    
 
 }
 
