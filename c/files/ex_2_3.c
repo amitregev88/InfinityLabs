@@ -1,9 +1,9 @@
 /************************************************************************************
 *Author: Amit Regev
 *Reviewer: Sveta Blum
-*Description:  recieve a string from user and append to file with "special input"
-**Infinity Labs OL124	
-
+*Description:recieve a string from user and append to file with "special input".
+			 using enum in  operation function
+*Infinity Labs OL124	
 ************************************************************************************/
 #include <stdio.h>	/*printf*/
 #include <string.h> /*str*/
@@ -24,6 +24,8 @@ typedef struct
 
 }logger;
 
+enum Isbool {ture, false};
+
 
 /*************************declarations of comparison function************************************************/
 int CompRm(char *s_in);
@@ -32,11 +34,11 @@ int CompExit(char *s_in);
 int CompBegin(char *s_in);
 int CompDefault(char *s_in);
 /*************************declarations of operation function************************************************/
-void OperRm(int flag, char *s_in, char *fname);
-void OperCount(int flag, char *s_in, char *fname);
-void OperExit(int flag, char *s_in, char *fname);
-void OperBegin(int flag, char *s_in, char *fname);
-void OperDefault(int flag, char *s_in, char *fname);
+enum Isbool OperRm(int flag, char *s_in, char *fname);
+enum Isbool OperCount(int flag, char *s_in, char *fname);
+enum Isbool OperExit(int flag, char *s_in, char *fname);
+enum Isbool OperBegin(int flag, char *s_in, char *fname);
+enum Isbool OperDefault(int flag, char *s_in, char *fname);
 int main (int argc, char **argv);
 
 
@@ -85,7 +87,7 @@ int main (int argc, char **argv)
 	
     while (1)
     {
-        printf("Please enter a string and in the end press Enter. -count to count number of lines, < to write from beginning of the file, -remove to remove the file , -exit to exit  \n");
+        printf("Please enter a string and in the end press Enter\n");
         fgets(string, MAX_STRING, stdin);
  
     	
@@ -250,7 +252,6 @@ void OperBegin(int flag, char *s_in, char *fname)
 		fclose (fp2);
 		remove ("temp.txt");
 	}
-	
 }
 
 void OperDefault(int flag, char *s_in, char *fname)
@@ -268,8 +269,6 @@ void OperDefault(int flag, char *s_in, char *fname)
 		fputs(s_in, fp);      
         fclose(fp);        
     }
-    
-
 }
 
 	
