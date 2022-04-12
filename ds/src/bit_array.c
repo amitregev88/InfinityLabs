@@ -90,12 +90,57 @@ int BitArrayFlip(bit_arr_ty *bptr, unsigned char index)
 
 void BitArrayRotateLeft(bit_arr_ty *bptr, unsigned int steps)
 {
+ 	bit_arr_ty tmp = *bptr >> (64 - steps);
 	*bptr <<= (steps%64);
+	*bptr |= tmp;
+	
+	
 }
 
 void BitArrayRotateRight(bit_arr_ty *bptr, unsigned int steps)
 {
-	*bptr >>= (steps%64)|(*bptr);
+	 bit_arr_ty tmp = *bptr<< (64 - steps);
+	
+	*bptr >>= (steps%64);
+	*bptr |= tmp;
 }
 
+
+int BitArrayCountBitsOn(const bit_arr_ty *bptr)
+{
+
+	int count = 0;
+	bit_arr_ty tmp = *bptr;
+	
+	while(tmp)
+	{
+		if(tmp&1)
+		{		
+			++count;
+			
+		}
+		tmp>>=1;
+	}
+	return count;	 
+}
+
+int BitArrayCountBitsOff(const bit_arr_ty *bptr)
+{
+
+	int count = 0;
+	bit_arr_ty tmp = *bptr;
+	int i = 64;
+	while(i>0)
+	{
+		if(!(tmp&1))
+		{		
+			++count;
+			
+		}
+		tmp>>=1;
+	i--;
+	}
+	
+	return count;	 
+}
 

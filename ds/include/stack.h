@@ -1,24 +1,45 @@
-typedef union
+/*************************************************************
+*OL124 Stack project
+*
+*
+* function of Stack Management
+*
+*
+******************************************************************/
+
+
+
+
+#ifndef OL124_STACK_H
+#define OL124_STACK_H
+
+
+/*
+struct stack
 {
-	int i;
-	float f;
-	double d;
-	char c;
-	char[30] s;
-} datatype_ty;
+    size_t size;
+    void *stack;
+    size_t capacity;
+    size_t size_of_element;
+};
+*/
 
-typedef sturct
-{
-	
-	int size;
-	datatype_ty 
-	
-}
+typedef struct stack stack_ty;
 
+stack_ty *StackCreate(size_t capacity, size_t size_of_element); 
 
- create (
+void StackDestroy(stack_ty *ptr);
 
+void StackPush(stack_ty* ptr, void *element);
 
+void StackPop(stack_ty* ptr);
 
-	
-	
+const void *StackPeek(const stack_ty* ptr);
+
+int StackIsEmpty(const stack_ty* ptr);
+
+size_t StackSize(const stack_ty *stack);
+
+size_t StackCapacity(const stack_ty *stack);
+
+#endif /* OL124_STACK_H */

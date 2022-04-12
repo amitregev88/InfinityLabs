@@ -10,6 +10,8 @@ void TestBitArraySetBit(void);
 void TestBitArrayFlip(void);
 void TestBitArrayRotateLeft(void);
 void TestBitArrayRotateRight(void);
+void TestBitArrayCountBitsOn(void);
+void TestBitArrayCountBitsOff(void);
 
 int main()
 {
@@ -19,12 +21,12 @@ int main()
 	TestBitArraySetOn();
 	TestBitArraySetOff();
 	TestBitArrayFlip();
-	TestBitArrayRotateLeft();
+	TestBitArrayRotateLeft();	
+	TestBitArrayRotateRight();*/
 	
-	*/
+	TestBitArrayCountBitsOn();
+	TestBitArrayCountBitsOff();
 	
-	
-	TestBitArrayRotateRight();
 }
 
 
@@ -274,7 +276,7 @@ void TestBitArrayRotateRight(void)
 		BitArrayRotateRight(&num, 65);
 
 	
-	if 	(num == 58) 
+	if 	(num == -9223372036854775779) 
 	
 		printf("test successed on 2 cycles : num %ld\n" , num);
 	else
@@ -283,5 +285,33 @@ void TestBitArrayRotateRight(void)
 	
 }
 	
+void TestBitArrayCountBitsOn(void)
+{
+	bit_arr_ty num = 59; /*111011*/
 
+	
+	if( BitArrayCountBitsOn(&num) == 5)
+	{
+		printf("test successed \n");
+	}
+	else
+	{
+		printf("test failed ");
+	}	
+}
+
+void TestBitArrayCountBitsOff(void)
+{
+	bit_arr_ty num = 59; /*111011*/
+
+	
+	if( BitArrayCountBitsOff(&num) == 59)
+	{
+		printf("test successed \n");
+	}
+	else
+	{
+		printf("test failed ");
+	}	
+}
 
