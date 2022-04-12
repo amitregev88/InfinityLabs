@@ -1,20 +1,36 @@
 #include<stdio.h>
-#include<bit_array.h>
+#include "../include/bit_array.h"
 
-int testBitArrayGetVal();
 
+
+void TestBitArrayGetVal(void);
+void TestBitArraySetOn(void);
+void TestBitArraySetOff(void);
+void TestBitArraySetBit(void);
+void TestBitArrayFlip(void);
+void TestBitArrayRotateLeft(void);
+void TestBitArrayRotateRight(void);
 
 int main()
 {
+		
+	/*TestBitArrayGetVal();
+	TestBitArraySetBit();
+	TestBitArraySetOn();
+	TestBitArraySetOff();
+	TestBitArrayFlip();
+	TestBitArrayRotateLeft();
 	
-
-
+	*/
+	
+	
+	TestBitArrayRotateRight();
 }
 
 
 void TestBitArrayGetVal(void)
 {
-	bit_arr_ty num = 7; /* 0000 0111    from right to left*/
+	bit_arr_ty num = 7; /* 00000111    from right to left*/
 	
 	int result = BitArrayGetVal(&num, 0);
 	
@@ -41,25 +57,231 @@ void TestBitArrayGetVal(void)
 				
 		default: break;
 	}
-	result = BitArrayGetVal(&num, 64); /*???????????????????????????*/
+	result = BitArrayGetVal(&num, 64);
+	
+	
+		switch (result)
+		{
+		case -1: printf("test successed on index out of range\n");
+				break;
+		
+		case 0: printf("test failed on index out of range\n");
+				break;
+				
+		case 1: printf("test failed on index out of range\n");
+				break;
+		}
+}
+		
+	 
+
+
+
+
+void TestBitArraySetOn(void)
+{
+	
+	bit_arr_ty num = 59; /*00111011*/  
+	int result = 0; 
+
+		
+	
+	
+	BitArraySetOn(&num, 0);
+	
+	
+	
+	if 	(num == num) /* checking case of bit already on*/
+	
+		printf("test successed on index 0 , num %ld\n", num);
+	else
+	
+		printf("test failed on index 0\n, num %ld", num);
+		
+	BitArraySetOn(&num, 2);
+	
+	if 	(num == 63) 
+	
+		printf("test successed on index out of range, num %ld\n", num);
+	else
+	
+		printf("test failed on index out of range, num %ld\n", num);
+	
+	result = BitArraySetOn(&num, 64);
+	
+	if 	(result  == -1) 
+	
+		printf("test successed on index out of range, res %d num %ld\n",result , num);
+	else
+	
+		printf("test failed on index out of range, num %ld\n", num);
+	
+}
+
+void TestBitArraySetOff(void)
+{
+	
+	bit_arr_ty num = 59; /*00111011*/  
+	int result = 0; 
+	
+	
+	BitArraySetOff(&num, 2);
+	
+	
+	if 	(num == num) /* checking case of bit already on*/
+	
+		printf("test successed on index 2 , num %ld\n", num);
+	else
+	
+		printf("test failed on index 2\n, num %ld", num);
+		
+	BitArraySetOff(&num, 0);
+	
+	if 	(num == 58) 
+	
+		printf("test successed on index 0, num %ld\n", num);
+	else
+	
+		printf("test failed on index 0 , num %ld\n", num);
+	
+	result = BitArraySetOff(&num, 64);
+	
+	if 	(result  == -1) 
+	
+		printf("test successed on index out of range, res %d num %ld\n",result , num);
+	else
+	
+		printf("test failed on index out of range, num %ld\n", num);
+	
+}
+
+
+
+void TestBitArraySetBit(void)
+{
+	int result = 0;
+	bit_arr_ty num = 59; /*111011*/
+
+	result = BitArraySetBit(&num,2,3); /*checking wrong option*/
+	
+	if (result == -1 )
+	{
+		printf("test setBit sucessed - worng option value\n");
+	}
+	else
+	{	
+		printf("test setBit failed - worng option value\n");
+	}
+	num = 59;
+	result=BitArraySetBit(&num,2,0);
+	
+	if (result == 0 )
+	{
+		printf("test setBit sucessed - set bit off\n");
+	}
+	else
+	{	
+		printf("test setBit failed - worng index value\n");
+	}
+	
+	num = 59;
+	result=BitArraySetBit(&num,2,1);
+	
+	if (result == 0 )
+	{
+		printf("test setBit sucessed - set bit on\n");
+	}
+	else
+	{	
+		printf("test setBit failed - worng index value\n");
+	}
+	
+}
+
+
+void TestBitArrayFlip(void)
+{
+	bit_arr_ty num = 59; /*111011*/
+	int result = BitArrayFlip(&num, 64);
+	
+	if 	(result  == -1) 
+	
+		printf("test successed on index out of range, res %d num %ld\n",result , num);
+	else
+	
+		printf("test failed on index out of range, num %ld\n", num);
+		
+	result = BitArrayFlip(&num, 0); /* checking flip from 1 to 0 */
+	
+	if 	(num == 58) 
+	
+		printf("test successed on index 0 : fliped res %d num %ld\n",result , num);
+	else
+	
+		printf("test failed on index 0 not fliped, num %ld\n", num);
+		
+		result = BitArrayFlip(&num, 0); /* checking flip from 0 to 1 */
+	
+	if 	(num == 59) 
+	
+		printf("test successed on index 0 : fliped res %d num %ld\n",result , num);
+	else
+	
+		printf("test failed on index 0 not fliped, num %ld\n", num);
 
 }
 
-int BitArraySetOn(bit_arr_ty *bptr,  unsigned char index);
-
-void TestBitArraySetOn(void)
-
-	bit_arr_ty num = 546;
-	unsigend char index = 4
-	int i = 0;
-	int tmp= 0;
-	
-	for (; i < 64;++i)
-	{
-		num[i] | 1 
-	
-	tmp |= ((n>>j)&1)<< i;
-	
+void TestBitArrayRotateLeft(void)
 {
-	int 
-	lut
+	bit_arr_ty num = 59; /*111011*/
+	
+	BitArrayRotateLeft(&num, 128);
+	
+	if 	(num == 59) 
+	
+		printf("test successed on 2 cycles : num %ld\n" , num);
+	else
+	
+		printf("test failed on on 2 cycles : num %ld\n" , num);
+		
+		num = 59;
+		BitArrayRotateLeft(&num, 65);
+
+	
+	if 	(num == 118) 
+	
+		printf("test successed on 2 cycles : num %ld\n" , num);
+	else
+	
+		printf("test failed on on 2 cycles : num %ld\n" , num);
+	
+}
+
+void TestBitArrayRotateRight(void)
+{
+	bit_arr_ty num = 59; /*111011*/
+	
+	BitArrayRotateRight(&num, 128);
+	
+	if 	(num == 59) 
+	
+		printf("test successed on 2 cycles : num %ld\n" , num);
+	else
+	
+		printf("test failed on on 2 cycles : num %ld\n" , num);
+		
+		num = 59;
+		BitArrayRotateRight(&num, 65);
+
+	
+	if 	(num == 58) 
+	
+		printf("test successed on 2 cycles : num %ld\n" , num);
+	else
+	
+		printf("test failed on on 2 cycles : num %ld\n" , num);
+	
+}
+	
+
+
