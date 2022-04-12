@@ -126,7 +126,6 @@ int BitArrayCountBitsOn(const bit_arr_ty *bptr)
 
 int BitArrayCountBitsOff(const bit_arr_ty *bptr)
 {
-
 	int count = 0;
 	bit_arr_ty tmp = *bptr;
 	int i = 64;
@@ -143,4 +142,61 @@ int BitArrayCountBitsOff(const bit_arr_ty *bptr)
 	
 	return count;	 
 }
+
+void BitArraySetAllOn( bit_arr_ty *bptr)
+{
+	*bptr= 0xffffffffffffffff;
+
+}
+
+void BitArraySetAllOff( bit_arr_ty *bptr)
+{
+	*bptr= 0;
+
+}
+
+void BitArrayMirror(bit_arr_ty *bptr)
+{
+	int i = 63, j = 0;
+	bit_arr_ty tmp = 0;  
+	
+	while  (i >= 0) 
+
+	{
+		tmp |= ((*bptr>>j)&1)<< i;
+		j++;
+		i--;
+	}
+	*bptr = tmp;
+	printf("bptr =%ld tmp = %ld \n", *bptr, tmp);
+
+}
+
+void BitArrayString(const bit_arr_ty *bptr, char *_dest)
+{
+	int i =0;
+	bit_arr_ty isolator = 1;
+	bit_arr_ty tmp = *bptr;
+		
+	_dest[64] = '\0';
+	
+	for(i=63; i>=0; --i)
+	{
+		if(tmp & isolator)
+		{	_dest[i] = '1';
+		}
+		else
+		{
+			_dest[i] = '0';
+		}
+		
+		tmp >>=1;
+	}
+	
+
+}
+
+
+
+
 

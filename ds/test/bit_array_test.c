@@ -12,6 +12,10 @@ void TestBitArrayRotateLeft(void);
 void TestBitArrayRotateRight(void);
 void TestBitArrayCountBitsOn(void);
 void TestBitArrayCountBitsOff(void);
+void TestBitArraySetAllOff(void);
+void TestBitArraySetAllOn(void);
+void TestBitArrayMirror(void);
+void TestBitArrayString(void);
 
 int main()
 {
@@ -22,10 +26,15 @@ int main()
 	TestBitArraySetOff();
 	TestBitArrayFlip();
 	TestBitArrayRotateLeft();	
-	TestBitArrayRotateRight();*/
-	
+	TestBitArrayRotateRight();
 	TestBitArrayCountBitsOn();
 	TestBitArrayCountBitsOff();
+	TestBitArraySetAllOn();
+	TestBitArraySetAllOff();
+	TestBitArrayMirror();*/
+	
+	TestBitArrayString();
+	
 	
 }
 
@@ -314,4 +323,70 @@ void TestBitArrayCountBitsOff(void)
 		printf("test failed ");
 	}	
 }
+
+
+void TestBitArraySetAllOn(void)
+{
+	bit_arr_ty num = 59; /*111011*/
+	
+	BitArraySetAllOn(&num);
+	if( num == 18446744073709551615)
+	{
+		printf("test successed \n");
+	}
+	else
+	{
+		printf("test failed %d\n ", num);
+	}	
+}
+
+void TestBitArraySetAllOff(void)
+{
+	bit_arr_ty num = 59; /*111011*/
+	BitArraySetAllOff(&num);
+	
+	if( num == 0)
+	{
+		printf("test successed \n");
+	}
+	else
+	{
+		printf("test failed num %d \n", num);
+	}	
+}
+
+
+void TestBitArrayMirror(void)
+{
+	bit_arr_ty num = 1; /*111011*/
+	BitArrayMirror(&num);
+	
+	if( num == 9223372036854775808)
+	{
+		printf("test successed  num %ld \n", num);
+	}
+	else
+	{
+		printf("test failed num %ld \n", num);
+	}	
+}
+
+void TestBitArrayString(void)
+{
+	bit_arr_ty num = 59; /*111011*/
+	char buf[64];
+	BitArrayString(&num, buf);
+	
+	if( strcmp(buf,"0000000000000000000000000000000000000000000000000000000000111011") == 0)
+	{
+		printf("test successed  buf %s \n", buf);
+	}
+	else
+	{
+		printf("test failed  buf %s \n", buf);
+	}
+
+}
+
+
 
