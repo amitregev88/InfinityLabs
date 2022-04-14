@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../include/stack.h"
+#include "../include/dynamic_vector.h"
 
 
 typedef struct stack stack_ty;
@@ -14,18 +14,18 @@ void TestStackPop(void);
 
 
 
-
+dynamic_vector_ty *Vector
 /************************TestStackCreateAndDestroy**********************/
 
 
 void TestStackCreateAndDestroy(void)
 {
 
-	stack stack_ty *ptr = NULL;
+	dynamic_vector_ty *ptr = NULL;
 
-/*create a stack*/
+/*create a dynamic vector*/
 
-	ptr = StackCreate(10, 11); /*checking in case the size of element greater than capacity */ 
+	ptr = VectorCreate(10, 11); /*checking in case the size of element greater than capacity */ 
 	
 	if (ptr == NULL)
 	{

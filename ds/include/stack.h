@@ -16,15 +16,6 @@
 #define OL124_STACK_H
 
 
-/*
-struct stack
-{
-    size_t size;
-    void *stack;
-    size_t capacity;
-    size_t size_of_element;
-};
-*/
 
 typedef struct stack stack_ty;
 

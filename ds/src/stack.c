@@ -14,10 +14,6 @@ struct stack
 typedef struct stack stack_ty;
 
 
-stack_ty *StackCreate(size_t capacity, size_t size_of_element);
-void StackDestroy(stack_ty *ptr);
-void StackPush(stack_ty* ptr, void *element);
-void StackPop(stack_ty* ptr);
 
 
 
@@ -74,7 +70,7 @@ void StackPush(stack_ty* ptr, void *element)
 		printf("Memory allocation error\n");
 	}
 	
-	if (*ptr.size == *ptr.capacity)
+	if (ptr->size == ptr->capacity)
 	{
 		printf("The stack is full . unable to push element to stack\n");
 	}	
