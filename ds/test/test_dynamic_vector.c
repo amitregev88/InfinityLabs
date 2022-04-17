@@ -2,142 +2,214 @@
 #include "../include/dynamic_vector.h"
 
 
-typedef struct stack stack_ty;
-
-
-void TestStackCreate(void);
-void TestStackDestroy(void);
-void Test_StackPush_StackSize_StackPeek(void)
-void TestStackPop(void);
 
 
 
+void TestDynamicVectorCreateAndDestroy(void);
+void TestVector(void);
 
 
-dynamic_vector_ty *Vector
-/************************TestStackCreateAndDestroy**********************/
 
-
-void TestStackCreateAndDestroy(void)
+int main()
 {
 
-	dynamic_vector_ty *ptr = NULL;
 
-/*create a dynamic vector*/
+	TestDynamicVectorCreateAndDestroy();
+	TestVector();
+
+	return 0;
+
+}
+
+
+
+
+
+
+
+
+
+/************************TestDynamicVectorCreateAndDestroy**********************/
+
+
+void TestDynamicVectorCreateAndDestroy(void)
+{
+
+	dynamic_vector_ty *ptr = NULL;	 /*create a dynamic vector*/
+
+
 
 	ptr = VectorCreate(10, 11); /*checking in case the size of element greater than capacity */ 
 	
-	if (ptr == NULL)
-	{
-		printf("Test create stack succeed - in case size of elements greater than capacity\n");
-	}
-	else
-	{
-		printf("Test create failed - in case size of elements greater than capacity\n");
-		StackDestroy(ptr);	/*destroy a stack - test*/
-	
-		if (ptr == NULL)
-		{
-			printf("Test destroy stack succeed in case the size of elements greater than capacity\n");
-		}
-		else
-		{
-			printf("Test destroy stack failed in case  the size of elements greater than capacity \n");
-		}
-	}
-	
-	
-/*create a stack again*/
-	ptr = NULL;
-	
-	ptr = StackCreate(15, 2); /*checking in case the capacity value  greater than size of elements */ 
 	if (ptr != NULL)
 	{
-		printf("Test create stack succeed - in case the capacity greater than size of elements\n");
-		StackDestroy(ptr);	/*destroy a stack - test*/
+		printf("Test of VectorCreate succeed - in case size of elements greater than capacity\n");
+	}
+	else
+	{
+		printf("Test of VectorCreate failed - in case size of elements greater than capacity\n");
+		VectorDestroy(ptr);	/*destroy dynamic vector - test*/
+	
 		if (ptr == NULL)
 		{
-			printf("Test destroy stack succeed - in case the capacity greater than size of elements\n");
+			printf("Test of VectorDestroy succeed in case the size of elements greater than capacity\n");
 		}
 		else
 		{
-			printf("Test destroy stack failed - in case the capacity greater than size of elements\n");
+			printf("Test of VectorDestroy failed in case  the size of elements greater than capacity \n");
+		}
+	}
+	
+	
+/*create a dynamic vector  again*/
+	ptr = NULL;
+	
+	ptr = VectorCreate(15, 2); /*checking in case the capacity value  greater than size of elements */ 
+	if (ptr != NULL)
+	{
+		printf("Test of VectorCreate succeed - in case the capacity greater than size of elements\n");
+		VectorDestroy(ptr);	/*destroy dynamic vector - test*/
+		if (ptr == NULL)
+		{
+			printf("Test of VectorDestroy succeed - in case the capacity greater than size of elements\n");
+		}
+		else
+		{
+			printf("Test of VectorDestroy failed - in case the capacity greater than size of elements\n");
 		}
 	}
 	else
 	{
-		printf("Test create stack failed - in case the capacity greater than size of elements\n");
+		printf("Test of VectorDestroy failed - in case the capacity greater than size of elements\n");
 	}
 
 }
 
-void Test_StackPush_StackSize_StackPeek(void)
+
+
+void TestVector(void)
 {
 	
-	char  a = 'a';
-
-	stack_ty *ptr = StackCreate(1,1); 
+	char a = 'a';
+	char b = 'b'; 
+	char c = 'c';
+	void *tmp = NULL;
+	dynamic_vector_ty *ptr2 = NULL;
 	
-	StackPush(ptr, &a)
+
+	dynamic_vector_ty *ptr = VectorCreate(2,1); 
+	
+	if (VectorIsEmpty(ptr)) /* test of IsEmpty function*/
+	{
+		printf("test of IsEmpty function succeed\n");
+	}
+	else
+	{
+		printf("test of IsEmpty function failed\n");
+	}
+	
+	printf("before the first push, size is: %ld\n", VectorSize(ptr)); /*test of size function*/
+	
+	VectorPushBack(ptr, &a);
 		
 	if (StackSize(ptr)==1)
 	{
-		printf("succeed stack push\n");
+		printf("after the first push, size is: %ld\n", VectorSize(ptr)); /*test of size function*/
+		printf("VectorPushBack and VectorSize succeed\n");
+
+		VectorPushBack(ptr, &b); 
+	
+		if (StackSize(ptr)==2)
+		{
+			printf("after the second push, size is: %ld\n", VectorSize(ptr)); /*test size function*/
+			printf("VectorPushBack and VectorSize succeed\n");
+		
+		}
+	}
+	else 
+	{
+		printf("VectorPushBack and VectorSize failed\n");
+	}
+		
+	
+	
+	
+	/*test of VectorCapacity function  and realloc of VectorPushBack*/
+	
+	VectorPushBack(ptr, &c); 
+	
+	printf("before realloc capacity is 2. after thrid push -realloc . after realloc, the capacity is %ld\n",VectorCapacity(ptr));
+	
+	
+	/* test of VectorGetAccessToElement*/
+	
+	tmp = VectorGetAccessToElement(ptr, 10); /* test with invalid index*/
+	
+	if (tmp == NULL)
+	{
+		printf("test of VectorGetAccessToElement succeed in case invalid index\n");
+	} 
+	
+	else 
+	{
+		printf("test of VectorGetAccessToElement faild in case invalid index\n");
+	}
+	
+	tmp = VectorGetAccessToElement(ptr, 2); /* test with valid index*/
+	
+	if (*(char *)tmp == 'c')
+	{
+		printf("the value in index 2 is %c -vectorGetAccessToElement succeed in case valid index\n",(*(char *)tmp));
+	} 
+	
+	else 
+	{
+		printf("test of VectorGetAccessToElement faild in case invalid index\n");
+	}
+	
+	
+	/*test of VectorPopBack function*/
+	
+	VectorPopBack(ptr); 
+	VectorPopBack(ptr); 
+	
+	if ((ptr->size == 1) && (ptr->capacity == 2))
+	{
+		printf("after  VectorPopBack 2 times. the size is %ld  and capacity is %lu", VectorSize(ptr), VectorCapacity);
+	}
+	else
+	{
+		printf("test of VectorPopBack function faild\n");
+	}
+		
+	/*test of VectorReserve*/
+	
+	
+	
+	ptr2 = VectorReserve(ptr, 8);
+	
+	
+	if (ptr2->capacity == 8)
+	{
+		printf("test of VectorReserve Succeeded\n");
 		
 	}
-	else 
+	else
 	{
-	printf("failed stack push\n");
+		printf("test of VectorReserve failed\n");
+	}	
 	
 	
-	}
 	
 	
-	if (*(char *)(StackPeek(ptr) == a)
-	{
-		printf("succed stackpeek\n");
-	}
-	
-	else 
-	{
-	
-		printf("failed stackpeek\n");
-	}
-	
-	
-	SrackPop(ptr)
-	
-	if (size == 0)
-	
-	{
-		printf("succed StackPop\n");
-	}
-	
-	else 
-	{
-	
-		printf("failed stackPop");
-	}
 }
+	
+	
 
 
 
 
 
-
-
-
-}
-
-	/*
-struct stack
-{
-    size_t size;
-    void *stack;
-    size_t capacity;
-    size_t size_of_element;
-};
-*/
 
 
 

@@ -81,7 +81,7 @@ int VectorPushBack(dynamic_vector_ty *vector, void *element)
 	void *tmp = NULL;
 	void *tmp2 = NULL;
 		
-	if (NULL == tmp)
+	if (NULL == vector)
 	{
 		printf("Memory allocation error\n");
 	}
