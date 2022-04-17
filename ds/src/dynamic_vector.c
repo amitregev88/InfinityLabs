@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include "../dynamic_vector.h"
+#include <stdlib.h> /*malloc*/
+#include <string.h> /*memcpy*/
+#include "/home/amit/git/ds/include/dynamic_vector.h"
 
 #define SIZE_FACTOR 2
 
@@ -19,7 +20,7 @@ dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 {
 
 	
-	dynamic_vector_ty *dynamic_vector = (dynamic_vector_ty *) calloc (sizeof(dynamic_vector_ty)); /* memory allocation for the struct of dynamic_vector*/
+	dynamic_vector_ty *dynamic_vector = (dynamic_vector_ty *) malloc (sizeof(dynamic_vector_ty)); /* memory allocation for the struct of dynamic_vector*/
 	
 	if (dynamic_vector == NULL)
 	{
@@ -40,6 +41,7 @@ dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 	if (dynamic_vector->data == NULL)
 	{
 		printf("error of memory allocation\n");  
+		free(dynamic_vector->data);
 		return NULL;
 	}
 	
@@ -47,29 +49,34 @@ dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 	return dynamic_vector;
 } 
 
-dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 
 void VectorDestroy(dynamic_vector_ty *vector)
 {
     free(vector->data);
+    vector->data = NULL;
+    
     free(vector);
 }
 
 dynamic_vector_ty *VectorReserve(dynamic_vector_ty *vector, size_t new_capacity)
 {
 	void *tmp = NULL;
-	if (vector->size >  new_capacity)
-	{
-		vector->size = new_capacity;
-	}
-
-	tmp = (dynamic_vector_ty *)realloc(vector, new_capacity * sizeof(vector->size_of_element);
 	
+
+	tmp = realloc(vector->data, new_capacity * (vector->size_of_element));
 	if (NULL == tmp)
 	{
 			printf("error of memory allocation\n");  
 			return NULL;
 	}
+	
+	
+	if (vector->size >=  new_capacity)
+	{
+		vector->size = new_capacity;
+	}
+	
+	
 
 	vector->data = tmp;
 	
@@ -78,8 +85,8 @@ dynamic_vector_ty *VectorReserve(dynamic_vector_ty *vector, size_t new_capacity)
 
 int VectorPushBack(dynamic_vector_ty *vector, void *element)
 {
-	void *tmp = NULL;
-	void *tmp2 = NULL;
+	dynamic_vector_ty *tmp = NULL;
+	
 		
 	if (NULL == vector)
 	{
@@ -89,23 +96,23 @@ int VectorPushBack(dynamic_vector_ty *vector, void *element)
 	if (vector->size == vector->capacity)
 	{
 		
-		tmp =  (dynamic_vector_ty *)realloc(vector->data, vector->size_of_element * vector->capacity * SIZE_FACTOR);
+		tmp = VectorReserve(vector, SIZE_FACTOR * vector->capacity);
 		if	(tmp == NULL)
 		{
 			return 0;
 		}
 		
 		vector->capacity *= SIZE_FACTOR;
-		vector->data = tmp;
+		
 	}
 	
 		
 		
 		
 /*exemple        1     &0(address)       10(elements)   4(bytes) -----> 40 byte right to the address known*/
-		tmp2 = (char *)(vector->data) + ((vector->size) * vector->size_of_element) 
 		
-	vector->data = memcpy(tmp2, element, vector->size_of_element);
+		
+	memcpy((char *)(vector->data) + ((vector->size) * vector->size_of_element), element, vector->size_of_element);
 	
 	++vector->size;
 	return 1;
@@ -116,30 +123,31 @@ int VectorPushBack(dynamic_vector_ty *vector, void *element)
 void VectorPopBack(dynamic_vector_ty *vector)
 {
 
-	void *tmp = NULL;
+	dynamic_vector_ty *tmp = NULL;
 	
 	if (vector->size == 0)
 	{
 		return;
 		
 	}
+	--vector->size;
+	if	((vector->size) * 4 <=  (vector->capacity))
 	
-	if	(vector->size * 4 <=  vector->capacity)
 	{
-		tmp = (dynamic_vector_ty *)realloc(vector->data, vector->size_of_element * vector->capacity / SIZE_FACTOR);
+		tmp = VectorReserve(vector, vector->capacity / SIZE_FACTOR);
 	
-	if	(vector->data == NULL)
-	{	
+		if	(NULL == tmp)
+		{	
 			return;
-	}
+		}
 	
+		
+		vector->capacity /= SIZE_FACTOR; 
 	
-	vector->capacity /= SIZE_FACTOR; 
-	vector->data = tmp;
 			
 	}
 	
-		--vector->size;
+	
 
 }
 
@@ -151,7 +159,7 @@ void *VectorGetAccessToElement(const dynamic_vector_ty *vector, size_t index)
 		return NULL;
 	}
 	
-	return (char *)(vector->data) + ((index * vector->size_of_element); 
+	return ((char *)(vector->data) + (index * vector->size_of_element)); 
 
 }
 	

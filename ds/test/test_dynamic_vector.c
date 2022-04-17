@@ -1,36 +1,18 @@
 #include <stdio.h>
-#include "../include/dynamic_vector.h"
-
-
-
-
+#include "/home/amit/git/ds/include/dynamic_vector.h"
 
 void TestDynamicVectorCreateAndDestroy(void);
 void TestVector(void);
 
-
-
 int main()
 {
-
-
 	TestDynamicVectorCreateAndDestroy();
 	TestVector();
 
 	return 0;
-
 }
 
-
-
-
-
-
-
-
-
 /************************TestDynamicVectorCreateAndDestroy**********************/
-
 
 void TestDynamicVectorCreateAndDestroy(void)
 {
@@ -48,39 +30,23 @@ void TestDynamicVectorCreateAndDestroy(void)
 	else
 	{
 		printf("Test of VectorCreate failed - in case size of elements greater than capacity\n");
-		VectorDestroy(ptr);	/*destroy dynamic vector - test*/
+		VectorDestroy(ptr);	
 	
-		if (ptr == NULL)
-		{
-			printf("Test of VectorDestroy succeed in case the size of elements greater than capacity\n");
-		}
-		else
-		{
-			printf("Test of VectorDestroy failed in case  the size of elements greater than capacity \n");
-		}
 	}
 	
 	
-/*create a dynamic vector  again*/
+		
 	ptr = NULL;
 	
 	ptr = VectorCreate(15, 2); /*checking in case the capacity value  greater than size of elements */ 
 	if (ptr != NULL)
 	{
 		printf("Test of VectorCreate succeed - in case the capacity greater than size of elements\n");
-		VectorDestroy(ptr);	/*destroy dynamic vector - test*/
-		if (ptr == NULL)
-		{
-			printf("Test of VectorDestroy succeed - in case the capacity greater than size of elements\n");
-		}
-		else
-		{
-			printf("Test of VectorDestroy failed - in case the capacity greater than size of elements\n");
-		}
+		VectorDestroy(ptr);	
 	}
 	else
 	{
-		printf("Test of VectorDestroy failed - in case the capacity greater than size of elements\n");
+		printf("Test of VectorCreate failed - in case the capacity greater than size of elements\n");
 	}
 
 }
@@ -94,9 +60,8 @@ void TestVector(void)
 	char b = 'b'; 
 	char c = 'c';
 	void *tmp = NULL;
-	dynamic_vector_ty *ptr2 = NULL;
 	
-
+	
 	dynamic_vector_ty *ptr = VectorCreate(2,1); 
 	
 	if (VectorIsEmpty(ptr)) /* test of IsEmpty function*/
@@ -112,14 +77,14 @@ void TestVector(void)
 	
 	VectorPushBack(ptr, &a);
 		
-	if (StackSize(ptr)==1)
+	if (VectorSize(ptr)==1)
 	{
 		printf("after the first push, size is: %ld\n", VectorSize(ptr)); /*test of size function*/
 		printf("VectorPushBack and VectorSize succeed\n");
 
 		VectorPushBack(ptr, &b); 
 	
-		if (StackSize(ptr)==2)
+		if (VectorSize(ptr)==2)
 		{
 			printf("after the second push, size is: %ld\n", VectorSize(ptr)); /*test size function*/
 			printf("VectorPushBack and VectorSize succeed\n");
@@ -152,7 +117,7 @@ void TestVector(void)
 	
 	else 
 	{
-		printf("test of VectorGetAccessToElement faild in case invalid index\n");
+		printf("test of VectorGetAccessToElement failed in case invalid index\n");
 	}
 	
 	tmp = VectorGetAccessToElement(ptr, 2); /* test with valid index*/
@@ -170,38 +135,22 @@ void TestVector(void)
 	
 	/*test of VectorPopBack function*/
 	
-	VectorPopBack(ptr); 
-	VectorPopBack(ptr); 
+	VectorPopBack(ptr);
+	VectorPopBack(ptr);
+		 
+	/*VectorPopBack(ptr); */
 	
-	if ((ptr->size == 1) && (ptr->capacity == 2))
+	if ((VectorSize(ptr) == 1) && (VectorCapacity(ptr) == 2))
 	{
-		printf("after  VectorPopBack 2 times. the size is %ld  and capacity is %lu", VectorSize(ptr), VectorCapacity);
+		printf("after  VectorPopBack 2 times. the size is %ld  and capacity is %ld - VectorPopBack and  VectorReserve succeeded\n", VectorSize(ptr), VectorCapacity(ptr));
 	}
 	else
 	{
 		printf("test of VectorPopBack function faild\n");
 	}
 		
-	/*test of VectorReserve*/
 	
-	
-	
-	ptr2 = VectorReserve(ptr, 8);
-	
-	
-	if (ptr2->capacity == 8)
-	{
-		printf("test of VectorReserve Succeeded\n");
-		
-	}
-	else
-	{
-		printf("test of VectorReserve failed\n");
-	}	
-	
-	
-	
-	
+
 }
 	
 	
