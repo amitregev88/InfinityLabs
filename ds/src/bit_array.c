@@ -27,14 +27,17 @@ int BitArraySetOn(bit_arr_ty *bptr,  unsigned char index)
 	bit_arr_ty num = *bptr;
 	
 	if (index > 63)
+	{
 		return -1;
-		
-		
+	}
+	
 	if (!((num>> index)&1))
 	{
 	 	*bptr = ((((num>> index)| 1 ) << index) | num);
-	}	
+	}
+		
 	return 0;
+	
 }
 
 
@@ -56,20 +59,33 @@ int BitArraySetOff(bit_arr_ty *bptr,  unsigned char index)
 int BitArraySetBit(bit_arr_ty *bptr, unsigned char index, unsigned char option)
 {
 	int result = 0;
-	if (option > 1 || option < 0)
-		return -1;
-		
+	
+	if (option > 1)
+	{
+		result = -1;
+		return result;
+	}
+	
+	if (index > 63)
+	{
+		result = -1;
+		return result;
+	}	
+	
 		switch(option)
 		{
+				
 			case 0:		result = BitArraySetOff(bptr, index);
-						return result;
 						break;
+						
 			case 1:		result = BitArraySetOn(bptr, index);
-						return result;
 						break;
+						
 			default:	break;
 						
 		}
+	
+	return result;
 	
 }
 
@@ -168,8 +184,6 @@ void BitArrayMirror(bit_arr_ty *bptr)
 		i--;
 	}
 	*bptr = tmp;
-	printf("bptr =%ld tmp = %ld \n", *bptr, tmp);
-
 }
 
 void BitArrayString(const bit_arr_ty *bptr, char *_dest)

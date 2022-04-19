@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "/home/amit/git/ds/include/dynamic_vector.h"
+#include "../include/dynamic_vector.h"
 
 void TestDynamicVectorCreateAndDestroy(void);
 void TestVector(void);

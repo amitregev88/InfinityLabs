@@ -1,5 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>	/*printf*/
+#include <stdlib.h>	/* malloc*/
+#include <string.h> /*memcpy*/
+
 
 
 struct stack
@@ -51,9 +53,9 @@ stack_ty *StackCreate(size_t capacity, size_t size_of_element)
 
 void StackDestroy(stack_ty *ptr)
 {
-	if (*ptr.stack != NULL)
+	if (ptr->stack != NULL)
 	{
-		free(*ptr.stack);
+		free(ptr->stack);
 	}
 	
 	if(ptr != NULL)
@@ -100,26 +102,59 @@ void StackPop(stack_ty* ptr)
 
 const void *StackPeek(const stack_ty* ptr)
 {
-	if (ptr == NULL)
-	{	
-		printf("memory allocation of stack error\n");
+	if (NULL == ptr || NULL == ptr->stack)
+	{
+		printf("memory allocation error\n"); 
 		return NULL;
 	}
-			
-	ptr
-
-
+	
+	if (0 == ptr->size)
+	{
+		printf("the stack is empty\n"); 
+	}
+	
+	return ((char *)(ptr->stack) + ((ptr->size - 1)* ptr->size_of_element));
 }
 
-int main()
+
+int StackIsEmpty(const stack_ty *ptr)
 {
-
-
-
-
-
-
+	if(NULL == ptr)
+	{
+		return -1;
+	}
+	
+	if(0 == ptr->size)
+	{
+		return 1;
+	}
+	
+	return 0;
 }
+
+size_t StackSize(const stack_ty *ptr)
+{
+	if (NULL == ptr)
+	{
+		printf("memory allocation error\n");
+	}
+	
+	return ptr->size;
+}
+
+size_t StackCapacity(const stack_ty *ptr)
+{
+	if (NULL == ptr)
+	{
+		printf("memory allocation error\n");
+	}
+	
+	return ptr->capacity;
+}
+
+
+
+
 
 
 

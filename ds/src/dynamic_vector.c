@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> /*malloc*/
 #include <string.h> /*memcpy*/
-#include "/home/amit/git/ds/include/dynamic_vector.h"
+#include "../include/dynamic_vector.h"
 
 #define SIZE_FACTOR 2
 
