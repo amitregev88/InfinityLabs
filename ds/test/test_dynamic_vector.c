@@ -21,7 +21,7 @@ void TestDynamicVectorCreateAndDestroy(void)
 
 
 
-	ptr = VectorCreate(10, 11); /*checking in case the size of element greater than capacity */ 
+	ptr = VectorCreate(3, 4); /*checking in case the size of element greater than capacity */ 
 	
 	if (ptr != NULL)
 	{
@@ -30,24 +30,25 @@ void TestDynamicVectorCreateAndDestroy(void)
 	else
 	{
 		printf("Test of VectorCreate failed - in case size of elements greater than capacity\n");
-		VectorDestroy(ptr);	
-	
+			
 	}
 	
 	
-		
+	VectorDestroy(ptr);	
 	ptr = NULL;
 	
 	ptr = VectorCreate(15, 2); /*checking in case the capacity value  greater than size of elements */ 
 	if (ptr != NULL)
 	{
 		printf("Test of VectorCreate succeed - in case the capacity greater than size of elements\n");
-		VectorDestroy(ptr);	
+		
 	}
 	else
 	{
 		printf("Test of VectorCreate failed - in case the capacity greater than size of elements\n");
 	}
+	
+	VectorDestroy(ptr);
 
 }
 
@@ -62,7 +63,7 @@ void TestVector(void)
 	void *tmp = NULL;
 	
 	
-	dynamic_vector_ty *ptr = VectorCreate(2,1); 
+	dynamic_vector_ty *ptr = VectorCreate(10,1); 
 	
 	if (VectorIsEmpty(ptr)) /* test of IsEmpty function*/
 	{
@@ -148,6 +149,9 @@ void TestVector(void)
 	{
 		printf("test of VectorPopBack function faild\n");
 	}
+	
+	VectorDestroy(ptr);
+	ptr = NULL;
 		
 	
 

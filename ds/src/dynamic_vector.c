@@ -20,7 +20,7 @@ dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 {
 
 	
-	dynamic_vector_ty *dynamic_vector = (dynamic_vector_ty *) malloc (sizeof(dynamic_vector_ty)); /* memory allocation for the struct of dynamic_vector*/
+	dynamic_vector_ty *dynamic_vector = (dynamic_vector_ty *)malloc(sizeof(dynamic_vector_ty)); /* memory allocation for the struct of dynamic_vector*/
 	
 	if (dynamic_vector == NULL)
 	{
@@ -42,6 +42,7 @@ dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 	{
 		printf("error of memory allocation\n");  
 		free(dynamic_vector->data);
+		free(dynamic_vector);
 		return NULL;
 	}
 	
