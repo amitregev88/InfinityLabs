@@ -15,12 +15,13 @@ struct circ_buffer
 {
     void *data;
     void *head;
-    size_t offset;
+    size_t *tail;
     size_t size;
+    size_t buffer_full;
 };
 
 
-typedef struct circ_buffer circ_buffer_ty;
+
 
 
 circ_buffer_ty *BufferCreate(size_t size)
@@ -43,13 +44,13 @@ circ_buffer_ty *BufferCreate(size_t size)
 	if (NULL == circ_buffer->data)
 	{
 		printf("Error of memory allocation\n");  
-		free(buffer);
+		free(circ_buffer);
 		return NULL;
 	}
 	
 	circ_buffer->head = circ_buffer->data;
 	
-	circ_buffer->offset = 0;
+	circ_buffer->tail = circ_buffer->data;
 	
 	circ_buffer->size = size;
 	
@@ -64,25 +65,34 @@ void BufferDestroy(circ_buffer_ty *buffer);
 
 size_t BufferWrite(circ_buffer_ty *buffer, const void *data, size_t count)
 {
+	size_t data_part_one;
+	
 		
-		if (buffer->tail == buffer->head)
-		{
-			if	(IsEmpty(buffer->data))
-			{					1056			1032			1008						
-				if (count <= (buffer->size -(buffer->head - buffer->tail sizeof(buffer->tail ))
-				{
-			  		memcpy(buffer->head, data, count);
-			  	}
-			  	else
-			  	{ 
-			  		memcpy(buffer->head, data, (buffer->head - buffer->tail));
-			  	}
-			}
-			else
-			{
-			return 0;
-			}
-		}
+	if (BufferFreeSpace(buffer) <= count)
+	{
+		count = BufferFreeSpace(buffer);
+		buffer->buffer_full = 1;
+	}
+	
+	if (buffer->head + count <= buffer->data + buffer->size)
+	{ 
+		memcpy(buffer->head, data, count);
+		buffer->head = ((char *)buffer->head + count);
+	}
+	
+	else
+	{
+		data_part_one = buffer->data + buffer->size - buffer->head;
+		
+		memcpy(buffer->head, data, data_part_one);
+		buffer->head = buffer->data;
+		
+		memcpy(buffer->head, data + data_part_one , count - data_part_one)
+		
+	}
+	
+			
+}
 
 
 size_t BufferRead(const circ_buffer_ty *buffer, void *_data, size_t count)
@@ -96,7 +106,7 @@ size_t BufferRead(const circ_buffer_ty *buffer, void *_data, size_t count)
 
 size_t BufferFreeSpace(const circ_buffer_ty *buffer)			
 {			
-	return (buffer->size - buffer->offset);
+	return (buffer->size - buffer->head + buffer->tail);
 }
 
 int BufferIsEmpty(const circ_buffer_ty *buffer);
