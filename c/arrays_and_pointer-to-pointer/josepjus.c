@@ -59,3 +59,93 @@ void josephus(int *arr, size_t n, size_t k)
 
 }
 
+/*
+
+#include <stdio.h>
+
+int find_next_allive (int *arr, int size, int killer);
+
+int main()
+{
+    int size = 100;
+    int i = 0;
+    int arr[100];
+    int killer = 0;
+    int next_killer = 2;
+    int next_to_kill = 1;
+    int survivour = -1;
+
+    for (i = 0; i < size; ++i)
+        *(arr + i) = 1;
+
+    while (survivour == -1)
+    {
+
+        /** finds the next_to_kill and check if it's **
+        ** a KILLER himself if not KILL him         **/
+/*
+        next_to_kill = find_next_allive(arr, size, killer);
+
+        if (next_to_kill != killer)
+        {
+            arr[next_to_kill] = 0;
+        }
+        else
+        {
+            survivour = killer;
+            break;
+        }
+
+        next_killer = find_next_allive(arr, size, killer);
+
+        if (next_killer != killer)
+        {
+            killer = next_killer;
+        }
+        else
+        {
+            survivour = killer;
+            break;
+        }
+    }
+
+    ++survivour;
+
+    printf ("The Survivour is # %d\n", survivour);
+
+    return 0;
+}
+*/
+/* Find next Alive to Kill him, if next one is the Killer return -1
+else return index of the next one need to kill**/
+
+/*int find_next_allive (int *arr, int size, int killer)
+{
+
+    int index = killer + 1; 
+    if (index + 1 > size)
+    {
+        index = 0;
+    }
+
+    while (arr[index] != 1)
+    {
+        if (index == killer)
+        {
+            return killer ;
+        }
+        else
+        {
+            ++index;
+        }
+
+        if (index + 1 > size)
+        {
+            index = 0;
+        }
+    }
+
+    return index;
+}
+*/
+
