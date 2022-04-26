@@ -15,12 +15,10 @@ struct circ_buffer
 {
     void *data;
     void *head;
-    size_t *tail;
+    void *tail;
     size_t size;
     size_t buffer_full;
 };
-
-
 
 
 
@@ -57,7 +55,7 @@ circ_buffer_ty *BufferCreate(size_t size)
 	return circ_buffer;
 } 
 
-void BufferDestroy(circ_buffer_ty *buffer);
+void BufferDestroy(circ_buffer_ty *buffer)
 {
 	free(buffer->data);
 	free(buffer);
@@ -66,6 +64,7 @@ void BufferDestroy(circ_buffer_ty *buffer);
 size_t BufferWrite(circ_buffer_ty *buffer, const void *data, size_t count)
 {
 	size_t data_part_one;
+	void *data_part_two;
 	
 		
 	if (BufferFreeSpace(buffer) <= count)
@@ -74,47 +73,85 @@ size_t BufferWrite(circ_buffer_ty *buffer, const void *data, size_t count)
 		buffer->buffer_full = 1;
 	}
 	
-	if (buffer->head + count <= buffer->data + buffer->size)
-	{ 
+	if ((char *)buffer->head + count <= (char *)buffer->data + buffer->size)
+	{
+	 
 		memcpy(buffer->head, data, count);
 		buffer->head = ((char *)buffer->head + count);
 	}
 	
 	else
 	{
-		data_part_one = buffer->data + buffer->size - buffer->head;
+		data_part_one = (char *)buffer->data + buffer->size - (char *)buffer->head;
 		
 		memcpy(buffer->head, data, data_part_one);
 		buffer->head = buffer->data;
 		
-		memcpy(buffer->head, data + data_part_one , count - data_part_one)
+		data_part_two = (char *)data + data_part_one;
+		memcpy(buffer->head, data_part_two , count - data_part_one);
+		buffer->head = ((char *)buffer->head + count - data_part_one);
 		
 	}
-	
-			
+	return count;	
 }
 
 
-size_t BufferRead(const circ_buffer_ty *buffer, void *_data, size_t count)
+size_t BufferRead(circ_buffer_ty *buffer, void *_data, size_t count)
 {
-
+	if(BufferIsEmpty(buffer))
+	{
+		return 0;
+	}
 	
-
-
+	if (buffer->size - BufferFreeSpace(buffer) <= count) /*checking if count is greater than size  */
+	{
+		count = buffer->size - BufferFreeSpace(buffer);
+	}
+	
+	
+	if ((char *)buffer->tail + count <= (char *)buffer->data + buffer->size )
+	{
+		memcpy(_data, buffer->tail, count);
+		buffer->tail = ((char *)buffer->tail + count);
+	}
+	
+	
+	else
+	{
+		size_t data_part_one = (char *)buffer->data + buffer->size - (char *)buffer->tail;
+		void *data_part_two;
+	
+		memcpy(_data, buffer->tail, data_part_one);
+		buffer->tail = buffer->data;
+	
+		data_part_two = (char *)_data + data_part_one;
+	
+		memcpy(data_part_two, buffer->tail, count - data_part_one);
+		buffer->tail = ((char *)buffer->tail + count - data_part_one);
+	}
+	
+	return count;
 
 }
 
 size_t BufferFreeSpace(const circ_buffer_ty *buffer)			
 {			
-	return (buffer->size - buffer->head + buffer->tail);
+	return (buffer->size - (size_t)buffer->head + (size_t)buffer->tail);
 }
 
-int BufferIsEmpty(const circ_buffer_ty *buffer);
+
+int BufferIsEmpty(const circ_buffer_ty *buffer)
 {	
-	if (0 == buffer->offset)
+	if ((char *)buffer->head == (char *)buffer->tail && (!(buffer->buffer_full))) 
 	{
 		return 1;
-	}	
+	}
+	
+	if (!(((char *)buffer->tail == (char *)buffer->data) && ((char *)buffer->head == (char *)buffer->data + buffer->size)))
+	{
+		return 1;
+	}
+	
 	return 0;   
 }
 

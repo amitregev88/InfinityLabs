@@ -37,7 +37,7 @@ size_t BufferWrite(circ_buffer_ty *buffer, const void *data, size_t count);
 /*************************************************************************************
 * ---BufferRead--- return count of read 
 **************************************************************************************/
-size_t BufferRead(const circ_buffer_ty *buffer, void *_data, size_t count);
+size_t BufferRead(circ_buffer_ty *buffer, void *_data, size_t count);
 
 /*************************************************************************************
 * ---BufferFreeSpace--- returns how many byts are free to write in the buffer.

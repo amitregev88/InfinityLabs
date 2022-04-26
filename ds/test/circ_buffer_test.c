@@ -10,37 +10,43 @@
 #include "../include/circ_buffer.h" 
 
 #define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")
+#define TEST(x,y)  x == y? IF_SUCCESS(1) : IF_SUCCESS(0)
 
 
 void test_circular_buffer()
 {
-	circ_buffer_ty ptr = NULL;	
+	circ_buffer_ty buffer = NULL;	
 
 	BufferCreate(0); /*checking in case size is 0*/
 	
-	if (NULL != ptr)
+	if (NULL != buffer)
 	{
-		printf("checking test BufferCreate in case size is 0\n");
+		printf("testing BufferCreate in case size is 0\n");
 		IF_SUCCESS(1);
 			
 	}
 	else
 	{
-		printf("checking test BufferCreate in case size is 0\n");
+		printf("testing BufferCreate in case size is 0\n");
 		IF_SUCCESS(0);
 	}
 	
 	BufferCreate(10) /* checking in case size is 0*/
-	if (NULL != ptr)
+	if (NULL != buffer)
 	{
-		printf("checking test of BufferCreate in case size is greater than 0\n");
+		printf("testing of BufferCreate in case size is greater than 0\n");
 		IF_SUCCESS(1);	
 	}
 	else 
 	{
-		printf(" checking test of BufferCreate in case size is greater than 0\n");
+		printf("testing of BufferCreate in case size is greater than 0\n");
 		IF_SUCCESS(0);				
 	}
+	
+	printf("the siz")BufferSize
+	TEST(10,BufferSize(buffer));
+	
+	
 	
 	
 	/* TODO execute destroy*/
@@ -64,13 +70,5 @@ void test_circular_buffer()
 	
 	
 	
-size_t BufferWrite(circ_buffer_ty *buffer, const void *data, size_t count)
-	
-}
-	
-	
 
-
-
-}
 
