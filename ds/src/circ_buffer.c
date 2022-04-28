@@ -52,6 +52,7 @@ circ_buffer_ty *BufferCreate(size_t size)
 	
 	circ_buffer->size = size;
 	
+	circ_buffer->buffer_full = 0;
 	return circ_buffer;
 } 
 
@@ -106,6 +107,10 @@ size_t BufferRead(circ_buffer_ty *buffer, void *_data, size_t count)
 	if (buffer->size - BufferFreeSpace(buffer) <= count) /*checking if count is greater than size  */
 	{
 		count = buffer->size - BufferFreeSpace(buffer);
+		if(count)
+		{
+			 buffer->buffer_full = 0;
+		}
 	}
 	
 	
@@ -130,12 +135,18 @@ size_t BufferRead(circ_buffer_ty *buffer, void *_data, size_t count)
 		buffer->tail = ((char *)buffer->tail + count - data_part_one);
 	}
 	
+	
 	return count;
 
 }
 
 size_t BufferFreeSpace(const circ_buffer_ty *buffer)			
 {			
+	if (buffer->buffer_full)
+	{
+		return 0;
+	}
+
 	return (buffer->size - (size_t)buffer->head + (size_t)buffer->tail);
 }
 
