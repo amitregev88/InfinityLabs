@@ -249,5 +249,5 @@ void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
 	dest->prev->next = from;
 	
 }
-/**/
+
 
