@@ -63,7 +63,7 @@ dlist_node_ty *DListPushBack(dlist_ty *list, void *data);
 
 /*************************************************************************************
 * --- PushFront --- add's a NODE at the FRONT of the linked list 
-* return 1 in case of success or o in case of
+* return 1 in case of success or 0 in case of failure
 **************************************************************************************/
 dlist_node_ty *DListPushFront(dlist_ty *list, void *data);
 
