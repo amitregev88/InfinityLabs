@@ -14,7 +14,7 @@
 #include <stdlib.h> /* malloc */
 
 /*
-#define __MSG_ERR_MEM_ALLOC__ printf ("Error memory allocation\n")
+
 
 struct doubly_list
 {

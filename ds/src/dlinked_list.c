@@ -12,16 +12,16 @@
 struct doubly_node 
 {
     void *data; 
-    doubly_node *next;
-    doubly_node *prev;
+    dlist_node_ty *next;
+    dlist_node_ty *prev;
 };
 
 
 struct doubly_list
 {
-    doubly_node head;
-    doubly_node tail;
-}
+    dlist_node_ty head;
+    dlist_node_ty tail;
+};
 
 
 dlist_ty *DListCreate(void)
@@ -34,10 +34,10 @@ dlist_ty *DListCreate(void)
 		return NULL;
 	}
 	
-	new_list->head.next = &new_list-> tail
+	new_list->head.next = &new_list-> tail;
 	new_list->head.prev = NULL;
 	new_list->tail.next = NULL;
-	new_list->tail.prev = &new_list->head
+	new_list->tail.prev = &new_list->head;
 	
 	return new_list;
 	
@@ -61,14 +61,14 @@ dlist_node_ty *DListInsert(dlist_node_ty *where, void *data)
 {
 	dlist_node_ty *new_node = (dlist_node_ty *)malloc(sizeof(dlist_node_ty));
 	
-	if (NULL == node)
+	if (NULL == new_node)
 	{
 		printf("Memory allocation error\n");
 		return NULL;
 	}
 	
 
-	where->prev.next = new_node;
+	where->prev->next = new_node;
 	new_node->prev = where->prev;
 	new_node->next = where;
 	where->prev = new_node;
@@ -81,10 +81,10 @@ dlist_node_ty *DListInsert(dlist_node_ty *where, void *data)
 dlist_node_ty *DListRemove(dlist_node_ty *to_remove)
 {
 
-	dlist_node_ty next_node = to_remove->next;
+	dlist_node_ty *next_node = DListGetNext(to_remove);
 	
 	to_remove->prev->next = next_node;
-	tmp->prev = to_remove->prev;
+	next_node->prev = to_remove->prev;
 	
 	
 	free (to_remove);
@@ -105,18 +105,31 @@ dlist_node_ty *DListPushFront(dlist_ty *list, void *data)
 
 void *DListPopBack(dlist_ty *list)
 {
-	dlist_ty data_pop_back = GetData(list->tail.prev);
+	
+	dlist_node_ty *pop_back_node = list->tail.prev;
+	
+	void *data_pop_back = DListGetData(pop_back_node);
+	
+	pop_back_node = DListGetPrev(pop_back_node);
 
-	DListRemove(list->tail.prev);
+	pop_back_node->prev->next = DListEnd(list);
+	
+	DListRemove(pop_back_node);
 	
 	return data_pop_back;
 }
 
 void *DListPopFront(dlist_ty *list)
 {
-	dlist_ty data_pop_front = GetData(DListBegin(list));
+	dlist_node_ty *pop_front_node = DListBegin(list);
+	
+	void *data_pop_front = DListGetData(pop_front_node);
+	
+	pop_front_node = DListGetNext(pop_front_node);
 
-	DListRemove(DListBegin(list));
+	pop_front_node->next->prev = &list->head;
+	
+	DListRemove(pop_front_node);
 	
 	return data_pop_front;
 }
@@ -125,7 +138,7 @@ void *DListPopFront(dlist_ty *list)
 size_t DListSize(const dlist_ty *list)
 {
 	size_t counter = 0;
-	dlist_node_ty begin = DListBegin(list);
+	dlist_node_ty *begin = DListBegin(list);
 	
 	
 	if(DListIsEmpty(list))
@@ -136,7 +149,7 @@ size_t DListSize(const dlist_ty *list)
 	while(begin != DListEnd(list))			/*for(tmp; tmp != list->tail; tmp = DListGetNext(tmp))*/
 	{
 		++counter;
-		begin = DListGetNext(tmp); 
+		begin = DListGetNext(begin); 
 	}
 		
 	return counter;
@@ -153,9 +166,9 @@ void *DListGetData(const dlist_node_ty *node)
 	return node->data;
 }
 
-void DListSetData(dlist_node_ty *no void *data)
+void DListSetData(dlist_node_ty *node, void *data)
 {
-	node-> data = data;	
+	node->data = data;	
 }
 dlist_node_ty *DListGetNext(const dlist_node_ty *node)
 {
@@ -174,7 +187,7 @@ dlist_node_ty *DListFind(const dlist_node_ty *from, const dlist_node_ty *to, int
 	
 	output_func = is_match(iter_node->data,param);
 		
-	if (!output_func));
+	if (!output_func)
 	{
 		return iter_node;
 	}
@@ -210,12 +223,15 @@ int DListForEach(const dlist_node_ty *from, const dlist_node_ty *to, int (*actio
 
 	dlist_node_ty *iter =(dlist_node_ty *) from; 
 
-	for(iter; iter != to; iter = DListGetNext(iter))
+	
+	while (iter != to)
 	{
-		if (!action(iter->data, param))
+		if (!action(DListGetData(iter),param))
 		{	
 			return 0;
 		}
+		
+		iter = DListGetNext(iter);
 	}
 		
 	return 1;	
