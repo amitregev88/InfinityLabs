@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<string.h> /* strcmp*/
-#include "../include/bit_array.h"
+#include "bit_array.h"
 
 
 

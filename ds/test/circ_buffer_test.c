@@ -6,64 +6,89 @@
 *************************************************************************************/
 
 
-#include <stdio.h>
-#include "../include/circ_buffer.h" 
+#include <stdio.h>	/*printf*/
+#include <string.h> /* strlen*/
+#include "circ_buffer.h" 
 
 #define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")
 #define TEST(x,y)  x == y? IF_SUCCESS(1) : IF_SUCCESS(0)
 
 
-void test_circular_buffer()
+void test_circular_buffer(void)
 {
-	circ_buffer_ty buffer = NULL;	
+	circ_buffer_ty *buffer = NULL;
+	static char string[20] = "Hello World";	
+	static char string_from_read_func[50];	
+	static char long_string[] ="this is a long string for testing the BufferWrite function in case the data is greater than buffer";	
+	
 
 	BufferCreate(0); /*checking in case size is 0*/
-	
-	if (NULL != buffer)
+
+	if (NULL == buffer)
 	{
-		printf("testing BufferCreate in case size is 0\n");
+		printf("Testing of function BufferCreate in case size is 0\n");
 		IF_SUCCESS(1);
 			
 	}
 	else
 	{
-		printf("testing BufferCreate in case size is 0\n");
+		printf("Testing of function BufferCreate in case size is 0\n");
 		IF_SUCCESS(0);
 	}
 	
-	BufferCreate(10) /* checking in case size is 0*/
+	buffer = BufferCreate(20); /* checking in case size is greater then 0*/
 	if (NULL != buffer)
 	{
-		printf("testing of BufferCreate in case size is greater than 0\n");
+		printf("\nTesting of function BufferCreate in case size is greater than 0\n");
 		IF_SUCCESS(1);	
 	}
 	else 
 	{
-		printf("testing of BufferCreate in case size is greater than 0\n");
+		printf("Testing of function BufferCreate in case size is greater than 0\n");
 		IF_SUCCESS(0);				
 	}
 	
-	printf("the siz")BufferSize
-	TEST(10,BufferSize(buffer));
+	printf("\nTesting of BufferSize function:\n");
+	
+	TEST(20,BufferSize(buffer));
+	
+	printf("\nTesting of BufferIsEmpty function in case buffer is empty:\n");
+	TEST(1,BufferIsEmpty(buffer));
 	
 	
+	printf("\nTesting of BufferWrite and BufferFreeSpace functions in case buffer is greater than data:\n");
+	TEST(BufferWrite(buffer, string, 11),11);
+	TEST(9,BufferFreeSpace(buffer));
+	
+	printf("\nTesting of BufferIsEmpty function in case buffer is not empty:\n");
+	TEST(0,BufferIsEmpty(buffer));
+	
+	printf("\nTesting of BufferRead function:\n");
+	TEST(BufferRead(buffer, string_from_read_func, 11),11);
+	TEST(11,strlen(string_from_read_func));
+	TEST(20,BufferFreeSpace(buffer));
 	
 	
-	/* TODO execute destroy*/
+	printf("\nTesting of BufferWrite and BufferFreeSpace functions in case the data is greater than buffer:\n");
+	TEST(20,BufferWrite(buffer, long_string, 21));
+	TEST(0,BufferFreeSpace(buffer));
 	
-	BufferIsEmpty
+	printf("\nTesting of BufferRead function:\n");
+	TEST(BufferRead(buffer, string_from_read_func, 20),20);
+	TEST(20,BufferFreeSpace(buffer));
 	
+	BufferDestroy(buffer);
+}
+
 	
-	if (BufferIsEmpty(ptr)) /* test of IsEmpty function*/
-	{
-		printf("checking test of IsEmpty function in case buffer is empty\n");
-		IF_SUCCESS(1);
-	}
-	else
-	{
-		printf("checking test of IsEmpty function in case buffer is empty\n");
-		IF_SUCCESS(0);
-	} 
+int main()
+{
+		
+	test_circular_buffer();
+
+	return 0;	
+}
+	
 	
 
 	

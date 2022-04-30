@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include "../include/bit_array.h"
+#include "bit_array.h"
 
 
 int BitArrayGetVal(const bit_arr_ty *bptr, unsigned char index)

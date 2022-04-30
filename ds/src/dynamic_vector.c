@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> /*malloc*/
 #include <string.h> /*memcpy*/
-#include "../include/dynamic_vector.h"
+#include "dynamic_vector.h"
 
 #define SIZE_FACTOR 2
 
@@ -80,6 +80,7 @@ dynamic_vector_ty *VectorReserve(dynamic_vector_ty *vector, size_t new_capacity)
 	
 
 	vector->data = tmp;
+	vector->capacity = new_capacity;
 	
 	return vector;
 }

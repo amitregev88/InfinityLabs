@@ -1,6 +1,7 @@
 #include <stdio.h>	/*printf*/
 #include <stdlib.h>	/* malloc*/
 #include <string.h> /*memcpy*/
+#include "stack.h"
 
 
 

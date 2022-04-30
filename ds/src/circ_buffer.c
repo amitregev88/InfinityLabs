@@ -8,7 +8,7 @@
 #include <stdio.h>	/*printf*/
 #include <stdlib.h>	/* malloc*/
 #include <string.h> /*memcpy*/
-#include "../include/circ_buffer.h" 
+#include "circ_buffer.h" 
 
 
 struct circ_buffer
@@ -21,44 +21,39 @@ struct circ_buffer
 };
 
 
-
 circ_buffer_ty *BufferCreate(size_t size)
 {
-	circ_buffer_ty *circ_buffer = (circ_buffer_ty *) malloc (sizeof(circ_buffer_ty)); 
+	circ_buffer_ty *buffer = (circ_buffer_ty *)malloc(sizeof(struct circ_buffer) + size); 
 	
-	if (NULL == circ_buffer)
+	if (NULL == buffer)
 	{
 		printf("Error of memory allocation\n");  
 		return NULL;
 	}
 	else if (0 == size)
 	{
-		printf("Error - size input is 0\n"); 
-		free(circ_buffer);
+		printf("size input is 0\n"); 
+		free(buffer);
 		return NULL;
 	}
 	
-	circ_buffer->data = (void *) malloc (size); /* memory allocation for the buffer*/
-	if (NULL == circ_buffer->data)
-	{
-		printf("Error of memory allocation\n");  
-		free(circ_buffer);
-		return NULL;
-	}
+	buffer->data = (char *)buffer + sizeof(struct circ_buffer);
 	
-	circ_buffer->head = circ_buffer->data;
 	
-	circ_buffer->tail = circ_buffer->data;
+	buffer->head = buffer->data;
 	
-	circ_buffer->size = size;
+	buffer->tail = buffer->data;
 	
-	circ_buffer->buffer_full = 0;
-	return circ_buffer;
+	buffer->size = size;
+	
+	buffer->buffer_full = 0;
+	
+	return buffer;
 } 
 
 void BufferDestroy(circ_buffer_ty *buffer)
 {
-	free(buffer->data);
+	
 	free(buffer);
 }
 
@@ -158,7 +153,7 @@ int BufferIsEmpty(const circ_buffer_ty *buffer)
 		return 1;
 	}
 	
-	if (!(((char *)buffer->tail == (char *)buffer->data) && ((char *)buffer->head == (char *)buffer->data + buffer->size)))
+	if (((char *)buffer->tail == (char *)buffer->data) && ((char *)buffer->head == (char *)buffer->data + buffer->size))
 	{
 		return 1;
 	}
