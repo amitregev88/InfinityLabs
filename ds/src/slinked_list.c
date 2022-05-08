@@ -408,6 +408,13 @@ int SListForEach(const slist_iter_ty from, const slist_iter_ty to, int (*action)
 
 
 
+void SListAppend(slist_ty *_dest_list, slist_ty *_src_list)
+{
+
+	SListEnd(_dest_list) = SListBegin(_src_list);
+
+}
+
 
 
 
