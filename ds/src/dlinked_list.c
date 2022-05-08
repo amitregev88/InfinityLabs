@@ -1,6 +1,6 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: 
+* Reviewer: Noam Dan Hadad
 * Date: 04.26.22
 * OL124 Double Linked List
 *************************************************************************************/
@@ -106,17 +106,20 @@ dlist_node_ty *DListPushFront(dlist_ty *list, void *data)
 void *DListPopBack(dlist_ty *list)
 {
 	
-	dlist_node_ty *pop_back_node = list->tail.prev;
-	
-	void *data_pop_back = DListGetData(pop_back_node);
-	
-	pop_back_node = DListGetPrev(pop_back_node);
+	dlist_node_ty *temp = list->tail.prev;
 
-	pop_back_node->prev->next = DListEnd(list);
+
+	void *data = DListGetData(temp);
 	
-	DListRemove(pop_back_node);
 	
-	return data_pop_back;
+	list->tail.prev = DListGetPrev(temp);
+	temp->prev->next = DListEnd(list);
+	
+
+	free(temp);
+	
+	return data;
+
 }
 
 void *DListPopFront(dlist_ty *list)
@@ -125,11 +128,11 @@ void *DListPopFront(dlist_ty *list)
 	
 	void *data_pop_front = DListGetData(pop_front_node);
 	
-	pop_front_node = DListGetNext(pop_front_node);
-
+	list->head.next = DListGetNext(pop_front_node);
 	pop_front_node->next->prev = &list->head;
 	
-	DListRemove(pop_front_node);
+	free(pop_front_node);
+	
 	
 	return data_pop_front;
 }
@@ -182,31 +185,23 @@ dlist_node_ty *DListGetPrev(const dlist_node_ty *node)
 
 dlist_node_ty *DListFind(const dlist_node_ty *from, const dlist_node_ty *to, int (*is_match)(const void *data, const void *param), const void *param)
 {
-	int output_func = 0;	
+	
 	dlist_node_ty *iter_node = (dlist_node_ty *) from;
 	
-	output_func = is_match(iter_node->data,param);
+	
+	while (iter_node != to)
+	{
+		if (is_match(DListGetData(iter_node), param))
+		{
+			return iter_node;
+		}
 		
-	if (!output_func)
-	{
-		return iter_node;
+		iter_node = DListGetNext(iter_node);
 	}
 	
-	
-	while((iter_node != to) && output_func == 1)	
-	{
-		iter_node = DListGetNext(iter_node); 
-		output_func = is_match(iter_node->data,param);
-	} 
-	
-	if(iter_node == to && output_func == 1)
-	{
-		iter_node = NULL;
-	}
-
-	
-	return iter_node;
+	return NULL;
 }
+
 
 dlist_node_ty *DListBegin(const dlist_ty *list)
 {
@@ -238,15 +233,25 @@ int DListForEach(const dlist_node_ty *from, const dlist_node_ty *to, int (*actio
 }
 
 void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
+
+	
 {
+	dlist_node_ty *temp_src = to->prev;
+	
 	
 	from->prev->next = to;
-	from->prev = dest->prev;
-	to->prev->next = dest;
+	to->prev = DListGetPrev(from);
 	
-	to->prev = from->prev;
-	dest->prev=to->prev	;
+	
 	dest->prev->next = from;
+	from->prev = dest->prev;
+	
+	
+	dest->prev = temp_src;
+	temp_src->next = dest;
+	
+	
+	
 	
 }
 

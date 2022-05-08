@@ -10,7 +10,7 @@
 #include <stdlib.h>	/* malloc*/
 #include "slinked_list.h" 
 
-/*static void swap(slist_node_ty *dest, slist_node_ty *src);*/
+static void SwapData(slist_node_ty *dest, slist_node_ty *src);
 
 struct sin_node 
 {
@@ -74,7 +74,7 @@ void SListDestroy(slist_ty *list)
 		iter = SListRemove(list,iter);
 	}
 	
-		
+	free(list->tail);		
 	free(list);
 	list = NULL;
 }
@@ -85,7 +85,6 @@ void SListDestroy(slist_ty *list)
 slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data)
 {
 		
-	void* temp;
 		
 	slist_node_ty *new_node = (slist_node_ty *) malloc(sizeof(slist_node_ty));
 	
@@ -100,16 +99,9 @@ slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data)
 	assert (NULL != where.node);
 	assert (NULL != data);
 	
-	new_node->data = data; 
+	new_node->data = data;
 	
-	
-	
-	temp = where.node->data;
-	
-	where.node->data = new_node->data;
-	
-	new_node->data = temp;
-
+	SwapData(new_node, where.node); /*swaps the data between the nodes */
 	
 	if (SListIsSameIter(where,SListEnd(list)))
 	{
@@ -135,16 +127,10 @@ slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data)
 **************************************************************************************/
 slist_iter_ty SListRemove(slist_ty *list, slist_iter_ty to_remove)
 {
-
-	void *temp;
-	
-	temp = to_remove.node->data;
-		
-	to_remove.node->data = to_remove.node->next->data;
-		
-	to_remove.node->next->data = temp;
-		
 	assert(list != NULL);
+
+		SwapData(to_remove.node, to_remove.node->next);
+	
 		
 	if (!SListIsSameIter(SListGetNext(to_remove),SListEnd(list)))
 	{
@@ -165,6 +151,7 @@ slist_iter_ty SListRemove(slist_ty *list, slist_iter_ty to_remove)
 	
 		free(list->tail);
 		to_remove.node->next = NULL;
+	
 		list->tail = to_remove.node;
 		
 			
@@ -242,10 +229,6 @@ void *SListPopFront(slist_ty *list)
 
 	slist_iter_ty iter = {NULL};
 	void *data = NULL;
-	
-	void *temp = NULL;
-	
-	
 
 	assert(NULL != list);
 	
@@ -263,12 +246,7 @@ void *SListPopFront(slist_ty *list)
 	
 	data = list->head->data;
 	
-	
-	temp = list->head->data;
-	
-	list->head->data = iter.node->data;
-	
-	iter.node->data = temp;
+	SwapData(list->head, iter.node);
 	
 	list->head->next = iter.node->next;
 	
@@ -443,18 +421,19 @@ int SListIsSameIter(slist_iter_ty iter1, slist_iter_ty iter2)
 
 
 
-/*
-static void swap(slist_node_ty *dest, slist_node_ty *src)
-{
-	void *tmp= dest->data;
-	
 
-	dest->data = src->data;
+static void SwapData(slist_node_ty *dest, slist_node_ty *src)
+{
+	slist_node_ty temp = {NULL, NULL};
 	
-	src->data = tmp;
+	temp.data = dest->data;
+	
+	dest->data = src->data;
+		
+	src->data = temp.data;
 }
 
-*/
+
 
 
 

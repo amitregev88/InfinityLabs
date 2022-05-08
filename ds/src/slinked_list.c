@@ -1,6 +1,6 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: 
+* Reviewer: Alex Miles
 * Date: 05.01.22
 * OL124 Singly Linked List
 *************************************************************************************/
@@ -74,7 +74,7 @@ void SListDestroy(slist_ty *list)
 		iter = SListRemove(list,iter);
 	}
 	
-		
+	free(list->tail);	
 	free(list);
 	list = NULL;
 }
@@ -107,15 +107,18 @@ slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data)
 	{
 		list->tail->next = new_node;
 		new_node->next = NULL;
+		new_node->data = NULL;
 		list->tail = new_node;
 		
-		return where;
+		
 	}
 	
 	
-	new_node->next =  where.node->next; /*connect new_node after where*/
-	where.node->next = new_node;
-	
+	else 
+	{
+		new_node->next =  where.node->next; /*connect new_node after where*/
+		where.node->next = new_node;
+	}
 
 	return where;
 	
@@ -194,6 +197,7 @@ void *SListPopBack(slist_ty *list)
 {
 	slist_iter_ty iter = {NULL};
 	void *data = NULL;
+	slist_node_ty* tmptail = list->tail;
 
 	assert(list != NULL);
 		
@@ -213,7 +217,8 @@ void *SListPopBack(slist_ty *list)
 	
 		
 	iter.node->next = NULL;
-	free(list->tail);
+	iter.node->data = NULL;
+	free(tmptail);
 	list->tail = iter.node;
 
 	return data;
@@ -337,15 +342,12 @@ slist_iter_ty SListFind(const slist_iter_ty from, const slist_iter_ty to, int (*
 		
 	while (iter.node != (slist_node_ty *) to.node)
 	{
-		if (is_match(SListGetData(iter),param) == 0)
+		if (is_match(SListGetData(iter),param))
 		{
-			iter = SListGetNext(iter);
+			return iter;			
 		}
 		
-		else
-		{
-			return iter;
-		}
+		iter = SListGetNext(iter);
 	}
 	
 	iter.node = NULL;

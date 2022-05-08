@@ -1,97 +1,201 @@
-/*************************************************************************************
-* Name: Amit Regev 
-* Date: 04.26.22
-* OL124 Double Linked List test
-*************************************************************************************/
 
-#include <stdio.h>	/*printf*/
-#include "dlinked_list.h" 
+#include <stdio.h> /* printf */
+#include "dlinked_list.h"
+
 
 #define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")
 #define TEST(x,y)  x == y? IF_SUCCESS(1) : IF_SUCCESS(0)
 
 
-void TestDlinkedList(void)
+
+
+void Test(void);
+int IsMatch(const void *data, const void *param);	/* for find function*/
+int IntPlusInt(void * data_from_list, void *param);	/* for foreach function*/
+
+/*******************************************************************************
+* TestA - checking the following functions: 
+
+* DlistCreate(),DListIsEmpty(),DListSize(),DListPushFront(),DListPushBack(),
+* DlistPopFront(), DlistPopBack  DlistBegin() ,DlistGetData(), DlistSetData(),
+* DlistGetNext(), DlistFind(), DlistDestroy() .
+* *******************************************************************************/
+
+int main(void)
 {
-	char ch = a;
-	char ch1 = b;
-	char ch2 = c;
+	Test();
+	
+	return 0;
+}
+
+int IsMatch(const void *data, const void *param) 
+{
+	return (*(int *)data == *(int *)param);
+}
+
+int IntPlusInt(void *ldata, void *param) 
+{
+	if (!*(int *)param)
+	{
+		return 0;
+	}
+	
+	*(int *)ldata += *(int *)param;
+	
+	return 1;
+}
+
+
+
+
+
+
+void Test(void)
+{
+	int num1 = 1, num2 = 2, num3 = 3, num4 = 4, num5 = 5, num6 = 6, num7 = 7;
+	
+	dlist_ty *list = NULL;
+	
+	dlist_ty *list2 = NULL;
 	
 	dlist_node_ty *node = NULL;
-
-	printf("Testing of DListCreate() function\n");
 	
-	dlist_ty *list = DListCreate();	
-		
-	TEST(list,!NULL);
+	dlist_node_ty *begin = NULL;
 	
-	printf("\nTesting of DListSize() function in case size is 0\n");
+	dlist_node_ty *end = NULL;
 	
-	TEST(DListSize(list),0);
+	printf("Testing of DListCreate() function:\n");
 	
-	printf("\nTesting of DListIsEmpty() function in case the linked list is empty\n");
-
-	TEST(DListIsEmpty(list),1);
+	list = DListCreate();
 	
+	if (list)
+	{
+		printf("Testing of DListCreate() function succeeded\n");
+	} 
 	
+	else
+	{
+		printf("Testing of DListCreate() function failed\n");
+	}
 	
-	printf("\nTesting of DListPushFront() function\n");
+	printf("\nTesting of DlistSize() function in case list is empty:\n");
+	TEST(DListSize(list), 0);
 	
-	TEST(DListPushFront(list, &ch), 1);
+	printf("\nTesting of DlistIsEmpty() function in case list is empty:\n");
+	TEST(DListIsEmpty(list), 1);
 	
+	printf("\nTesting of DlistPushFront() and  DlistGetData function:\n");
+	DListPushFront(list, &num3);
+	DListPushFront(list, &num2);
+	DListPushFront(list, &num1);
+	node = DListBegin(list);
+	TEST(*(int *)DListGetData(node), 1);
 	
-	printf("\nTesting of DListSize() function in case size is greater than 0\n");
+	printf("\nTesting of DlistSize() function in case list is not empty:\n");
+	TEST(DListSize(list), 3);
 	
-	TEST(DListSize(list),1);
-		
-	printf("\nTesting of DListIsEmpty() function in case the linked list is not empty\n");
-	TEST(DListIsEmpty(list),0);
-	
-	printf("\nTesting of DListPushFront() and DListGetDatafunction in case linked list is not empty\n");
-		
-	TEST(*DListGetData(DListPushFront(list, &ch1), b);
-	TEST(DListPushFront(list, &ch1), 1);
-	
-	printf("\nTesting of DListPushBack()\n");
-	TEST(*DListGetData(DListPushBack(list, &ch1), b);
-	TEST(DListPushBack(list, &ch), a);
-
-	printf("\nTesting of DListPopBack()\n");
-
-	TEST(*(char *)DListPopBack(list), b);
-	TEST(DListSize(list),4);
-	
-	printf("\nTesting of DListFront()\n");
-
-	TEST(*(char *)DListPopBack(list), b);
-	TEST(DListSize(list),3);
-	
-	printf("\nTesting of DListInsert()\n");
-	
-	node = DListInsert(node, &ch)
-	(*(char *
-	TEST(DListSize(list),3);
-	
-	/*TODO*/
+	printf("\nTesting of DlistIsEmpty() function in case list is not empty:\n");
+	TEST(DListIsEmpty(list), 0);
 	
 	
-
-	
-	printf("\nTesting of DListSetData() function\n");
-	DListSetData(node, &ch2);
-	
-	TEST(*(char *)DListSetData(node), ch2);
-	DListSetData(node, &ch);
-	
-	
-	
-	printf("\nTesting of DListGetNext() function\n");
+	printf ("\nTesting of DlistPopBack() DlistBegin() DListGetNext() DListGetData() DListSize() function:\n");
+	TEST(*(int *)DListPopBack(list), 3);
+	node = DListBegin(list);
+	TEST(*(int *)DListGetData(node), num1);
 	node = DListGetNext(node);
-	TEST(*(char *)DListGetData(node), ch);
+	TEST(*(int *)DListGetData(node), num2);
+	TEST(DListSize(list), 2);
 	
 	
 
+	printf ("\nTesting of DlistPopFront() function:\n");
+	TEST(*(int *)DListPopFront(list), 1);
+	TEST(DListSize(list), 1);
+	node = DListBegin(list);
+	TEST(*(int *)DListGetData(node), num2);
 	
 	
+	printf("\nTesting of DlistPushBack() and  DlistGetData function:\n");
+	DListPushBack(list, &num2);
+	DListPushBack(list, &num3);
+	node = DListGetNext(DListBegin(list));
+	TEST(*(int *)DListGetData(node), 2);
+	node = DListGetNext(node);
+	TEST(*(int *)DListGetData(node), 3);
+	
+	printf("\nTesting of DlistSize() function :\n");
+	TEST(DListSize(list), 3);
+	
+	printf("\nTesting of DListInsert() DListGetEnd  DlistGetData DListGetPrev()function:\n");
+	node = DListEnd(list);
+	node = DListInsert(node, &num2);
+	TEST(DListSize(list), 4);
+	TEST(*(int *)DListGetData(node), num2);
+		
+	printf("\nTesting of DlistSetData() and  DlistGetData function:\n");
+	node = DListEnd(list);
+	node = DListGetPrev(node);
+	DListSetData(node, &num4);
+	TEST(*(int *)DListGetData(node), num4);
+	
+
+	printf ("\nTesting of DListGetNext() function:\n");
+	node = DListBegin(list);
+	TEST(*(int *)DListGetData(node), num2);
+	node = DListGetNext(node);
+	TEST(*(int *)DListGetData(node), num2);
+	node = DListGetNext(node);
+	TEST(*(int *)DListGetData(node), num3);
+	node = DListGetNext(node);
+	TEST(*(int *)DListGetData(node), num4);
+	
+	
+	printf ("\nTesting of DListBegin() function :\n");
+	node = DListBegin(list);
+	TEST(*(int *)DListGetData(node), num2);
+	
+	printf ("\nTesting of DListEnd() function :\n");
+	node = DListEnd(list);
+	node = DListGetPrev(node);
+	TEST(*(int *)DListGetData(node), num4);
+	
+	printf ("\nTesting of DListFind() function:\n");
+	begin = DListBegin(list);
+	end = DListEnd(list);
+	
+	node = DListFind(begin, end, IsMatch, &num3);
+	TEST(*(int *)DListGetData(node), num3);
+	
+	printf ("\nTesting of DListForEach() function ?????????????:\n");
+	TEST(*(int *)DListGetData(begin), 2);
+	
+	TEST(DListForEach(begin, end, &IntPlusInt, &num1), 1);
+	
+	TEST(*(int *)DListGetData(begin), 4);
+	
+
+	printf ("\nTesting of DListSplice function :\n");
+		
+	list2 = DListCreate();
+	
+	DListPushBack(list2, &num5);
+	DListPushBack(list2, &num6);
+	DListPushBack(list2, &num7);
+	
+	DListSplice(DListEnd(list), DListBegin(list2), DListEnd(list2));
+	
+	
+	TEST(DListSize(list), 7);
+	TEST(DListIsEmpty(list2), 1);
+	
+	node = DListEnd(list);
+	node = DListGetPrev(node);
+	
+	TEST(*(int *)DListGetData(node), 7);
+
+	DListDestroy(list);	
+	DListDestroy(list2);	
+
 }
+
 

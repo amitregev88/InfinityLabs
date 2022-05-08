@@ -12,7 +12,7 @@
 void TestA(void);
 void TestB(void);
 int IsMatch(const void *data, const void *param);	/* for find function*/
-int IntAddNum(void *data_from_list, void *param);	/* for foreach function*/
+int IntPlusInt(void * data_from_list, void *param);	/* for foreach function*/
 
 /*******************************************************************************
 * TestA - checking the following functions: 
@@ -36,17 +36,19 @@ int IsMatch(const void *data, const void *param)
 	return (*(char *)data == *(char *)param);
 }
 
-int IntAddNum(void *data_from_list, void *param) 
+int IntPlusInt(void *ldata, void *param) 
 {
 	if (!*(int *)param)
 	{
 		return 0;
 	}
 	
-	*(int *)data_from_list += *(int *)param;
+	*(int *)ldata += *(int *)param;
 	
 	return 1;
+	
 }
+
 
 
 void TestA(void)
@@ -65,8 +67,16 @@ void TestA(void)
 	
 	list = SListCreate();
 	
-	TEST(list, !NULL);
+	if (list)
+	{
+		printf("Testing of SListCreate() function succeeded\n");
+	} 
 	
+	else
+	{
+		printf("Testing of SListCreate() function failed\n");
+	}
+		
 	printf("\nTesting of SListIsEmpty() function in case list is empty:\n");
 	
 	TEST(SListIsEmpty(list), 1);
@@ -137,7 +147,7 @@ void TestA(void)
 	
 	
 	printf ("\nTesting of SListPopFront() function:\n");
-	TEST(*(char *)SListPopFront(list), a);
+	TEST(*(float *)SListPopFront(list), num2);
 	TEST(*(char *)SListPopFront(list), b);
 	TEST(*(char *)SListPopFront(list), c);
 	
@@ -155,10 +165,8 @@ void TestA(void)
 	TEST(SListPopBack(list), NULL);
 	
 	
-
 	SListDestroy(list);	
 
-	
 }
 
 /*******************************************************************************
@@ -168,20 +176,86 @@ void TestA(void)
 * *******************************************************************************/
 
 
-void TestB(void);
+void TestB(void)
 {
 	slist_ty *list = NULL;
 	
 	slist_iter_ty iter = {NULL};
-
-
-
-
+	
+	int num1 = 1, num2 = 2, num3 = 3, num4 = 4; 
+	
+	list = SListCreate();
+	
+	if (list)
+	{
+		printf("Testing of SListCreate() function succeeded\n");
+	} 
+	
+	else
+	{
+		printf("Testing of SListCreate() function failed\n");
+	}
+	
+	
+	printf ("\nTesting of SListInsert() function :\n");
+	
+	iter = SListInsert(list, SListBegin(list), &num2);
+	
+	
+	TEST(*(int *)SListGetData(iter), num2);
+	
+	iter = SListInsert(list, SListBegin(list), &num1);	
+	
+	TEST(*(int *)SListGetData(iter), num1);
+	
+	printf ("\nTesting of SListInsert() and SListEnd() function :\n");
+	
+	iter = SListInsert(list, SListEnd(list), &num3);
+	
+	TEST(*(int *)SListGetData(iter), num3);
+	
+	printf ("\nTesting of SListForEach() function :\n");
+	
+	
+	TEST(SListForEach(SListBegin(list), SListEnd(list), &IntPlusInt, &num4), 1);
+	
+	iter = SListBegin(list);
+	
+	
+	TEST(*(int *)SListGetData(iter), 5);
+	
+	iter = SListGetNext(iter);
+	
+	
+		
+	TEST(*(int *)SListGetData(iter), 6);
+	
+	iter = SListGetNext(iter);
+	
+	printf("%d\n", (*(int *)SListGetData(iter)));
+	
+	TEST(*(int *)SListGetData(iter), 7);
 	
 	
 	
+	printf ("\nTesting of SListRemove() function :\n");
+	
+	iter = SListRemove(list, SListBegin(list));
+	
+	TEST(SListSize(list), 2);
+	
+	TEST(*(int *)SListGetData(iter), 6);
 	
 	
+	iter = SListRemove(list,SListGetNext(iter));
+	
+	TEST(SListSize(list), 1);
+	
+	TEST(SListGetData(iter), NULL);
+	
+		
+	SListDestroy(list);
+}
 	
 	
 
