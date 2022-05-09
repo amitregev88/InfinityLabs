@@ -1,13 +1,14 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: Noam Dan Hadad
-* Date: 04.26.22
-* OL124 Double Linked List
+* Reviewer: 
+* Date: 04.09.22
+* OL124 Sorted List (base on dlinked list)
 *************************************************************************************/
 
 #include <stdio.h>	/*printf*/
 #include <stdlib.h>	/* malloc*/
 #include "dlinked_list.h" 
+#include "sortlist.h"
 
 struct doubly_node 
 {

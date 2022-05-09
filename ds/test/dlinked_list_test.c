@@ -13,13 +13,7 @@ void Test(void);
 int IsMatch(const void *data, const void *param);	/* for find function*/
 int IntPlusInt(void * data_from_list, void *param);	/* for foreach function*/
 
-/*******************************************************************************
-* TestA - checking the following functions: 
 
-* DlistCreate(),DListIsEmpty(),DListSize(),DListPushFront(),DListPushBack(),
-* DlistPopFront(), DlistPopBack  DlistBegin() ,DlistGetData(), DlistSetData(),
-* DlistGetNext(), DlistFind(), DlistDestroy() .
-* *******************************************************************************/
 
 int main(void)
 {

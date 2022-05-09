@@ -140,6 +140,12 @@ int SListForEach(const slist_iter_ty from, const slist_iter_ty to, int (*action)
 **************************************************************************************/
 int SListIsSameIter(slist_iter_ty iter1, slist_iter_ty iter2);
 
+/*************************************************************************************
+* --- Append --- -append list2  to  the end of the list1 and
+*                 list2 is turn EMPTY , user need to destroy it at the end of the program
+**************************************************************************************/
+void SListAppend(slist_ty *_list1, slist_ty *list2);
+
 
 #endif /*OL124_LINKED_LIST_H*/
 

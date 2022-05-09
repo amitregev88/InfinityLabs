@@ -408,12 +408,24 @@ int SListForEach(const slist_iter_ty from, const slist_iter_ty to, int (*action)
 
 
 
-void SListAppend(slist_ty *_dest_list, slist_ty *_src_list)
+void SListAppend(slist_ty *_list1, slist_ty *list2)
 {
 
-	SListEnd(_dest_list) = SListBegin(_src_list);
+	assert(NULL != _list1);
+	assert(NULL != list2);
 
-}
+	
+	
+	SwapData(_list1->tail, list2->head);
+	
+	_list1->tail->next = list2-> head->next;
+	
+	_list1->tail = list2->tail;
+	
+	_list2->head->next = NULL;
+	
+	_list2->tail->_list2->head;
+	
 
 
 
@@ -426,6 +438,8 @@ int SListIsSameIter(slist_iter_ty iter1, slist_iter_ty iter2)
 {
 	return (iter1.node == iter2.node);
 }
+
+
 
 
 
