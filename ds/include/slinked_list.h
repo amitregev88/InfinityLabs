@@ -138,7 +138,7 @@ int SListForEach(const slist_iter_ty from, const slist_iter_ty to, int (*action)
 /*************************************************************************************
 * --- IsSameIter --- * return 1 in case of match or 0
 **************************************************************************************/
-int SListIsSameIter(slist_iter_ty iter1, slist_iter_ty iter2);
+int SListIsSameIter(const slist_iter_ty iter1, const slist_iter_ty iter2);
 
 /*************************************************************************************
 * --- Append --- -append list2  to  the end of the list1 and

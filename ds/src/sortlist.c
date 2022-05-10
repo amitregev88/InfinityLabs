@@ -9,25 +9,23 @@
 #include <stdlib.h>	/* malloc*/
 #include "dlinked_list.h" 
 #include "sortlist.h"
+#include <assert.h>
 
-struct doubly_node 
+struct sort_list
 {
-    void *data; 
-    dlist_node_ty *next;
-    dlist_node_ty *prev;
+    dlist_ty *list;
+    compare_ty compare;
 };
 
 
-struct doubly_list
+/*************************************************************************************
+*Creates Sorted list - return pointer to SortList 
+**************************************************************************************/
+sortlist_ty *SortLCreate(compare_ty compare)
 {
-    dlist_node_ty head;
-    dlist_node_ty tail;
-};
+	assert(NULL != compare);	
 
-
-dlist_ty *DListCreate(void)
-{
-	dlist_ty *new_list = (dlist_ty *)malloc(sizeof(dlist_ty));
+	sort_list *new_list = (sort_list *)malloc(sizeof(sort_list));
 	
 	if (NULL == new_list)
 	{
@@ -35,234 +33,355 @@ dlist_ty *DListCreate(void)
 		return NULL;
 	}
 	
-	new_list->head.next = &new_list-> tail;
-	new_list->head.prev = NULL;
-	new_list->tail.next = NULL;
-	new_list->tail.prev = &new_list->head;
+	assert(NULL != compare);
+	
+	new_list->list = DListCreate();
+	
+	if (NULL == new_list->list)
+	{
+		free(new_list);
+		return NULL;
+	}
+	
+	new_list.compare = compare;
 	
 	return new_list;
 	
 }
 
-void DListDestroy(dlist_ty *list)
+/*************************************************************************************
+*Delete Sorted List 
+**************************************************************************************/
+void SortLDestroy(sortlist_ty *sortlist)
 {
-	dlist_node_ty *iter_node = DListBegin(list);
+	 DListDestroy(sortlist->list);
+	 free(sortlist);
+
+}
+
+
+/*************************************************************************************
+* Add iter to the sorted list Success = 0, Fail = 1
+**************************************************************************************/
+int SortLInsert(sortlist_ty *sortlist, void *data);
+{
+
+	sortlist_iter_ty iter = NULL;
+	iter = SortLBegin(sortlist);
 	
-	while (iter_node != DListEnd(list))
+	
+	
+	assert(NULL != sortlist);
+	assert(NULL != sortlist->compare);
+	assert(NULL != data);
+
+	iter = SortLBegin(sortlist);
+	
+	if(1 == SortIsEmpty(sortlist))
 	{
-		iter_node = DListRemove(iter_node);
-	}
-	
 		
-	free(list);
-	list = NULL;
-}
-
-dlist_node_ty *DListInsert(dlist_node_ty *where, void *data)
-{
-	dlist_node_ty *new_node = (dlist_node_ty *)malloc(sizeof(dlist_node_ty));
-	
-	if (NULL == new_node)
-	{
-		printf("Memory allocation error\n");
-		return NULL;
-	}
-	
-
-	where->prev->next = new_node;
-	new_node->prev = where->prev;
-	new_node->next = where;
-	where->prev = new_node;
-	new_node->data = data;
-	
-	return new_node;
-	
-}
-
-dlist_node_ty *DListRemove(dlist_node_ty *to_remove)
-{
-
-	dlist_node_ty *next_node = DListGetNext(to_remove);
-	
-	to_remove->prev->next = next_node;
-	next_node->prev = to_remove->prev;
-	
-	
-	free (to_remove);
-	
-	return next_node;
-
-}
-
-dlist_node_ty *DListPushBack(dlist_ty *list, void *data)
-{
-	return DListInsert(DListEnd(list), data);
-}
-
-dlist_node_ty *DListPushFront(dlist_ty *list, void *data)
-{
-	return DListInsert(DListBegin(list), data);
-}
-
-void *DListPopBack(dlist_ty *list)
-{
-	
-	dlist_node_ty *temp = list->tail.prev;
-
-
-	void *data = DListGetData(temp);
-	
-	
-	list->tail.prev = DListGetPrev(temp);
-	temp->prev->next = DListEnd(list);
-	
-
-	free(temp);
-	
-	return data;
-
-}
-
-void *DListPopFront(dlist_ty *list)
-{
-	dlist_node_ty *pop_front_node = DListBegin(list);
-	
-	void *data_pop_front = DListGetData(pop_front_node);
-	
-	list->head.next = DListGetNext(pop_front_node);
-	pop_front_node->next->prev = &list->head;
-	
-	free(pop_front_node);
-	
-	
-	return data_pop_front;
-}
-
-
-size_t DListSize(const dlist_ty *list)
-{
-	size_t counter = 0;
-	dlist_node_ty *begin = DListBegin(list);
-	
-	
-	if(DListIsEmpty(list))
-	{
-		return 0;
-	}
-	
-	while(begin != DListEnd(list))			/*for(tmp; tmp != list->tail; tmp = DListGetNext(tmp))*/
-	{
-		++counter;
-		begin = DListGetNext(begin); 
-	}
-		
-	return counter;
-
-}
-
-int DListIsEmpty(const dlist_ty *list)
-{
-	return (DListBegin(list) == DListEnd(list));
-}
-
-void *DListGetData(const dlist_node_ty *node)
-{
-	return node->data;
-}
-
-void DListSetData(dlist_node_ty *node, void *data)
-{
-	node->data = data;	
-}
-dlist_node_ty *DListGetNext(const dlist_node_ty *node)
-{
-	return node->next;
-}
-
-dlist_node_ty *DListGetPrev(const dlist_node_ty *node)
-{
-	return node->prev;
-}
-
-dlist_node_ty *DListFind(const dlist_node_ty *from, const dlist_node_ty *to, int (*is_match)(const void *data, const void *param), const void *param)
-{
-	
-	dlist_node_ty *iter_node = (dlist_node_ty *) from;
-	
-	
-	while (iter_node != to)
-	{
-		if (is_match(DListGetData(iter_node), param))
+		if (NULL != DListInsert(SortLBegin(sortlist), data))
 		{
-			return iter_node;
-		}
-		
-		iter_node = DListGetNext(iter_node);
-	}
-	
-	return NULL;
-}
-
-
-dlist_node_ty *DListBegin(const dlist_ty *list)
-{
-	return list->head.next;
-}
-
-dlist_node_ty *DListEnd(const dlist_ty *list)
-{
-	return (dlist_node_ty *) &list->tail;
-}
-
-int DListForEach(const dlist_node_ty *from, const dlist_node_ty *to, int (*action)(void *list_data, void *param), void *param)
-{
-
-	dlist_node_ty *iter =(dlist_node_ty *) from; 
-
-	
-	while (iter != to)
-	{
-		if (!action(DListGetData(iter),param))
-		{	
 			return 0;
 		}
-		
-		iter = DListGetNext(iter);
+			
+		else
+		{
+			return 1;
+		}
 	}
 		
-	return 1;	
+	else
+	{
+		
+		while (SortLIsSmaeIter(iter, SortLEnd(sortlist)) == 0)
+		{
+			
+			if ((sortlist->compare(data, SortGetData(iter) <= 0)
+			{		
+				if (NULL != DListInsert(iter, data))
+				{	
+					return 0;
+				}
+				
+				else 
+				{
+					return 1;
+				}
+			}
+		}
+	}
+}
+		
+		
+		
+void SortLRemove(sortlist_iter_ty to_remove)
+{
+	
+	assert(NULL != to_remove);
+	
+	DListRemove(to_remove->node);
+	
 }
 
-void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
 
-	
+/*************************************************************************************
+* --- Size --- returns the size of the Sorted Linked List ----- O(n)
+**************************************************************************************/
+size_t SortLSize(const sortlist_ty *sortlist)
 {
-	dlist_node_ty *temp_src = to->prev;
+
+	assert(NULL != sortlist);
+	
+	return DListSize(sortlist->list);
+
+}
+
+/*************************************************************************************
+* --- SortLIsEmpty --- returns 1 in case is empty or -0 other case ---- O(1)
+**************************************************************************************/
+int SortLIsEmpty(const sortlist_ty *sortlist)
+{
+	assert(NULL != sortlist);
+	return DListIsEmpty(sortlist->list);
+	
+}
+
+/*************************************************************************************
+* --- SortLBegin --- returns first iter of sorted list
+**************************************************************************************/
+sortlist_iter_ty SortLBegin(const sortlist_ty *sortlist)
+{
+	sortlist_iter_ty begin = NULL;
+	
+	assert(NULL != sortlist);
+	
+	begin->node = DListBegin(sortlist->list);
+	
+	return begin;
+}
+
+/*************************************************************************************
+* --- SortLEnd --- returns last iter of sorted list
+**************************************************************************************/
+sortlist_iter_ty SortLEnd(const sortlist_ty *sortlist)
+{
+	sortlist_iter_ty end = NULL;
+	
+	assert(NULL != sortlist);
+	
+	end->node = DListEnd(sortlist->list);
+	
+	return end;
+}
+
+
+/*************************************************************************************
+* --- SortLGetPrev --- returns previous iter of given iter
+**************************************************************************************/
+sortlist_iter_ty SortLGetPrev(const sortlist_iter_ty iter)
+{
+
+
+	sortlist_iter_ty prev = NULL;
+	
+	assert(NULL != iter);
+	
+	prev->node = DListGetPrev(sortlist->list);
+	
+	return prev;
+
+}
+
+/*************************************************************************************
+* --- SortLGetNext --- returns next iter of given iter
+**************************************************************************************/
+sortlist_iter_ty SortLGetNext(const sortlist_iter_ty iter)
+{
+
+
+	sortlist_iter_ty next = NULL;
+	
+	assert(NULL != iter);
+	
+	next->node = DListGetNext(sortlist->list);
+	
+	return next;
+
+}
+
+/*************************************************************************************
+* --- SortLGetData --- returns data of given iter
+**************************************************************************************/
+void *SortLGetData(const sortlist_iter_ty iter)
+{
+	assert(NULL != iter);
+	
+	return DListGetData(iter->node);
+}
+
+/*************************************************************************************
+* --- SortLIsSameIter --- returns 1 if the same, 0 otherwise
+**************************************************************************************/
+int SortLIsSameIter(const sortlist_iter_ty iter_1, const sortlist_iter_ty iter_2)
+{
+	assert(NULL != iter_1);
+	assert(NULL != iter_2);
+	
+	return (DListIsSameNode(iter_1->node, iter_2->node));
+}
+
+/*************************************************************************************
+* --- SortLPopBack --- remove the last iter from sorted list and return its data
+**************************************************************************************/
+void *SortLPopBack(sortlist_ty *sortlist)
+{
+	assert(NULL != sortlist);
+	
+	return DListPopBack(sortlist->list);
+
+}
+
+/*************************************************************************************
+* --- SortLPopFront --- remove the first iter from sorted list and return its data
+**************************************************************************************/
+void *SortLPopFront(sortlist_ty *sortlist)
+{
+	assert(NULL != sortlist);
+	
+	return DListPopFront(sortlist->list);
+
+}
+
+/*************************************************************************************
+* --- SortLForEach --- return 0 in case of success or 1 failure 
+**************************************************************************************/
+int SortLForEach(sortlist_iter_ty from, const sortlist_iter_ty to, int (*action)(void *data, const void *param), const void *param)
+{
+	assert(NULL != from);
+	assert(NULL != to);
+	assert(NULL != action);
+	
+	return DListForEach(from->node, to->node, action);
+}
+
+/*************************************************************************************
+* --- Find --- Finds the iter with data==param using  comparison function inside struct sort_list 
+**************************************************************************************/
+sortlist_iter_ty SortLFind(const sortlist_ty *sortlist, const sortlist_iter_ty from, const sortlist_iter_ty to, const void *param)
+{
+	assert(NULL != sortlist);
+	assert(NULL != sortlist->compare);
+	assert(NULL != from);
+	assert(NULL != to);
+	assert(NULL != param);
+	
+	sortlist_iter_ty iter = NULL;
+	
+	iter->node = DListFind(from->node, to->node, sortlist->compare, param);
+	
+	return iter;
+}
+
+/*************************************************************************************
+* --- Find --- Finds the iter using USER's comparison function is_match 
+**************************************************************************************/
+ SortLFindIf(const sortlist_iter_ty from, const sortlist_iter_ty to, int (*is_match)(const void *data, const void *param), const void *param)
+{
+	assert(NULL != from);
+	assert(NULL != to);
+	assert(NULL != action);
+	assert(NULL != param);
+	
+	sortlist_iter_ty iter = NULL;
 	
 	
-	from->prev->next = to;
-	to->prev = DListGetPrev(from);
+	iter->node = DListFind(from->node, to->node, is_match, param);
 	
-	
-	dest->prev->next = from;
-	from->prev = dest->prev;
-	
-	
-	dest->prev = temp_src;
-	temp_src->next = dest;
-	
-	
-	
-	
+	return iter;
+
 }
 /*************************************************************************************
-* --- Is Same Node ---  returns 1 if node1=node2 , returns 0  otherwise
+* --- SortLMerge --- Merge source list  into dest list, source list will be empty,  
 **************************************************************************************/
-int DListIsSameNode(const dlist_node_ty *node_1, const dlist_node_ty *node_2)
+void SortLMerge(sortlist_ty *_dest, sortlist_ty *_source)
 {
-	
-	return ((DListGetData(node_1) == DListGetData(node_2)) && (DListGetNext(node_1) == DListGetNext(node_2)) && (DListGetPrev(node_1) == DListGetPrev(node_2)))? 1 : 0;
+	assert(NULL != _dest);
+	assert(NULL != _source);
+	assert(NULL != _source->compare);
 
+	
+	sortlist_iter_ty iter_dest = {NULL};
+	
+	sortlist_iter_ty src_from_iter = {NULL};
+	
+	sortlist_iter_ty src_to_iter = {NULL};
+	
+	int flag = 0;
+	
+	iter_dest = SortLBegin(_dest);
+	
+	src_from_iter = SortLBegin(_source);
+	
+	src_to_iter = SortLBegin(_source);
+	
+		
+	while (SortLIsSameIter(SortLEnd(_dest->list),iter_dest))
+	{
+	
+		
+		while (!SortLIsSameIter(src_to_iter, SortLEnd(src_to_iter)))
+		{
+		
+		
+			if (_source->compare(SortLGetData(iter_dest), SortLGetData(src_to_iter)) >= 0)
+			{
+				src_to_iter = SortLGetNext(src_to_iter);
+				
+				flag = 1;
+				
+			}
+			
+			else if (flag)
+			{
+				DListSplice(iter_dest.node ,src_from_iter.node , src_to_iter.node);
+				src_from_iter = src_to_iter;
+				flag = 0;
+			}
+		}
+		
+		if (flag)
+		{
+			DListSplice(iter_dest.node ,src_from_iter.node , src_to_iter.node);
+			flag = 0;
+		}
+		
+		iter_dest = SortLGetNext(iter_dest);
+	}
+		
+	if (!SortLIsSameIter(src_to_iter, SortLEnd(src_to_iter)))
+	{
+		DListSplice(iter_dest.node ,src_from_iter.node , SortLEnd(_source));
+	}
+		
+	
 }
+		
+		
+			
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
 
 

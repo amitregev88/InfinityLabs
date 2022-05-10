@@ -213,7 +213,7 @@ dlist_node_ty *DListEnd(const dlist_ty *list)
 	return (dlist_node_ty *) &list->tail;
 }
 
-int DListForEach(const dlist_node_ty *from, const dlist_node_ty *to, int (*action)(void *list_data, void *param), void *param)
+int DListForEach(dlist_node_ty *from, const dlist_node_ty *to, int (*action)(void *list_data, const void *param), const void *param)
 {
 
 	dlist_node_ty *iter =(dlist_node_ty *) from; 
@@ -221,15 +221,15 @@ int DListForEach(const dlist_node_ty *from, const dlist_node_ty *to, int (*actio
 	
 	while (iter != to)
 	{
-		if (!action(DListGetData(iter),param))
+		if (action(DListGetData(iter),param) == 1)
 		{	
-			return 0;
+			return 1;
 		}
 		
 		iter = DListGetNext(iter);
 	}
 		
-	return 1;	
+	return 0;	
 }
 
 void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
@@ -260,7 +260,9 @@ void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
 int DListIsSameNode(const dlist_node_ty *node_1, const dlist_node_ty *node_2)
 {
 	
-	return ((DListGetData(node_1) == DListGetData(node_2)) && (DListGetNext(node_1) == DListGetNext(node_2)) && (DListGetPrev(node_1) == DListGetPrev(node_2)))? 1 : 0;
+	return (node_1 == node_2);
+	
+	/*return ((DListGetData(node_1) == DListGetData(node_2)) && (DListGetNext(node_1) == DListGetNext(node_2)) && (DListGetPrev(node_1) == DListGetPrev(node_2)))? 1 : 0;*/
 
 }
 

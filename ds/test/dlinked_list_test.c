@@ -11,7 +11,7 @@
 
 void Test(void);
 int IsMatch(const void *data, const void *param);	/* for find function*/
-int IntPlusInt(void * data_from_list, void *param);	/* for foreach function*/
+int IntPlusInt(void * data_from_list, const void *param);	/* for foreach function*/
 
 
 
@@ -27,16 +27,16 @@ int IsMatch(const void *data, const void *param)
 	return (*(int *)data == *(int *)param);
 }
 
-int IntPlusInt(void *ldata, void *param) 
+int IntPlusInt(void *ldata, const void *param) 
 {
 	if (!*(int *)param)
 	{
-		return 0;
+		return 1;
 	}
 	
 	*(int *)ldata += *(int *)param;
 	
-	return 1;
+	return 0;
 }
 
 
@@ -163,7 +163,7 @@ void Test(void)
 	printf ("\nTesting of DListForEach() function ?????????????:\n");
 	TEST(*(int *)DListGetData(begin), 2);
 	
-	TEST(DListForEach(begin, end, &IntPlusInt, &num1), 1);
+	TEST(DListForEach(begin, end, IntPlusInt, &num1), 0);
 	
 	TEST(*(int *)DListGetData(begin), 4);
 	

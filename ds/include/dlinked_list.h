@@ -6,8 +6,8 @@
 *
 *
 *************************************************************************************/
-#ifndef OL124_LINKED_LIST_H
-#define OL124_LINKED_LIST_H
+#ifndef OL124_DLINKED_LIST_H
+#define OL124_DLINKED_LIST_H
 
 #include <stddef.h>
 /*
@@ -24,8 +24,8 @@ struct doubly_node
     doubly_node *prev;
 };
 */
-typedef struct doubly_list dlist_ty;
 typedef struct doubly_node dlist_node_ty;
+typedef struct doubly_list dlist_ty;
 
 /*************************************************************************************
 * --- ListCreate --- returns *list that points *head == NULL and *end == NULL
@@ -119,9 +119,9 @@ dlist_node_ty *DListBegin(const dlist_ty *list);
 dlist_node_ty *DListEnd(const dlist_ty *list);
 
 /*************************************************************************************
-* --- ForEach --- * return 1 in case of success or 0
+* --- DListForEach --- * return 0 in case of success or 1
 **************************************************************************************/
-int DListForEach(const dlist_node_ty *from, const dlist_node_ty *to, int (*action)(void *list_data, void *param), void *param);
+int DListForEach(dlist_node_ty *from, const dlist_node_ty *to, int (*action)(void *list_data, const void *param), const void *param);
 
 /*************************************************************************************
 * --- Splice ---
@@ -133,7 +133,7 @@ void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to);
 **************************************************************************************/
 int DListIsSameNode(const dlist_node_ty *node_1, const dlist_node_ty *node_2);
 
-#endif /*OL124_LINKED_LIST_H*/
+#endif /*OL124_DLINKED_LIST_H*/
 
 
 

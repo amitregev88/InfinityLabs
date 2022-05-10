@@ -9,7 +9,11 @@
 ******************************************************************/
 
 #ifndef OL124_SORT_LIST_H
-#ifndef OL124_SORT_LIST_H
+#define OL124_SORT_LIST_H
+
+#include <stddef.h>
+
+#include "dlinked_list.h"
 
 /*
 struct sort_list
@@ -18,18 +22,18 @@ struct sort_list
     compare_ty compare;
 };
 */
+typedef struct sort_list sortlist_ty;
 
-struct sort_list_iter
+typedef struct sort_list_iter
 {
     dlist_node_ty *node;
-};
+}sortlist_iter_ty ;
 
 
 /* Negative- a->b/a<b  (first a, second b)  , Positive- b->a/ b<a (first b, second a) , Zero- a=b */
 /*if result is negative then a, next b. elseif result is positive then b next a. else the order is not matter*/
 typedef int (*compare_ty)(const void *a, const void *b);
-typedef struct sort_list sortlist_ty;
-typedef sort_list_iter sortlist_iter_ty;
+
 
 /*************************************************************************************
 *Creates Sorted list - return pointer to SortList 
@@ -49,7 +53,7 @@ int SortLInsert(sortlist_ty *sortlist, void *data);
 /*************************************************************************************
 *Remove element
 **************************************************************************************/
-void SortLRemove(sortlist_ty *sortlist, sortlist_iter_ty to_remove);
+void SortLRemove(sortlist_iter_ty to_remove);
 
 /*************************************************************************************
 * --- Size --- returns the size of the Sorted Linked List ----- O(n)
@@ -97,19 +101,19 @@ int SortLIsSameIter(const sortlist_iter_ty iter_1, const sortlist_iter_ty iter_2
 void *SortLPopBack(sortlist_ty *sortlist);
 
 /*************************************************************************************
-* --- SortLPopfront --- remove the first iter from sorted list and return its data
+* --- SortLPopFront --- remove the first iter from sorted list and return its data
 **************************************************************************************/
-void *SortLPopfront(sortlist_ty *sortlist);
+void *SortLPopFront(sortlist_ty *sortlist);
 
 /*************************************************************************************
-* --- SortLForEach --- return 1 in case of success or 0 failure 
+* --- SortLForEach --- return 0 in case of success or 1 failure 
 **************************************************************************************/
-int SortLForEach(const sortlist_iter_ty from, const sortlist_iter_ty to, int (*action)(const void *data, const void *param), const void *param);
+int SortLForEach(sortlist_iter_ty from, const sortlist_iter_ty to, int (*action)(void *data, const void *param), const void *param);
 
 /*************************************************************************************
 * --- Find --- Finds the iter with data==param using  comparison function inside struct sort_list 
 **************************************************************************************/
-sortlist_iter_ty SortLFind(sortlist_ty *sortlist, sortlist_iter_ty from, sortlist_iter_ty to, const void *param);
+sortlist_iter_ty SortLFind(const sortlist_ty *sortlist, const sortlist_iter_ty from, const sortlist_iter_ty to, const void *param);
 
 /*************************************************************************************
 * --- Find --- Finds the iter using USER's comparison function is_match 

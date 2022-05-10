@@ -45,6 +45,7 @@ queue_ty *QCreate(void)
 void QDestroy(queue_ty *queue)
 {
 	SListDestroy(queue->list);
+	free(queue);
 }
 
 /*Get node from front of the queue - return  data from node (pop front)*/
@@ -83,5 +84,5 @@ size_t QSize(const queue_ty *queue)
 void QAppend(queue_ty *_dest_queue, queue_ty *_src_queue)
 {
 
-	SListAppend(_dest_queue, _src_queue);
+	SListAppend(_dest_queue->list, _src_queue->list);
 }

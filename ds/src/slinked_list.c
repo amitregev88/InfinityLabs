@@ -422,11 +422,11 @@ void SListAppend(slist_ty *_list1, slist_ty *list2)
 	
 	_list1->tail = list2->tail;
 	
-	_list2->head->next = NULL;
+	list2->head->next = NULL;
 	
-	_list2->tail->_list2->head;
+	list2->tail = list2->head;
 	
-
+}
 
 
 
@@ -434,7 +434,7 @@ void SListAppend(slist_ty *_list1, slist_ty *list2)
 /*************************************************************************************
 * --- IsSameIter --- * return 1 in case of match or 0
 **************************************************************************************/
-int SListIsSameIter(slist_iter_ty iter1, slist_iter_ty iter2)
+int SListIsSameIter(const slist_iter_ty iter1, const slist_iter_ty iter2)
 {
 	return (iter1.node == iter2.node);
 }
