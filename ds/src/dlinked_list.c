@@ -88,6 +88,7 @@ dlist_node_ty *DListRemove(dlist_node_ty *to_remove)
 	
 	
 	free (to_remove);
+	to_remove = NULL;
 	
 	return next_node;
 
@@ -259,11 +260,7 @@ void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
 **************************************************************************************/
 int DListIsSameNode(const dlist_node_ty *node_1, const dlist_node_ty *node_2)
 {
-	
 	return (node_1 == node_2);
-	
-	/*return ((DListGetData(node_1) == DListGetData(node_2)) && (DListGetNext(node_1) == DListGetNext(node_2)) && (DListGetPrev(node_1) == DListGetPrev(node_2)))? 1 : 0;*/
-
 }
 
 

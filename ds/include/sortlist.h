@@ -46,9 +46,9 @@ sortlist_ty *SortLCreate(compare_ty compare);
 void SortLDestroy(sortlist_ty *sortlist);
 
 /*************************************************************************************
-* Add iter to the sorted list Success = 0, Fail = 1
+* Add node to the sorted list return iter to this node if fail -> iter.node=NULL
 **************************************************************************************/
-int SortLInsert(sortlist_ty *sortlist, void *data);
+sortlist_iter_ty SortLInsert(sortlist_ty *sortlist, void *data);
 
 /*************************************************************************************
 *Remove element

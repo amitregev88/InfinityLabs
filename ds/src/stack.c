@@ -14,7 +14,7 @@ struct stack
 };
 
 
-typedef struct stack stack_ty;
+
 
 
 

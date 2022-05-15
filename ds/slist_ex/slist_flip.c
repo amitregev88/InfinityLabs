@@ -4,6 +4,7 @@
 * Date: 03.05.22
 * OL124 Linked List Exercises
 *************************************************************************************/
+#include <stddef.h>
 
 typedef struct node
 {
@@ -28,7 +29,7 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2);
 node_t *Flip(node_t *head)
 {
 
-	node_t curr = NULL; next_curr = NULL; tmp = NULL;
+	node_t curr = {NULL,NULL}, next_curr = {NULL,NULL}, tmp = {NULL,NULL};
 	
 	if ((!head) || (!(head->next)))
 	{

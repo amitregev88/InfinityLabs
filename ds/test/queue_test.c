@@ -56,10 +56,7 @@ void Test(void)
 	printf("\nTesting of  QPeek() function in case queue is empty:\n");
 	TEST(QPeek(queue1), NULL);
 	
-	printf("\nTesting of QDeQueue() function  in case queue is empty:\n");
-	
-	
-	TEST((QEnQueue(queue1, &num1)), 0);
+
 	
 	
 	printf("\nTesting of QEnQueue() and  QPeek function  in case queue is not empty:\n");
@@ -68,10 +65,10 @@ void Test(void)
 	TEST(QEnQueue(queue1, &num2), 0);
 	TEST(QEnQueue(queue1, &num3), 0);
 	
-	TEST(QPeek(queue1), &num3); /*?*/
+	TEST(QPeek(queue1), &num1); 
 	
 	printf("\nTesting of QSize() function in case queue is not empty:\n");
-	TEST(QSize(queue1), 3); /*?*/
+	TEST(QSize(queue1), 3); 
 	
 	
 	
@@ -80,7 +77,7 @@ void Test(void)
 	TEST(QDeQueue(queue1), &num1);
 	
 	printf("\nTesting of QSize() function in case queue is not empty:\n");
-	TEST(QSize(queue1), 2); /*?*/
+	TEST(QSize(queue1), 2); 
 	
 	queue2 = QCreate();
 	
@@ -108,11 +105,11 @@ void Test(void)
 
 	
 	
-	TEST(QSize(queue1), 5);	/*?*/
+	TEST(QSize(queue1), 5);	
 	
 	TEST(QIsEmpty(queue2), 1);
 	
-	TEST(QPeek(queue1), &num6); /*?*/
+	TEST(QPeek(queue1), &num2); 
 	
 
 	QDestroy(queue1);	
