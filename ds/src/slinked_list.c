@@ -33,32 +33,29 @@ struct sin_list
 **************************************************************************************/
 slist_ty *SListCreate(void)
 {
-	slist_ty *list = (slist_ty *)malloc(sizeof(slist_ty));
-	slist_node_ty *dummy = (slist_node_ty *)malloc(sizeof(slist_node_ty));
+	slist_ty *list = NULL;
+	slist_node_ty *dummy = NULL;
 	
+	list = (slist_ty *)malloc(sizeof(slist_ty));
 	if (NULL == list)
 	{
-		printf("Memory allocation error\n");
 		return NULL;
 	}
 	
-	
+	dummy = (slist_node_ty *)malloc(sizeof(slist_node_ty));
 	if (NULL == dummy)
 	{
-		printf("Memory allocation error\n");
+		/*clean up*/
 		free(list);
 		return NULL;
 	}
 	
 	dummy->next = NULL;
 	dummy->data = NULL;
-	
 	list->head = dummy;
-	
 	list->tail = dummy; 
 		
-	return list;
-	
+	return list;	
 }
 
 /*************************************************************************************

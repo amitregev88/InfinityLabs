@@ -26,11 +26,12 @@ struct doubly_list
 
 dlist_ty *DListCreate(void)
 {
-	dlist_ty *new_list = (dlist_ty *)malloc(sizeof(dlist_ty));
+	dlist_ty *new_list = NULL;
+	
+	new_list = (dlist_ty *)malloc(sizeof(dlist_ty));
 	
 	if (NULL == new_list)
 	{
-		printf("Memory allocation error\n");
 		return NULL;
 	}
 	

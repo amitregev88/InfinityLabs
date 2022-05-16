@@ -11,6 +11,8 @@
 #ifndef OL124_Q_H
 #define OL124_Q_H
 
+#include <stddef.h>
+
 
 
 

@@ -7,6 +7,7 @@
 
 #include <assert.h>	/* assert*/
 #include <stdlib.h>	/* malloc*/
+#include <assert.h>	/* assert*/
 #include "pqueue.h"
 #include "sortlist.h"
 
@@ -18,33 +19,26 @@ struct pqueue
 };
 
 
-
-
-
-
-
 /*Creates Queue - return pointer to Que */
 pqueue_ty *PQCreate(int (*cmp)(const void *, const void *))
 {
 
-	pqueue_ty *new_pqueue = (pqueue_ty *)malloc(sizeof(pqueue_ty));
+	pqueue_ty *new_pqueue = NULL;
+	assert(NULL != cmp);
 	
+	new_pqueue = (pqueue_ty *)malloc(sizeof(pqueue_ty));	
 	if (NULL == new_pqueue)
 	{
 		return NULL;
 	}
 	
-	assert(NULL != cmp);
-	
 	new_pqueue->list = SortLCreate(cmp);
-	
 	if (NULL == new_pqueue->list)
 	{
+		/*clean up*/
 		free(new_pqueue);
 		return NULL;
 	}
-	
-	/*new_pqueue->list->compare = cmp;*/
 	
 	return new_pqueue;
 }

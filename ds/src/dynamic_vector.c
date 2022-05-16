@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> /*malloc*/
 #include <string.h> /*memcpy*/
+#include <assert.h> /*assert*/
 #include "dynamic_vector.h"
 
 #define SIZE_FACTOR 2
@@ -18,34 +19,33 @@ struct dynamic_vector
 
 dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 {
-
 	
-	dynamic_vector_ty *dynamic_vector = (dynamic_vector_ty *)malloc(sizeof(dynamic_vector_ty)); /* memory allocation for the struct of dynamic_vector*/
+	dynamic_vector_ty *dynamic_vector = NULL; 
 	
+	assert(capacity > 0);
+	assert(size_of_element > 0);
+	
+	/* memory allocation for the struct of dynamic_vector*/
+	dynamic_vector = (dynamic_vector_ty *)malloc(sizeof(dynamic_vector_ty));
 	if (dynamic_vector == NULL)
 	{
-		printf("error of memory allocation\n");  
 		return NULL;
 	}
-	else if ((capacity == 0) || (size_of_element == 0) )
+
+	
+	
+	/* memory allocation for the dynamic vector*/	
+	dynamic_vector->data = (void *) malloc (size_of_element * capacity); 
+	if (dynamic_vector->data == NULL)
 	{
+		/*clean up*/
 		free(dynamic_vector);
 		return NULL;
 	}
-
 	
 	dynamic_vector->size = 0;
 	dynamic_vector->capacity = capacity;
 	dynamic_vector->size_of_element = size_of_element;
-	dynamic_vector->data = (void *) malloc (size_of_element * capacity); /* memory allocation for the dynamic vector*/
-	if (dynamic_vector->data == NULL)
-	{
-		printf("error of memory allocation\n");  
-		free(dynamic_vector->data);
-		free(dynamic_vector);
-		return NULL;
-	}
-	
 	
 	return dynamic_vector;
 } 

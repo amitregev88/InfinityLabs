@@ -22,29 +22,17 @@ void test_circular_buffer(void)
 	static char long_string[] ="this is a long string for testing the BufferWrite function in case the data is greater than buffer";	
 	
 
-	BufferCreate(0); /*checking in case size is 0*/
 
-	if (NULL == buffer)
-	{
-		printf("Testing of function BufferCreate in case size is 0\n");
-		IF_SUCCESS(1);
-			
-	}
-	else
-	{
-		printf("Testing of function BufferCreate in case size is 0\n");
-		IF_SUCCESS(0);
-	}
 	
-	buffer = BufferCreate(20); /* checking in case size is greater then 0*/
+	buffer = BufferCreate(20); 
 	if (NULL != buffer)
 	{
-		printf("\nTesting of function BufferCreate in case size is greater than 0\n");
+		printf("\nTesting of function BufferCreate \n");
 		IF_SUCCESS(1);	
 	}
 	else 
 	{
-		printf("Testing of function BufferCreate in case size is greater than 0\n");
+		printf("Testing of function BufferCreate\n");
 		IF_SUCCESS(0);				
 	}
 	

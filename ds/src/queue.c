@@ -19,23 +19,21 @@ struct queue
 /*Creates Queue - return pointer to Que */
 queue_ty *QCreate(void)
 {
- 	queue_ty *queue = malloc(sizeof(queue));
+ 	queue_ty *queue = NULL;
  	
+ 	queue = malloc(sizeof(struct queue));
  	if(NULL == queue)
 	{
 		return NULL;
 	}
-
-  	
-	queue->list = SListCreate();
 	
+	queue->list = SListCreate();
 	if (NULL == queue->list)
 	{
+		/*clean up*/
 		free(queue);
 		return NULL;
 	}
-
-	
 	
 	return queue;
 }

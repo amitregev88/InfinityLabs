@@ -1,38 +1,40 @@
 #include <stdio.h>	/*printf*/
 #include <stdlib.h>	/* malloc*/
 #include <string.h> /*memcpy*/
+#include <assert.h> /*assert*/
 #include "stack.h"
 
 
 
 struct stack
 {
-    size_t size;
     void *stack;
+    size_t size;
     size_t capacity;
     size_t size_of_element;
 };
 
 
 
-
-
-
-
-
-
 stack_ty *StackCreate(size_t capacity, size_t size_of_element)
 {
+	stack_ty *struct_stack = NULL;
+	assert(capacity > 0);
+	assert(size_of_element > 0);
 	
-	stack_ty *struct_stack = (stack_ty *) malloc (sizeof(stack_ty)); /* memory allocation for the struct of stack*/
-	
-	if (struct_stack == NULL)
+	/* memory allocation for the struct of stack*/
+	struct_stack = (stack_ty *) malloc (sizeof(stack_ty)); 
+	if (NULL == struct_stack )
 	{
-		printf("error of memory allocation\n");  
 		return NULL;
 	}
-	else if (capacity == 0)
+	
+	
+	/* memory allocation for the stack*/
+	struct_stack->stack = (void *) malloc (size_of_element * capacity); 
+	if (struct_stack->stack == NULL)
 	{
+		/*clean up*/
 		free(struct_stack);
 		return NULL;
 	}
@@ -40,13 +42,6 @@ stack_ty *StackCreate(size_t capacity, size_t size_of_element)
 	struct_stack->size = 0;
 	struct_stack->capacity = capacity;
 	struct_stack->size_of_element = size_of_element;
-	struct_stack->stack = (void *) malloc (size_of_element * capacity); /* memory allocation for the stack*/
-	if (struct_stack->stack == NULL)
-	{
-		printf("error of memory allocation\n");  
-		return NULL;
-	}
-	
 	
 	return struct_stack;
 } 
@@ -54,16 +49,8 @@ stack_ty *StackCreate(size_t capacity, size_t size_of_element)
 
 void StackDestroy(stack_ty *ptr)
 {
-	if (ptr->stack != NULL)
-	{
 		free(ptr->stack);
-	}
-	
-	if(ptr != NULL)
-	{
 		free(ptr);
-	}
-	
 }
 
 void StackPush(stack_ty* ptr, void *element)

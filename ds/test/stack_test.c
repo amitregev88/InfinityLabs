@@ -30,10 +30,10 @@ void TestStackCreateAndDestroy(void)
 	}
 	else
 	{
-		printf("Test of create stack failed - in case size of elements greater than capacity\n");
-		StackDestroy(ptr);	/*destroy a stack */		
+		printf("Test of create stack failed - in case size of elements greater than capacity\n");	
 	}
 	
+		StackDestroy(ptr);
 	
 /*create a stack again*/
 	ptr = NULL;
@@ -42,13 +42,15 @@ void TestStackCreateAndDestroy(void)
 	if (ptr != NULL)
 	{
 		printf("Test of create stack succeed - in case the capacity greater than size of elements\n");
-		StackDestroy(ptr);	/*destroy a stack - test*/
 		
 	}
 	else
 	{
 		printf("Test of create stack failed - in case the capacity greater than size of elements\n");
 	}
+	
+
+	StackDestroy(ptr);
 
 }
 
@@ -126,5 +128,7 @@ void TestStack(void)
 	
 		printf("StackPop test failed\n");
 	}
+	
+	StackDestroy(ptr);
 }
 

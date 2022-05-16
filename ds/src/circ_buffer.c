@@ -8,6 +8,7 @@
 #include <stdio.h>	/*printf*/
 #include <stdlib.h>	/* malloc*/
 #include <string.h> /*memcpy*/
+#include <assert.h> /*assert*/
 #include "circ_buffer.h" 
 
 
@@ -23,22 +24,18 @@ struct circ_buffer
 
 circ_buffer_ty *BufferCreate(size_t size)
 {
-	circ_buffer_ty *buffer = (circ_buffer_ty *)malloc(sizeof(struct circ_buffer) + size); 
+	circ_buffer_ty *buffer = NULL;
 	
+	assert(size > 0);
+	
+	buffer = (circ_buffer_ty *)malloc(sizeof(struct circ_buffer) + size); 	
 	if (NULL == buffer)
-	{
-		printf("Error of memory allocation\n");  
+	{	  
 		return NULL;
 	}
-	else if (0 == size)
-	{
-		printf("size input is 0\n"); 
-		free(buffer);
-		return NULL;
-	}
+	
 	
 	buffer->data = (char *)buffer + sizeof(struct circ_buffer);
-	
 	
 	buffer->head = buffer->data;
 	

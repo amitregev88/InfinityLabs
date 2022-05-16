@@ -7,9 +7,9 @@
 
 #include <stdio.h>	/*printf*/
 #include <stdlib.h>	/* malloc*/
+#include <assert.h>/* assert*/
 #include "dlinked_list.h" 
 #include "sortlist.h"
-#include <assert.h>
 
 static int IsInSameSList(const sortlist_iter_ty from, const sortlist_iter_ty to);
 
@@ -26,29 +26,25 @@ struct sort_list
 sortlist_ty *SortLCreate(compare_ty compare)
 {
 
-	sortlist_ty *new_list = (sortlist_ty *)malloc(sizeof(sortlist_ty));
+	sortlist_ty *new_list = NULL;
+	assert(NULL != compare);
 	
+	new_list = (sortlist_ty *)malloc(sizeof(sortlist_ty));
 	if (NULL == new_list)
 	{
-		printf("Memory allocation error\n");
 		return NULL;
 	}
 	
-	
-	assert(NULL != compare);
-	
-	new_list->list = DListCreate();
-	
+	new_list->list = DListCreate();	
 	if (NULL == new_list->list)
 	{
+		/*clean up*/
 		free(new_list);
 		return NULL;
 	}
 	
 	new_list->compare = compare;
-	
 	return new_list;
-	
 }
 
 /*************************************************************************************
