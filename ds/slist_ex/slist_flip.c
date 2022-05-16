@@ -1,16 +1,12 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: 
+* Reviewer: Yotam Ahron
 * Date: 03.05.22
 * OL124 Linked List Exercises
 *************************************************************************************/
 #include <stddef.h>
+#include "slinked_list_modify_for_exercises.h"
 
-typedef struct node
-{
-	void *data;
-	struct node *next;
-}node_t;
 
 
 /*Reverse the order of a given slist*/
@@ -29,7 +25,7 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2);
 node_t *Flip(node_t *head)
 {
 
-	node_t curr = {NULL,NULL}, next_curr = {NULL,NULL}, tmp = {NULL,NULL};
+	node_t *curr = NULL, *next_curr = NULL, *tmp = NULL; 
 	
 	if ((!head) || (!(head->next)))
 	{
@@ -38,12 +34,11 @@ node_t *Flip(node_t *head)
 	
 	curr = head;
 	
-	curr->next = NULL;
-	
 	next_curr = head->next;
 	
 	tmp = next_curr->next;
 	
+	curr->next = NULL;
 	
 	while (tmp->next != NULL)
 	{
@@ -66,37 +61,49 @@ node_t *Flip(node_t *head)
 }
 	
 	
-int HasLoop(const  node_t *head)
+int HasLoop(const node_t *head)
 {
+	node_t *first = NULL;
+	
 	node_t *has_loop = NULL;
+
 	int flag = 0;
+
+	first = (node_t *) head;
+
 	
-	has_loop = Flip(head);
+	has_loop = Flip(first);
 	
 	
-	if (has_loop == head)
+	if ((has_loop->data == first->data) && (has_loop->next == first->next))
 	{
 		flag = 1;
 	}
 	
-	Flip(head);
+
+	
+	Flip(has_loop);
+	
+
 	
 	return flag;
 }
 
 
-node_t FindIntersection(slist_node_ty *head_1, slist_node_ty *head_2)
+node_t *FindIntersection(node_t *head_1, node_t *head_2)
 {
 	
-	size_t i = 0; size_list1 = 0, size_list2 = 0, steps = 0;
+	size_t i = 0, size_list1 = 0, size_list2 = 0, steps = 0;
 	
-	size_list1 = SListSize(head_1);
+	size_list1 = SingleListSize(head_1);
 	
-	size_list2 = SListSize(head_2);
+	size_list2 = SingleListSize(head_2);
+	
+	
 	
 	if (size_list1 < size_list2)
 	{
-		node_t tmp = NULL;
+		node_t *tmp = NULL;
 				
 		tmp = head_1;
 		
@@ -113,7 +120,7 @@ node_t FindIntersection(slist_node_ty *head_1, slist_node_ty *head_2)
 	}
 	
 	
-	for (; i <= steps; ++i)
+	for (; i < steps; ++i)
 	{
 		head_1 = head_1->next;
 	}
@@ -130,9 +137,9 @@ node_t FindIntersection(slist_node_ty *head_1, slist_node_ty *head_2)
 		head_2 = head_2->next;
 	}
 	
+	
 	return NULL;
 }
-
 
 
 

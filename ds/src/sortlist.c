@@ -330,8 +330,6 @@ void SortLMerge(sortlist_ty *_dest, sortlist_ty *_source)
 	
 	sortlist_iter_ty iter_dest = {NULL};
 	
-	sortlist_iter_ty src_from_iter = {NULL};
-	
 	sortlist_iter_ty src_to_iter = {NULL};
 	
 	int flag = 0;
@@ -342,13 +340,9 @@ void SortLMerge(sortlist_ty *_dest, sortlist_ty *_source)
 	assert(NULL != _source->compare);
 	
 	
-
-	
 	iter_dest = SortLBegin(_dest);
 	
-	src_from_iter = SortLBegin(_source);
-	
-	src_to_iter = SortLBegin(_source);
+	src_to_iter = SortLGetNext(SortLBegin(_source));
 	
 		
 	while (!SortLIsSameIter(SortLEnd(_dest),iter_dest))
@@ -365,25 +359,21 @@ void SortLMerge(sortlist_ty *_dest, sortlist_ty *_source)
 			
 		if (flag)
 		{
-			DListSplice(iter_dest.node ,src_from_iter.node , src_to_iter.node);
-			src_from_iter = src_to_iter;
+			DListSplice(iter_dest.node ,SortLBegin(_source).node , src_to_iter.node);
+
 			flag = 0;
 		}
 		
 		iter_dest = SortLGetNext(iter_dest);
 		
 	}
-		
-		
-	if (!SortLIsSameIter(src_to_iter, SortLEnd(_source)))
+	
+	if (!SortLIsEmpty(_source))
 	{
-		DListSplice(iter_dest.node ,src_from_iter.node , SortLEnd(_source).node);
+		DListSplice(iter_dest.node ,SortLBegin(_source).node , SortLEnd(_source).node);
 	}
-	
-	return;
-		
-	
 }
+	
 		
 		
 			

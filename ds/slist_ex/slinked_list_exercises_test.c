@@ -8,6 +8,8 @@
 #include <stdio.h> /* printf, puts */
 #include "slinked_list_modify_for_exercises.h"
 
+
+
 #define RESET   "\033[0m"        /* Reset colour */
 #define RED     "\033[31m"       /* Red */
 #define GREEN   "\033[32m"      /* Green */
@@ -17,20 +19,131 @@
 printf(GREEN "%s worked succesfully for %s\n",function, input) : \
 printf(RED "%s failed  for %s\n",function, input)
 
+
+
+
+
 node_t *Flip(node_t *head)
 {
-	/* code here*/
+
+	node_t *curr = NULL, *next_curr = NULL, *tmp = NULL; 
+	
+	if ((!head) || (!(head->next)))
+	{
+		return head;
+	} 
+	
+	curr = head;
+	
+	next_curr = head->next;
+	
+	tmp = next_curr->next;
+	
+	curr->next = NULL;
+	
+	while (tmp->next != NULL)
+	{
+	
+		next_curr->next = curr;
+	
+		curr = next_curr;
+	
+		next_curr = tmp; 
+	
+		tmp = tmp->next;
+	}
+		
+	next_curr->next = curr;
+	
+	tmp->next = next_curr;
+	
+	return tmp; 
+	
 }
+
 
 int HasLoop(const node_t *head)
 {
-	/* code here*/
+	node_t *first = NULL;
+	
+	node_t *has_loop = NULL;
+
+	int flag = 0;
+
+	first = (node_t *) head;
+
+	
+	has_loop = Flip(first);
+	
+	
+	if ((has_loop->data == first->data) && (has_loop->next == first->next))
+	{
+		flag = 1;
+	}
+	
+
+	
+	Flip(has_loop);
+	
+
+	
+	return flag;
 }
 
-node_t *FindIntersection(node_t *head1, node_t *head2)
+
+node_t *FindIntersection(node_t *head_1, node_t *head_2)
 {
-	/* code here*/
+	
+	size_t i = 0, size_list1 = 0, size_list2 = 0, steps = 0;
+	
+	size_list1 = SingleListSize(head_1);
+	
+	size_list2 = SingleListSize(head_2);
+	
+	
+	
+	if (size_list1 < size_list2)
+	{
+		node_t *tmp = NULL;
+				
+		tmp = head_1;
+		
+		head_1 = head_2;
+		
+		head_2 = tmp;
+		
+		steps = size_list2 - size_list1;
+	}
+	
+	else
+	{
+		steps = size_list1 - size_list2;
+	}
+	
+	
+	for (; i < steps; ++i)
+	{
+		head_1 = head_1->next;
+	}
+	
+
+	while ((NULL != head_1) && (NULL != head_2))
+	{
+		if (head_1 == head_2)
+		{
+			return head_1;
+		}
+		
+		head_1 = head_1->next;
+		head_2 = head_2->next;
+	}
+	
+	
+	return NULL;
 }
+
+	
+
 
 /* --- utilities functions --- */
 void SIngleListIntPrint(node_t *head)
@@ -113,6 +226,8 @@ int main(void)
 
 	has_loop = HasLoop(a_list);
 	CHECK("HasLoop",0,has_loop, "detect there is no loop");
+	
+	SIngleListIntPrint(a_list);
 
 	(SingleListGetNode(a_list,5))->next = SingleListGetNode(a_list,2);
 	puts("AFTER LOOP CREATED: ");

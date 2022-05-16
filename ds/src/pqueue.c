@@ -1,6 +1,6 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: 
+* Reviewer: Alexander Bor
 * Date: 05.12.22
 * OL124 Priority Queue project (base on Sorted List)
 *************************************************************************************/
@@ -8,6 +8,7 @@
 #include <assert.h>	/* assert*/
 #include <stdlib.h>	/* malloc*/
 #include "pqueue.h"
+#include "sortlist.h"
 
 
 struct pqueue

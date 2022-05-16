@@ -10,26 +10,22 @@
 #include <stdio.h>
 
 
-const uid_ty UID_INVALID = {0,0,0};
+const uid_ty UID_INVALID = {0,0,0}; /* UID to check the Validity vs */
 
-/* Return 1 if UID number is valid and 0 if not valid */
+/* Return UID */
 uid_ty GetUID(void)
 {
 	static unsigned long count = 0;
 	
 	uid_ty new_uid = {0,0,0};
 	
-	new_uid.timestamp = time(NULL);
+	time_t time = time(NULL);
 	
-	if (new_uid.timestamp >= 0)
+	if (-1 != time)
 	{
 		new_uid.counter = ++count;
 		new_uid.pid = getpid();
-	}
-								
-	else			
-	{
-		new_uid.timestamp = 0;	
+		new_uid.timestamp = time;
 	}
 	
 	return new_uid;
