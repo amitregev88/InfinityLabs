@@ -8,3 +8,5 @@
 !*.cpp
 !*.hpp
 !*.md
+!*.json
+!*.mak
