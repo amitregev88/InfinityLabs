@@ -160,7 +160,7 @@ void Test(void)
 	node = DListFind(begin, end, IsMatch, &num3);
 	TEST(*(int *)DListGetData(node), num3);
 	
-	printf ("\nTesting of DListForEach() function ?????????????:\n");
+	printf ("\nTesting of DListForEach() function:\n");
 	TEST(*(int *)DListGetData(begin), 2);
 	
 	TEST(DListForEach(begin, end, IntPlusInt, &num1), 0);

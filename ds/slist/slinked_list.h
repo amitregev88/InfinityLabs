@@ -1,153 +1,151 @@
 /*************************************************************************************
-* OL124 DLinked List Project
-* dlinked_list.h
-* dlinked_list.c
-* dlinked_list_test.c
+* OL124 SLinked List Project
+* slinked_list.h
+* slinked_list.c
+* slinked_list_test.c
 *
-*
+*   
 *************************************************************************************/
-#ifndef OL124_DLINKED_LIST_H
-#define OL124_DLINKED_LIST_H
+#ifndef OL124_LINKED_LIST_H
+#define OL124_LINKED_LIST_H
 
 #include <stddef.h>
 /*
-struct doubly_list
+struct sin_list
 {
-    doubly_node *begin;
-    doubly_node *end;
+    sin_node head;
+    sin_node tail;
 }
 
-struct doubly_node
+struct sin_node 
 {
-    void *data;
-    doubly_node *next;
-    doubly_node *prev;
+    void *data; 
+    sin_node *next;
 };
+
+struct slist_iter
+{
+    slist_node_ty *node;
+    
+} slist_iter_ty;
+
+typedef struct sin_node slist_node_ty;*
 */
-typedef struct doubly_node dlist_node_ty;
-typedef struct doubly_list dlist_ty;
+
+typedef struct sin_node slist_node_ty;
+typedef struct sin_list slist_ty;
+typedef struct  slist_iter
+	{
+		slist_node_ty *node;
+	}slist_iter_ty;
+
+
 
 /*************************************************************************************
-* --- ListCreate --- returns *list that points *head == NULL and *end == NULL
+* --- ListCreate --- returns *list that points *head == NULL 
 **************************************************************************************/
-dlist_ty *DListCreate(void);
+slist_ty *SListCreate(void);
 
 /*************************************************************************************
-* --- ListDestroy --- free() all the NODES and LIST itself
+* --- ListDestroy --- free() all the NODES and LIST itself O(n)
 **************************************************************************************/
-void DListDestroy(dlist_ty *list);
+void SListDestroy(slist_ty *list);
 
 /*************************************************************************************
-* --- Insert --- receives the <node_ty *node> next to which make's the insert, return prev
+* --- Insert --- receives the "where" and inserts before the "where" O(1)
 **************************************************************************************/
-dlist_node_ty *DListInsert(dlist_node_ty *where, void *data);
+slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data);
 
 /*************************************************************************************
-* --- Remove --- Removes the NODE next to <node_ty *node>
-* return NEXT NODE
+* --- Remove --- Removes the NODE in the itter to_remove
+* return NEXT NODE (iter) o(1)***
 **************************************************************************************/
-dlist_node_ty *DListRemove(dlist_node_ty *to_remove);
+slist_iter_ty SListRemove(slist_ty *list, slist_iter_ty to_remove);
 
 /*************************************************************************************
-* --- PushBack --- add's a NODE at the END of the linked list
-* return LAST NODE
+* --- PushBack --- add's a NODE at the END of the linked list 
+* return LAST NODE (iter) O(1)
 **************************************************************************************/
-dlist_node_ty *DListPushBack(dlist_ty *list, void *data);
+slist_iter_ty SListPushBack(slist_ty *list, void *data);
 
 /*************************************************************************************
-* --- PushFront --- add's a NODE at the FRONT of the linked list
-* return 1 in case of success or o in case of
+* --- PushFront --- add's a NODE at the FRONT of the linked list 
+* return FIRST NODE (iter) O(1)
 **************************************************************************************/
-dlist_node_ty *DListPushFront(dlist_ty *list, void *data);
+slist_iter_ty SListPushFront(slist_ty *list, void *data);
 
 /*************************************************************************************
-* --- PopBack --- POP's the LAST NODE
-* returns pointer to DATA
+* --- PopBack --- POP's the LAST NODE 
+* returns pointer to DATA O(n)
 **************************************************************************************/
-void *DListPopBack(dlist_ty *list);
+void *SListPopBack(slist_ty *list);
 
 /*************************************************************************************
-* --- PopFront --- POP's the FIRST NODE
-* returns pointer to DATA
+* --- PopFront --- POP's the FIRST NODE 
+* returns pointer to DATA O(1)
 **************************************************************************************/
-void *DListPopFront(dlist_ty *list);
+void *SListPopFront(slist_ty *list);
 
 /*************************************************************************************
 * --- Size --- returns the size of the Linked List ----- O(n)
 **************************************************************************************/
-size_t DListSize(const dlist_ty *list);
+size_t SListSize(const slist_ty *list); 
 /*************************************************************************************/
 
 /*************************************************************************************
 * --- DListIsEmpty --- returns 1 in case is empty or -0 other case ---- O(1)
 **************************************************************************************/
-int DListIsEmpty(const dlist_ty *list);
+int SListIsEmpty(const slist_ty *list);
 
 /*************************************************************************************
-* --- GetData --- Gets the DATA from a NODE
+* --- GetData --- Gets the DATA from a NODE 
 **************************************************************************************/
-void *DListGetData(const dlist_node_ty *node);
+void *SListGetData(const slist_iter_ty node);
 
 /*************************************************************************************
-* --- SetData --- Sets the DATA to a NODE
+* --- SetData --- Sets the DATA to a NODE 
 **************************************************************************************/
-void DListSetData(dlist_node_ty *node, void *data);
+void SListSetData(slist_iter_ty node, void *data);
 
 /*************************************************************************************
-* --- GetNext --- Gets a pointer to the NEXT NODE to <node>
+* --- GetNext --- Gets a iter of the NEXT NODE to <node> 
 **************************************************************************************/
-dlist_node_ty *DListGetNext(const dlist_node_ty *node);
+slist_iter_ty SListGetNext(const slist_iter_ty node);
 
 /*************************************************************************************
-* --- GetPrev --- Gets a pointer to the PREV NODE to <node>
+* --- Find --- Finds the Node using USER's comparison function 
+* return iter
 **************************************************************************************/
-dlist_node_ty *DListGetPrev(const dlist_node_ty *node);
+slist_iter_ty SListFind(const slist_iter_ty from, const slist_iter_ty to, int (*is_match)(const void *data, const void *param), const void *param);
 
 /*************************************************************************************
-* --- Find --- Finds the Node using USER's comparison function
+* --- Begin --- gets the first node O(1)
+*return iter of the first NODE
 **************************************************************************************/
-dlist_node_ty *DListFind(const dlist_node_ty *from, const dlist_node_ty *to, int (*is_match)(const void *data, const void *param), const void *param);
+slist_iter_ty SListBegin(const slist_ty *list);
 
 /*************************************************************************************
-* --- Begin --- gets the first node
+* --- End --- gets the  next of the last connected node,  O(1)
+* return iter of tail
 **************************************************************************************/
-dlist_node_ty *DListBegin(const dlist_ty *list);
+slist_iter_ty SListEnd(const slist_ty *list);
 
 /*************************************************************************************
-* --- End --- gets the next of the END
+* --- ForEach --- * return 1 in case of success or 0  O(n)
 **************************************************************************************/
-dlist_node_ty *DListEnd(const dlist_ty *list);
+int SListForEach(const slist_iter_ty from, const slist_iter_ty to, int (*action)(void *list_data, void *param), void *param);
 
 /*************************************************************************************
-* --- DListForEach --- * return 0 in case of success or 1
+* --- IsSameIter --- * return 1 in case of match or 0
 **************************************************************************************/
-int DListForEach(dlist_node_ty *from, const dlist_node_ty *to, int (*action)(void *list_data, const void *param), const void *param);
+int SListIsSameIter(const slist_iter_ty iter1, const slist_iter_ty iter2);
 
 /*************************************************************************************
-* --- Splice ---
+* --- Append --- -append list2  to  the end of the list1 and
+*                 list2 is turn EMPTY , user need to destroy it at the end of the program
 **************************************************************************************/
-void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to);
-
-/*************************************************************************************
-* --- Is Same Node ---  returns 1 if node1=node2 , returns 0  otherwise
-**************************************************************************************/
-int DListIsSameNode(const dlist_node_ty *node_1, const dlist_node_ty *node_2);
-
-#endif /*OL124_DLINKED_LIST_H*/
+void SListAppend(slist_ty *_list1, slist_ty *list2);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif /*OL124_LINKED_LIST_H*/
 
