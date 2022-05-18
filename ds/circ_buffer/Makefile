@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = circ_buffer_test.c circ_buffer.c
 
 # list of directories containing header files
-PROJ_INC_DIR =
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = circ_buffer_test.out

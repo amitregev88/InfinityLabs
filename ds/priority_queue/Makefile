@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = pqueue_test.c pqueue.c
 
 # list of directories containing header files
-PROJ_INC_DIR = ../sorted_list ../dlist
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = pqueue_test.out
@@ -31,6 +31,6 @@ PROJ_LIBS =
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  = ../sorted_list/Makefile ../dlist/Makefile
+PROJ_DEPENDS  = ../sorted_list/Makefile
 
 include $(ROOT_DIR)/make/Project.mak

@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = queue_test.c queue.c
 
 # list of directories containing header files
-PROJ_INC_DIR = ../slist
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = queue_test.out

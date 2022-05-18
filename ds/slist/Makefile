@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = slinked_list_test.c slinked_list.c
 
 # list of directories containing header files
-PROJ_INC_DIR =
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = slinked_list_test.out

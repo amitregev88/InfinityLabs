@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = sortlist_test.c sortlist.c
 
 # list of directories containing header files
-PROJ_INC_DIR = ../dlist
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = sortlist_test.out

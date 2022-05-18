@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = bit_array_test.c bit_array.c 
 
 # list of directories containing header files
-PROJ_INC_DIR =
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = bit_array_test.out

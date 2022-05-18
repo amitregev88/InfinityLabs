@@ -5,13 +5,13 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = dlinked_list_test.c dlinked_list.c
+PROJ_SRCS = scheduler.c scheduler_test.c
 
 # list of directories containing header files
 PROJ_INC_DIR = ../include/
 
 # the executable file
-PROJ_OUT = dlinked_list_test.out
+PROJ_OUT = scheduler_test.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable
@@ -22,7 +22,7 @@ PROJ_CPPFLAGS =
 PROJ_MACROS =
 
 # additional object files (created by other projects)
-PROJ_ADD_OBJS =
+PROJ_ADD_OBJS = pqueue.o sortlist.o dlinked_list.o uid.o
 
 # additional libraries
 PROJ_LIBS =
@@ -31,6 +31,6 @@ PROJ_LIBS =
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  =
+PROJ_DEPENDS  = ../priority_queue/Makefile
 
 include $(ROOT_DIR)/make/Project.mak

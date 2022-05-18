@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = dynamic_vector_test.c dynamic_vector.c
 
 # list of directories containing header files
-PROJ_INC_DIR =
+PROJ_INC_DIR = ../include/
 
 # the executable file
 PROJ_OUT = dynamic_vector_test.out

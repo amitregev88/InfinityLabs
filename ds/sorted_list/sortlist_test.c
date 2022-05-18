@@ -167,10 +167,10 @@ void Test(void)
 	
 	printf("\nTesting of Find() function:\n");
 	
-	iter = SortLFind(slist1, SortLBegin(slist1), SortLEnd(slist1), &num4);
+	/*iter = SortLFind(slist1, SortLBegin(slist1), SortLEnd(slist1), &num4);
 	
 	TEST(SortLIsSameIter(iter2, iter), 1);
-	
+	*/
 
 	printf("\nTesting of FindIf() function:\n");
 	
