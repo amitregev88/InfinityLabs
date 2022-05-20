@@ -5,10 +5,10 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = scheduler.c scheduler_test.c
+PROJ_SRCS = scheduler.c  task.c scheduler_test.c
 
 # list of directories containing header files
-PROJ_INC_DIR = ../include/
+PROJ_INC_DIR = ../../ds/include/
 
 # the executable file
 PROJ_OUT = scheduler_test.out
@@ -31,6 +31,6 @@ PROJ_LIBS =
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  = ../priority_queue/Makefile
+PROJ_DEPENDS  = ../../ds/priority_queue/Makefile ../../ds/uid/Makefile
 
 include $(ROOT_DIR)/make/Project.mak

@@ -3,8 +3,7 @@
 * 
 * task.h
 * task.c
-* 
-* 
+*  
 *Version 1.1 - only create, add, run - updated for now
 ******************************************************************/
 
@@ -13,7 +12,9 @@
 
 #include <stddef.h> /* size_t */
 #include "uid.h" /* uid_ty */
+#include "scheduler.h"
 #include <time.h>
+
 
 typedef struct scheduler_task
 {
@@ -25,7 +26,7 @@ typedef struct scheduler_task
     size_t interval;
 }task_ty;
 
-typedef int (*task_ptr_ty)(void *param);
+
 
 /***********************************************************************************
 *--- TaskSetUID --- Sets the UID into the task->interval field 
@@ -33,12 +34,12 @@ typedef int (*task_ptr_ty)(void *param);
 int TaskSetUID(task_ty *task);
 
 /***********************************************************************************
-*--- TaskGetUID --- Gets the UID from the task->interval field 
+*--- TaskGetUID --- Gets the UID of the task
 **************************************************************************************/
 uid_ty TaskGetUID(task_ty *task);
 
 /***********************************************************************************
-*--- TaskSetParam --- Sets the void *param into the task->param field 
+*--- TaskSetParam --- Sets the void *param into the task->param field for callback function
 **************************************************************************************/
 void TaskSetParam(task_ty *task, void *param);
 
@@ -52,7 +53,7 @@ void *TaskGetParam(task_ty *task);
 void TaskSetInterval(task_ty *task, size_t interval);
 
 /***********************************************************************************
-*--- TaskGetInterval --- Sets the interval into the task->interval field 
+*--- TaskGetInterval ---Gets the interval of task  from the task->interval field 
 **************************************************************************************/
 size_t TaskGetInterval(task_ty *task);
 
@@ -62,11 +63,11 @@ size_t TaskGetInterval(task_ty *task);
 void TaskSetAction(task_ty *task, task_ptr_ty action_func);
 
 /***********************************************************************************
-*--- TaskSetRunTime ---  
+*--- TaskSetRunTime ---  set the time of the task 
 **************************************************************************************/
 void TaskSetRunTime(task_ty *task, time_t current_time);
 /***********************************************************************************
-*--- TaskGetNextRunTime --- 
+--- TaskGetRunTime --- Gets the next run time 
 **************************************************************************************/
 time_t TaskGetRunTime(task_ty *task);
 

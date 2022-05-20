@@ -12,6 +12,7 @@
 #include "uid.h" /* uid_ty */
 #include "pqueue.h"
 #include "task.h"
+#include "scheduler.h"
 #include <assert.h>
 
 
@@ -25,7 +26,7 @@ int TaskSetUID(task_ty *task)
 
     task->UID = GetUID();
    
-    return (UIDIsSame(UID_INVALID, task->UID))
+    return (UIDIsSame(UID_INVALID, task->UID));
  
 }
 
@@ -94,7 +95,7 @@ void TaskSetAction(task_ty *task, task_ptr_ty action_func)
     assert(NULL != task);
     assert(NULL != action_func);
 
-    task->task_func;
+    task->task_func = action_func;
 }
 
 
@@ -110,7 +111,7 @@ void TaskSetRunTime(task_ty *task, time_t current_time)
 
 }
 /***********************************************************************************
-*--- TaskGetNextRunTime --- Gets the next run time 
+*--- TaskGetRunTime --- Gets the next run time 
 **************************************************************************************/
 time_t TaskGetRunTime(task_ty *task)
 {
@@ -120,12 +121,13 @@ time_t TaskGetRunTime(task_ty *task)
 }
 
 /***********************************************************************************
-*--- TaskGetAction --- Gets the next run time 
-**************************************************************************************/
+*--- TaskGetAction ---runs the action function
+***************************************************************************************/
+
 int TaskRunAction(task_ty *task)
 {
     assert(NULL != task);
 
-    return task->task_func(TaskGetParam(task));
+    return (task->task_func(TaskGetParam(task)));
 
 }

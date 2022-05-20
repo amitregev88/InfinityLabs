@@ -11,13 +11,14 @@
 #include <time.h>
 #include "scheduler.h"
 #include "task.h"
-/*#include "pqueue.h"*/
-/*#include "uid.h"*/
+#include "pqueue.h"
+#include "uid.h" 
 
 
 struct scheduler 
 {
     pqueue_ty *pq;
+    size_t stop;
     
 };
 
@@ -32,15 +33,17 @@ int TimeCmp(const void* a, const void* b)
 **************************************************************************************/
 scheduler_ty *SchedulerCreate()
 {
-    scheduler_ty *schd = malloc(sizeof(scheduler_ty));
+    scheduler_ty *schd = NULL;
+    
+     schd = malloc(sizeof(scheduler_ty));
    
-    if (!schd)
+    if (schd == NULL)
     {
         return NULL;
     }
 
     schd->pq = PQCreate(TimeCmp);
-    if (schd->pq)
+    if (schd->pq == NULL)
     {
         /*clean up*/
         free(schd);
@@ -67,7 +70,7 @@ uid_ty SchedulerAdd(scheduler_ty *scheduler, size_t interval_in_sec, task_ptr_ty
     assert(interval_in_sec > 0);
     assert(NULL != task_func);
   
-    task_ty *new_task = malloc (sizeof(task_ty));
+    new_task = malloc (sizeof(task_ty));
     if (NULL == new_task)
     {
         return UID_INVALID;
@@ -81,10 +84,14 @@ uid_ty SchedulerAdd(scheduler_ty *scheduler, size_t interval_in_sec, task_ptr_ty
 
     TaskSetInterval(new_task, interval_in_sec);
 
+    TaskSetRunTime(new_task, time(NULL));
+
     TaskSetAction(new_task, task_func);
     
     if (PQEnQueue(scheduler->pq, new_task) == 1)
     {
+        /*clean up*/
+        free(new_task);
         return UID_INVALID;
     }
 
@@ -99,40 +106,84 @@ uid_ty SchedulerAdd(scheduler_ty *scheduler, size_t interval_in_sec, task_ptr_ty
 **************************************************************************************/
 int SchedulerRun(scheduler_ty *scheduler)
 {
+
+    time_t current_time = 0;
+    int time_to_sleep = 0;
+
     assert(NULL != scheduler);
 
-    while(1)
+    while(scheduler->stop != 1)
     {
         task_ty *task = NULL;
-        time_t current_time = time(NULL);
+
+        task = PQDeQueue(scheduler->pq);
+
+        current_time = time(NULL);
+        if (-1 == current_time)
+        {
+            return 1;
+        }
+        
+        time_to_sleep = (int)(TaskGetRunTime(task) - current_time);
+        if(time_to_sleep > 0)
+        {
+            sleep(time_to_sleep);
+        }
+
+        TaskRunAction(task);
+
+        current_time = time(NULL);
         if (-1 == current_time)
         {
             return 1;
         }
 
-        task = PQDeQueue(scheduler->pq);
+        TaskSetRunTime(task, current_time + TaskGetInterval(task));
 
-        sleep(TaskGetRunTime(PQPeek(scheduler->pq)));
-        
-
-        
-
+        PQEnQueue(scheduler->pq, task);
 
     }
+    scheduler->stop = 0;
+    return 0;
+/*
+ Dequeue next_task
+time_to_sleep = current_time - next_task_time
+sleep(time_to_sleep)
+run task_func
+update next_task_time
+enqueue next_task
+
+*/
+
+}
+
+/*************************************************************************************
+*--SchedulerStop-- Stop task.
+**************************************************************************************/
+void SchedulerStop(scheduler_ty *scheduler)
+{
+    assert(NULL != scheduler);
+    scheduler->stop = 1;
+
+}
+
+/*************************************************************************************
+*--SchedulerRemove-- Remove task with uid from scheduler
+**************************************************************************************/
+void SchedulerRemove(scheduler_ty *scheduler, uid_ty uid)
+{
 
 
-time_t time_to_sleep = current_time -
+}
 
+/*************************************************************************************
+*--SchedulerDestroy-- Delete scheduler 
+*************************************************************************************/
+void SchedulerDestroy(scheduler_ty *scheduler)
+{
 
+ 
+ 
+ free(scheduler)
 
-
-
-
-// Dequeue next_task                                -done
-//time_to_sleep = current_time - next_task_time     -done    
-//sleep(time_to_sleep)                              -done
-// run task_func
-//update next_task_time
-//enqueue next_task
-
-}}
+}
