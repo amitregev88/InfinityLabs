@@ -133,11 +133,7 @@ void *PQErase(pqueue_ty *pq, int (*is_match)(const void *data, const void *param
 	assert(NULL != is_match);
 	assert(NULL != param);
 	
-	
-
-	
-	
-	
+		
 	iter_find = SortLFindIf(SortLBegin(pq->list), SortLEnd(pq->list), is_match, param);
 	
 	if (!iter_find.node)

@@ -14,7 +14,6 @@
 #include "pqueue.h"
 #include "uid.h" 
 
-
 struct scheduler 
 {
     pqueue_ty *pq;
@@ -25,6 +24,11 @@ struct scheduler
 int TimeCmp(const void* a, const void* b)
 {
     return ((int)TaskGetRunTime((task_ty *)b) - (int)TaskGetRunTime((task_ty *)a));
+}
+
+int UIDIsMatch(const void* uid1, const void* uid2)
+{
+    return UIDIsSame(TaskGetUID((task_ty *)uid1), TaskGetUID((task_ty *)uid2));
 }
     
 
@@ -49,6 +53,8 @@ scheduler_ty *SchedulerCreate()
         free(schd);
         return NULL;
     }
+
+    schd->stop = 0;
 
     return schd;
 
@@ -172,8 +178,15 @@ void SchedulerStop(scheduler_ty *scheduler)
 **************************************************************************************/
 void SchedulerRemove(scheduler_ty *scheduler, uid_ty uid)
 {
+    
+    assert(NULL != scheduler);
+    assert(0 != uid.counter);
+    assert(0 != uid.timestamp);
+    assert(0 != uid.pid);
 
+    free(PQErase(scheduler->pq, UIDIsMatch, &uid));
 
+    
 }
 
 /*************************************************************************************
@@ -181,9 +194,48 @@ void SchedulerRemove(scheduler_ty *scheduler, uid_ty uid)
 *************************************************************************************/
 void SchedulerDestroy(scheduler_ty *scheduler)
 {
+    assert(NULL != scheduler);
+    
+    SchedulerClear(scheduler); 
 
- 
- 
- free(scheduler)
+    PQDestroy(scheduler->pq);
+    scheduler->pq = NULL;
 
+    free(scheduler);
+    scheduler = NULL;
+}
+
+/*************************************************************************************
+* --SchedulerIsEmpty-- returns 1 in case is empty or 0 otherwise
+**************************************************************************************/
+int SchedulerIsEmpty(const scheduler_ty *scheduler)
+{
+    assert(NULL != scheduler);
+        
+    return (PQIsEmpty(scheduler->pq));
+}
+
+/*************************************************************************************
+* --SchedulerSize-- returns the size of the Scheduler
+**************************************************************************************/
+size_t SchedulerSize(const scheduler_ty *scheduler)
+{
+    assert(NULL != scheduler);
+    
+    return PQSize(scheduler->pq);
+
+}
+
+/*************************************************************************************
+* --SchedulerClear-- remove all tasks in scheduler.
+**************************************************************************************/
+void SchedulerClear(scheduler_ty *scheduler)
+{
+    assert(NULL != scheduler);
+    
+    while(SchedulerIsEmpty(scheduler) == 0)
+    {
+        free(PQDeQueue(scheduler->pq));
+    }
+    return;
 }

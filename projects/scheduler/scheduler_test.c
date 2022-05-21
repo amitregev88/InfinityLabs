@@ -15,40 +15,36 @@
 
 
 #include <stdio.h> /* printf */
+#include <assert.h>
 #include "scheduler.h"
 #include "task.h"
 
 
+typedef struct 
+{
+    scheduler_ty *sched;
+    
+    uid_ty uid_task;
+        
+}task_remove_ty;
 
-
-#define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")
-#define TEST(x,y)  x == y? IF_SUCCESS(1) : IF_SUCCESS(0)
 
 int TaskOne(void *a)
 {
-
-    printf("task 1\n");
+    printf("%s\n", (char *)a);
     return 0;
-
 }
 
 int TaskTwo(void *a)
 {
-
-    
-    printf("task 2\n");
-
+    printf("%s\n", (char *)a);
     return 0;
-
 }
 
 int TaskThree(void *a)
 {
-
-    printf("task 3\n");
-
+    printf("%s\n", (char *)a);
     return 0;
-
 }
 
 int StopScheduler(void *a)
@@ -62,14 +58,24 @@ int StopScheduler(void *a)
     if (count > 0)
     {
         SchedulerStop((scheduler_ty *)a);
-
+        printf("scheduler stop\n");
     }
-
-
-     
 
     return 0;
 
+}
+
+
+int TaskRemove(void *a)
+{
+
+    task_remove_ty *iter = (task_remove_ty *)a;
+    
+    assert(NULL != a);
+
+    SchedulerRemove(iter->sched, iter->uid_task);
+   
+   return 0;    
 }
 
 
@@ -87,20 +93,36 @@ int main()
 
     uid_ty taskuid4;
 
-   
-    taskuid1 = SchedulerAdd(sched, 5, TaskOne, NULL);
+    uid_ty taskuid5;
 
-    taskuid2 = SchedulerAdd(sched, 10, TaskTwo, NULL);
+    char str1[] = "Task 1";
 
-    taskuid3 = SchedulerAdd(sched, 15, TaskThree, NULL);
+    char str2[] = "Task 2";
 
-    taskuid4 = SchedulerAdd(sched, 30, StopScheduler, sched);
+    char str3[] = "Task 3";
+
+    task_remove_ty iter;
+
+    taskuid1 = SchedulerAdd(sched, 3, TaskOne, str1);
+
+    taskuid2 = SchedulerAdd(sched, 7, TaskTwo, str2);
+
+    taskuid3 = SchedulerAdd(sched, 10, TaskThree, str3);
+
+    taskuid4 = SchedulerAdd(sched,  31, TaskRemove, &iter);
+
+    iter.sched = sched;
+    iter.uid_task = taskuid1;
+
+    taskuid5 = SchedulerAdd(sched, 100, StopScheduler, sched);
+
+    printf("Testing of SchedulerRemove function - task 1 will be removed after 31 sec without to stop the scheduler\n");
 
     SchedulerRun(sched);
 
+    SchedulerDestroy(sched);
 
     return 0;
-
 
 }
 
