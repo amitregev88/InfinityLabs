@@ -20,13 +20,13 @@ int main()
 
     printf("\n\nTesting of FSASuggestSize\n");
     
-    TEST(suggest,47);
+    TEST(suggest,40);
 
     printf("\n\nshould to allocate %ld bytes\n",suggest);
 
     printf("\nattempt to alocate %ld bytes\n",suggest);
 
-    pool = malloc(suggest+1UL);
+    pool = malloc(suggest );
     if (NULL == pool)
     {
         printf("\n memory allocation failed\n");
@@ -42,7 +42,7 @@ int main()
 
     printf("\n\ntesting of FSAAlloc function\n");
 
-    new_fsa = FSAInit ((char *)pool + 1UL ,suggest, sblock);
+    new_fsa = FSAInit (pool ,suggest, sblock);
 
     if (new_fsa)
     {

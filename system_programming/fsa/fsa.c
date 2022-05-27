@@ -29,12 +29,12 @@ struct fsa
 *********************************************************************/
 size_t FSASuggestSize(size_t number_of_desired_blocks, size_t size_of_block)
 {
-    size_t size_suggest = number_of_desired_blocks * SetSizeOfBlock(size_of_block) + sizeof(struct fsa);
+    
+    
+    size_t size_suggest = number_of_desired_blocks * SetSizeOfBlock(size_of_block) + sizeof(struct fsa) + sizeof(size_t)- 1;
     
     assert(size_of_block >= sizeof(size_t));
    
-
-
     return size_suggest;
 }
 
@@ -45,7 +45,8 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
 {
     fsa_ty *fsa = NULL;
     size_t i = 0;
-    char *block_address = NULL;
+    char *block_offset = NULL;
+    size_t alingnment = 0;
 
     assert(NULL != pool);
     assert(pool_size >= size_of_block + sizeof(fsa_ty)); 
@@ -64,26 +65,27 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
     }
 
 
-    block_address = (char *) fsa + sizeof(fsa_ty);
+    block_offset = (char *) fsa + sizeof(fsa_ty);
 
-    fsa->free_blocks =  (pool_size - sizeof(fsa_ty)) / size_of_block;
-    
-    i = 0;
-    
+    alingnment = ((size_t)fsa - (size_t)pool);
+
+    fsa->free_blocks =  (pool_size - sizeof(fsa_ty) - alingnment )/ size_of_block;
+      
     /*assign offset for each block*/
-    for(; i < fsa->free_blocks - 1; ++i)
+    for(i = 0; i < (fsa->free_blocks - 1); ++i)
     {
     
-        block_address = (char *)pool + sizeof(fsa_ty) + i * size_of_block;
+        block_offset = (char *)pool + sizeof(fsa_ty) + alingnment + i * size_of_block;
 
-        *(size_t *)block_address = (size_t)block_address +  size_of_block - (size_t)pool;
+        *(size_t *)block_offset = (size_t)block_offset +  size_of_block - (size_t)pool;
 
     }
 
-    block_address = (char *)pool + sizeof(fsa_ty) + i * size_of_block;
+    block_offset = (char *)pool + sizeof(fsa_ty) + i * size_of_block;
 
-    *(size_t *)block_address = 0;
+    *(size_t *)block_offset = 0;
 
+    fsa->head =  (char *)pool + sizeof(fsa_ty);
 
     return fsa;
 }
@@ -94,30 +96,61 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
 * Memory Allocation -O(1)
 * get the pointer to the data that was just allocated
 ********************************************************************/
-/*void *FSAAlloc(fsa_ty *fsa)
+void *FSAAlloc(fsa_ty *fsa)
 {
-    void *free_block = NULL;
+    void *next_free_block = NULL;
 
-    assert (NULL != fsa) 
-
-    free_block = fsa
+    next_free_block = fsa->head;
 
 
+    assert (NULL != fsa);
+    assert (NULL != fsa->head);
+
+    if(fsa->free_blocks != 0)
+    {
+        --fsa->free_blocks;
+
+        fsa->head = (char *)fsa + *(size_t *)fsa->head;
+    }
+
+    else
+    {
+        return NULL;
+    }
+    
+
+    return next_free_block;
 }
 
 
 /*******************************************************************
 * Memory DeAllocation -O(1)
 ********************************************************************/
-/*void FSAFree(fsa_ty *fsa, void *block);
+void FSAFree(fsa_ty *fsa, void *block)
+{
+    assert(fsa);
+    assert(block);
+
+    ++fsa->free_blocks;
+
+    *(size_t *)block = (size_t)fsa->head - (size_t)fsa;
+    
+    fsa->head = block;
+}
 
 /*******************************************************************
 * count free blocks
 ********************************************************************/
-/*size_t FSACountFree(fsa_ty *fsa);
+size_t FSACountFree(fsa_ty *fsa)
+{
+    assert(NULL != fsa);
+
+    return(fsa->free_blocks);
+
+}
 
 
-*/
+
 
 static size_t SetSizeOfBlock(size_t size_of_block)
 {
