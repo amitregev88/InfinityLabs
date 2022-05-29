@@ -46,7 +46,7 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
     fsa_ty *fsa = NULL;
     size_t i = 0;
     char *block_offset = NULL;
-    size_t alingnment = 0;
+    
 
     assert(NULL != pool);
     assert(pool_size >= size_of_block + sizeof(fsa_ty)); 
@@ -57,6 +57,7 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
     if ((size_t)pool % sizeof(size_t))
     {
         fsa = (fsa_ty *)((size_t)pool + sizeof(size_t) - ((size_t)pool % sizeof(size_t)));
+        pool_size -= sizeof(size_t) - (size_t)pool % sizeof(size_t);
     }
 
     else 
@@ -67,25 +68,25 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
 
     block_offset = (char *) fsa + sizeof(fsa_ty);
 
-    alingnment = ((size_t)fsa - (size_t)pool);
+    
 
-    fsa->free_blocks =  (pool_size - sizeof(fsa_ty) - alingnment )/ size_of_block;
+    fsa->free_blocks =  (pool_size - sizeof(fsa_ty) )/ size_of_block;
       
     /*assign offset for each block*/
     for(i = 0; i < (fsa->free_blocks - 1); ++i)
     {
     
-        block_offset = (char *)pool + sizeof(fsa_ty) + alingnment + i * size_of_block;
+        block_offset = (char *)fsa + sizeof(fsa_ty) + i * size_of_block;
 
-        *(size_t *)block_offset = (size_t)block_offset +  size_of_block - (size_t)pool;
+        *(size_t *)block_offset = (size_t)block_offset +  size_of_block - (size_t)fsa;
 
     }
 
-    block_offset = (char *)pool + sizeof(fsa_ty) + i * size_of_block;
+    block_offset = (char *)fsa + sizeof(fsa_ty) + i * size_of_block;
 
     *(size_t *)block_offset = 0;
 
-    fsa->head =  (char *)pool + sizeof(fsa_ty);
+    fsa->head =  (char *)fsa + sizeof(fsa_ty);
 
     return fsa;
 }
@@ -100,24 +101,22 @@ void *FSAAlloc(fsa_ty *fsa)
 {
     void *next_free_block = NULL;
 
-    next_free_block = fsa->head;
-
-
     assert (NULL != fsa);
     assert (NULL != fsa->head);
 
-    if(fsa->free_blocks != 0)
+    
+    if (fsa->free_blocks == 0)
     {
-        --fsa->free_blocks;
 
-        fsa->head = (char *)fsa + *(size_t *)fsa->head;
-    }
-
-    else
-    {
         return NULL;
     }
     
+    
+    next_free_block = fsa->head;
+        
+    --fsa->free_blocks;
+
+    fsa->head = (char *)fsa + *(size_t *)fsa->head;
 
     return next_free_block;
 }

@@ -11,12 +11,26 @@
 
 static size_t WORD_SIZE = sizeof(size_t);
 
+
+static size_t SetSizeOfBlock(size_t size_of_block);
+static void CoalesceVSA(vsa_ty *vsa);
+static int IsFreeBlock(void *meta);
+static void SetAllocBlock(void *block);
+static void SetFreeBlock(void *block);
+static void *AllocBlock(void *meta, size_t size);
+static void *GetNextMeta(void *meta);
+
 struct vsa
 {
-    
     void *head; /* first meta data*/
     void *tail; /* end of the pool */
 };
+
+typedef struct meta
+{
+    size_t block;
+}meta_ty;
+
 
 
 /*******************************************************************
@@ -49,7 +63,7 @@ vsa_ty *VSAInit(void *pool, size_t pool_size)
     if((size_t)vsa->tail % WORD_SIZE != 0)
     {
 
-        vsa->tail -= (size_t)vsa->tail % WORD_SIZE;
+        vsa->tail = (char *)vsa->tail - ((size_t)vsa->tail % WORD_SIZE);
     }
 
     neto = ((size_t)vsa->tail - (size_t)vsa->head);
@@ -68,64 +82,34 @@ vsa_ty *VSAInit(void *pool, size_t pool_size)
 ********************************************************************/
 void *VSAAlloc(vsa_ty *vsa, size_t size)
 {
+    void *iter = NULL;
+    void *data = NULL;
+
     assert(NULL != vsa);
     assert(size > 0);
 
-    void *iter = NULL;
-    void *data = NULL;
-    
-
-    size_t meta = 0;
-
     iter = vsa->head;
-
 
     size = SetSizeOfBlock(size);
 
-    while(iter < (size_t)vsa->tail)
+    CoalesceVSA(vsa);
+
+    while(iter < vsa->tail)
     {
-        if (IsFreeBlock(iter))       /*check if the next block is available*/
+        if (IsFreeBlock(iter) && *(size_t *)iter > size)       /*checks if the next block is free and if the block is fit to space*/
         {
-            if (*(size_t *)iter > size)     /* checks if the block is fit space */
-            {
-               
-            }
+            data = AllocBlock(iter, size);
 
-            else
-            {
-                meta = *(size_t *)iter;
-                iter += meta;
+            break;
 
-            }
-
-
-
-
-
-
-
-
-
-
-
-        }
-    
-        
-
-
-        meta = *(size_t *)iter;
-        iter += meta;
+        }     
+       
+        iter = GetNextMeta(iter);
+       
     }
 
-  
-
-
-
-
-
-
-
-
+    
+    return data;
 }
 
 /*******************************************************************
@@ -143,11 +127,45 @@ void VSAFree(void *block)
 /*******************************************************************
 * return current amount of free bytes avilable
 ********************************************************************/
-size_t LargestChunkAvailable(vsa_ty *vsa);
+size_t LargestChunkAvailable(vsa_ty *vsa)
+{
+    
+    void* iter = NULL;
+    
+    size_t amount_of_bytes = 0;
 
+    size_t temp = 0;
 
+    assert(NULL != vsa);
 
+    CoalesceVSA(vsa);
 
+    iter = vsa->head;
+
+    while (iter < vsa->tail)
+    {
+        
+        
+        for(;!IsFreeBlock(iter) && iter < vsa->tail;iter = GetNextMeta(iter))
+        {
+            /*empty*/
+        }
+                     
+        for(;IsFreeBlock(iter);iter = GetNextMeta(iter))
+        {      
+            amount_of_bytes += *(size_t *)iter; 
+        }
+
+        if (amount_of_bytes > temp)
+        {
+            temp = amount_of_bytes;
+        }
+    
+        amount_of_bytes = 0;
+    }
+        
+    return temp; 
+}
 
 
 /*******************************************************************
@@ -170,41 +188,44 @@ static size_t SetSizeOfBlock(size_t size_of_block)
 }
 
 /*******************************************************************
-* inner function - make Coalesce to the FSA
+* inner function - make Coalesce to the VSA
 ********************************************************************/
 
-static void CoalesceFSA(vsa_ty *vsa)
+static void CoalesceVSA(vsa_ty *vsa)
 {
     
     
     size_t amount_of_bytes = 0;
 
+    size_t counter = 0;
+
     void *iter = vsa->head;
 
-    assert(NULL != vsa);
+    void *iter_next = NULL;
 
-    while (iter != vsa->tail)
+    while (iter < vsa->tail)
     {
         
-        for(iter; IsFreeBlock(iter); iter = (char *)iter + *(size_t *)iter)
+        
+        for(;!IsFreeBlock(iter) && iter < vsa->tail;iter = GetNextMeta(iter))
         {
-            
-            amount_of_bytes += *(size_t *)iter;
-
+            /*empty*/
         }
         
-        iter = (char *)iter - amount_of_bytes;
-
-        *(size_t *)iter = amount_of_bytes;
+        iter_next = iter;
+             
+        for(; IsFreeBlock(iter_next) && counter < 2;iter_next = GetNextMeta(iter_next))
+        {      
+            amount_of_bytes += *(size_t *)iter_next;
+            ++counter;
+        }
         
-        (size_t)iter = (char *)iter + amount_of_bytes;
+        *(size_t *)iter = amount_of_bytes + WORD_SIZE;
 
-        amount_of_bytes = 0;       
-        
-
-    }
-
+        amount_of_bytes = 0;
+    }     
 }
+
 
 /*******************************************************************
 * inner function - checks the given block is available
@@ -261,35 +282,33 @@ static void SetFreeBlock(void *block)
 * inner function - 
 ********************************************************************/
 
-static void *SplitBlock(void *meta, size_t size)
+static void *AllocBlock(void *meta, size_t size)
 {
     void *data = NULL;
     void *next_meta = NULL;
+
     
     if (*(size_t *)meta >= size + 2 * WORD_SIZE) 
     {
         data = (size_t *)meta + WORD_SIZE;
 
         *(size_t *)next_meta =  *(size_t *)meta - size - WORD_SIZE;
-
-        
-        next_meta = (size_t)meta +
-
-        
+    
+        next_meta = (char *)data + size;
+   
         *(size_t *)meta = size;
 
-        return data;
+        SetFreeBlock(next_meta);
+        
     }
 
     else
     {
-
-
+        data = (size_t *)meta + WORD_SIZE;
     }
 
-                
-
-    *(size_t *)meta = *(size_t *)iter - size;
+    SetAllocBlock(data);
+    
 
     return data;
 
@@ -297,4 +316,11 @@ static void *SplitBlock(void *meta, size_t size)
     
 }
 
+/*******************************************************************
+* inner function - GetNextBlock
+********************************************************************/
+static void *GetNextMeta(void *meta)
+{
 
+    return (void *)((char *)meta + *(size_t *)meta - (*(size_t *)meta & 0x01));
+}
