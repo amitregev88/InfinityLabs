@@ -6,27 +6,7 @@
 *
 * Revision 2.0
 ******************************************/
-/* --DEMO--
 
-int main()
-{
-
-    vsa_ty *vsa;
-    
-    void *pool = NULL;
-    struct kolshehu *block = NULL;
-    
-    pool = malloc(pool_size);
-    
-    vsa = VSAInit(pool, pool_size);
-    
-    block = VSAAlloc(vsa, sizeof(*block));
-    
-    FSAFree(block);
-    
-    return 0;
-}
-*/
 
 #ifndef __VSA__H_
 #define __VSA__H_
@@ -54,9 +34,9 @@ void *VSAAlloc(vsa_ty *vsa, size_t size);
 void VSAFree(void *block);
 
 /*******************************************************************
-* return current amount of free bytes avilable
+* return largest Chunk of free bytes avilable
 ********************************************************************/
-size_t LargestChunkAvailable(vsa_ty *vsa);
+size_t VSALargestChunkAvailable(vsa_ty *vsa);
 
 #endif /* __VSA__H_ */
 
