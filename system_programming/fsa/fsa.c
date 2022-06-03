@@ -1,6 +1,6 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: 
+* Reviewer: Alexander Bor
 * Date: 23.05.22
 * Fixed Size Allocator
 **************************************************************************************/
@@ -45,7 +45,7 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
 {
     fsa_ty *fsa = NULL;
     size_t i = 0;
-    char *block_offset = NULL;
+    size_t *block_offset = NULL;
     
 
     assert(NULL != pool);
@@ -54,19 +54,16 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
 
     size_of_block = SetSizeOfBlock(size_of_block);
 
+    fsa = (fsa_ty *)pool;
+
     if ((size_t)pool % sizeof(size_t))
     {
         fsa = (fsa_ty *)((size_t)pool + sizeof(size_t) - ((size_t)pool % sizeof(size_t)));
         pool_size -= sizeof(size_t) - (size_t)pool % sizeof(size_t);
     }
 
-    else 
-    {
-        fsa = (fsa_ty *)pool;
-    }
-
-
-    block_offset = (char *) fsa + sizeof(fsa_ty);
+    
+    block_offset = (size_t *)((char *) fsa + sizeof(fsa_ty));
 
     
 
@@ -76,15 +73,15 @@ fsa_ty *FSAInit(void *pool, size_t pool_size, size_t size_of_block)
     for(i = 0; i < (fsa->free_blocks - 1); ++i)
     {
     
-        block_offset = (char *)fsa + sizeof(fsa_ty) + i * size_of_block;
+        block_offset = (size_t *)((char *)fsa + sizeof(fsa_ty) + i * size_of_block);
 
-        *(size_t *)block_offset = (size_t)block_offset +  size_of_block - (size_t)fsa;
+        *block_offset = (size_t)block_offset +  size_of_block - (size_t)fsa;
 
     }
 
-    block_offset = (char *)fsa + sizeof(fsa_ty) + i * size_of_block;
+    block_offset = (size_t *)((char *)fsa + sizeof(fsa_ty) + i * size_of_block);
 
-    *(size_t *)block_offset = 0;
+    *block_offset = 0;
 
     fsa->head =  (char *)fsa + sizeof(fsa_ty);
 

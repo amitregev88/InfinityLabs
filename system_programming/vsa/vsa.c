@@ -1,6 +1,6 @@
 /*************************************************************************************
 * Name: Amit Regev 
-* Reviewer: 
+* Reviewer: Yotam Aharon
 * Date: 26.05.22
 * Variable Size Allocator
 **************************************************************************************/
@@ -15,7 +15,7 @@ static size_t WORD_SIZE = sizeof(size_t);
 static size_t SetSizeOfBlock(size_t size_of_block);
 static void CoalesceVSA(vsa_ty *vsa);
 static int IsFreeBlock(void *meta);
-static void SetAllocBlock(void *block);
+static void SetOccupiedBlock(void *block);
 static void SetFreeBlock(void *block);
 static void *AllocBlock(void *meta, size_t size);
 static void *GetNextMeta(vsa_ty *vsa, void *meta);
@@ -217,7 +217,7 @@ static void CoalesceVSA(vsa_ty *vsa)
         
         iter_next = iter;
 
-        if(!iter)
+        if(!iter) /* GetNextMeta return NULL in case next meta > tail */
         {
             return;
         }
@@ -256,7 +256,7 @@ static int IsFreeBlock(void *meta)
 * inner function - set the given block to be occupied.
 ********************************************************************/
 
-static void SetAllocBlock(void *block)
+static void SetOccupiedBlock(void *block)
 {
     
     void *meta = NULL;
@@ -312,7 +312,7 @@ static void *AllocBlock(void *meta, size_t size)
     }
 
   
-    SetAllocBlock(data);
+    SetOccupiedBlock(data);
     
 
     return data;
