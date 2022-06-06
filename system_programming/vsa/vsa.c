@@ -8,30 +8,15 @@
 #include <stddef.h> /* size_t */
 #include <assert.h> /* assert */
 #include "vsa.h"
+#include "block.h"
 
-static size_t WORD_SIZE = sizeof(size_t);
-
-
-static size_t SetSizeOfBlock(size_t size_of_block);
 static void CoalesceVSA(vsa_ty *vsa);
-static int IsFreeBlock(void *meta);
-static void SetOccupiedBlock(void *block);
-static void SetFreeBlock(void *block);
-static void *AllocBlock(void *meta, size_t size);
-static void *GetNextMeta(vsa_ty *vsa, void *meta);
 
 struct vsa
 {
     void *head; /* first meta data*/
     void *tail; /* end of the pool */
 };
-
-typedef struct meta
-{
-    size_t block;
-}meta_ty;
-
-
 
 /*******************************************************************
 * Create VSA - user passes pointer and memory allocation size
@@ -104,7 +89,13 @@ void *VSAAlloc(vsa_ty *vsa, size_t size)
 
         }     
        
-        iter = GetNextMeta(vsa,iter);
+        iter = GetNextMeta(iter);
+        if(iter >= vsa->tail)
+        {
+            break;
+        }
+
+    
        
     }
 
@@ -146,12 +137,12 @@ size_t VSALargestChunkAvailable(vsa_ty *vsa)
     {
         
         
-        for(;iter && !IsFreeBlock(iter);iter = GetNextMeta(vsa, iter))
+        for(;iter && !IsFreeBlock(iter);iter = GetNextMeta(iter))
         {
             /*empty*/
         }
         
-        if(!iter)
+        if(iter >= vsa->tail)
         {
 
             return temp;
@@ -164,35 +155,15 @@ size_t VSALargestChunkAvailable(vsa_ty *vsa)
             temp = amount_of_bytes;
         }
 
-        iter = GetNextMeta(vsa, iter);
+        iter = GetNextMeta(iter);
     }
         
     return temp; 
 }
 
-
-/*******************************************************************
-* inner function - set the size of block to word or duplicates of a word
-********************************************************************/
-static size_t SetSizeOfBlock(size_t size_of_block)
-{
-
-    assert (0 != size_of_block);
-
-
-    if (size_of_block % WORD_SIZE != 0)
-    {
-        size_of_block = size_of_block + WORD_SIZE - size_of_block % WORD_SIZE;
-
-    }
-
-    return size_of_block;
-
-}
-
-/*******************************************************************
-* inner function - make Coalesce to the VSA
-********************************************************************/
+/***********************************************************************************
+*--- Coalesce ---Coalesce from the given block until the end of the range
+**************************************************************************************/
 
 static void CoalesceVSA(vsa_ty *vsa)
 {
@@ -206,29 +177,30 @@ static void CoalesceVSA(vsa_ty *vsa)
 
     void *iter_next = NULL;
 
-    while (iter && iter < vsa->tail)
+    while (iter < vsa->tail)
     {
         
         
-        for(;iter && !IsFreeBlock(iter);iter = GetNextMeta(vsa, iter))
+        for(;iter < vsa->tail && !IsFreeBlock(iter);iter = GetNextMeta(iter))
         {
             /*empty*/
         }
         
-        iter_next = iter;
 
-        if(!iter) /* GetNextMeta return NULL in case next meta > tail */
+        if(iter >= vsa->tail) 
         {
             return;
         }
              
-        for(; iter_next && IsFreeBlock(iter_next);iter_next = GetNextMeta(vsa, iter_next))
+        iter_next = iter;
+
+        for(; iter_next && IsFreeBlock(iter_next);iter_next = GetNextMeta(iter_next))
         {      
             amount_of_bytes += *(size_t *)iter_next;
             ++counter;
         }
 
-         if(!iter_next)
+         if(iter >= vsa->tail)
         {
             return;
         }
@@ -237,102 +209,9 @@ static void CoalesceVSA(vsa_ty *vsa)
 
         amount_of_bytes = 0;
         counter = 0;
-        iter = GetNextMeta(vsa, iter);
+        iter = GetNextMeta(iter);
     }     
 }
 
 
-/*******************************************************************
-* inner function - checks the given block is available
-********************************************************************/
-static int IsFreeBlock(void *meta)
-{
-    return (*(size_t *)meta % 2 == 0);
 
-}
-
-
-/*******************************************************************
-* inner function - set the given block to be occupied.
-********************************************************************/
-
-static void SetOccupiedBlock(void *block)
-{
-    
-    void *meta = NULL;
-    
-    assert(block);
-  
-    meta = (char *)block - WORD_SIZE;
-
-    *(size_t *)meta |= 0x01;
-
-}
-
-/*******************************************************************
-* inner function - set the given block to be free.
-********************************************************************/
-
-static void SetFreeBlock(void *block)
-{
-    
-    void *meta = NULL;
-          
-    meta = (char *)block - WORD_SIZE;
-
-    *(size_t *)meta -= (*(size_t *)meta & 0x01);
-
-}
-/*******************************************************************
-* inner function - 
-********************************************************************/
-
-static void *AllocBlock(void *meta, size_t size)
-{
-    
-    
-    void *data = NULL;
-    void *next_meta = NULL;
-
-    assert(meta);
-    
-    data = (char *)meta + WORD_SIZE;
-    
-    if (*(size_t *)meta >= size + 2 * WORD_SIZE) 
-    {
-    
-        next_meta = (char *)data + size;
-
-        *(size_t *)next_meta =  *(size_t *)meta - size - WORD_SIZE;
-   
-        *(size_t *)meta = size;
-
-        SetFreeBlock(next_meta);
-        
-    }
-
-  
-    SetOccupiedBlock(data);
-    
-
-    return data;
-
-
-    
-}
-
-/*******************************************************************
-* inner function - GetNextBlock
-********************************************************************/
-static void *GetNextMeta(vsa_ty *vsa, void *meta)
-{
-    if ((void *)((char *)meta + *(size_t *)meta + WORD_SIZE  - (*(size_t *)meta & 0x01)) < vsa->tail)
-    {
-        return (void *)((char *)meta + *(size_t *)meta + WORD_SIZE  - (*(size_t *)meta & 0x01));
-
-    }
-
-    return NULL;
-
-    
-}

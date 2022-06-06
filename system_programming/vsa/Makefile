@@ -5,7 +5,7 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = vsa_test.c vsa.c
+PROJ_SRCS = vsa_test.c vsa.c block.c
 
 # list of directories containing header files
 PROJ_INC_DIR = ../include/
