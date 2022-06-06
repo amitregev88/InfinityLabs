@@ -137,7 +137,7 @@ size_t VSALargestChunkAvailable(vsa_ty *vsa)
     {
         
         
-        for(;iter && !IsFreeBlock(iter);iter = GetNextMeta(iter))
+        for(;iter < vsa->tail && !IsFreeBlock(iter);iter = GetNextMeta(iter))
         {
             /*empty*/
         }
@@ -194,7 +194,7 @@ static void CoalesceVSA(vsa_ty *vsa)
              
         iter_next = iter;
 
-        for(; iter_next && IsFreeBlock(iter_next);iter_next = GetNextMeta(iter_next))
+        for(; iter_next < vsa->tail && IsFreeBlock(iter_next);iter_next = GetNextMeta(iter_next))
         {      
             amount_of_bytes += *(size_t *)iter_next;
             ++counter;
