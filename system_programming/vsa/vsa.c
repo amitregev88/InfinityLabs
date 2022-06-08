@@ -162,7 +162,7 @@ size_t VSALargestChunkAvailable(vsa_ty *vsa)
 }
 
 /***********************************************************************************
-*--- Coalesce ---Coalesce from the given block until the end of the range
+*--- CoalesceVSA ---Coalesce from the given vsa.
 **************************************************************************************/
 
 static void CoalesceVSA(vsa_ty *vsa)

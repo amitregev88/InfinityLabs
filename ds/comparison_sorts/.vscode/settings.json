@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "comparison_and_linear_sorts.h": "c"
+    }
+}
