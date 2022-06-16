@@ -5,17 +5,17 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = linear_sorts_tests.c linear_sorts.c
+PROJ_SRCS = bst_test.c bst.c
 
 # list of directories containing header files
 PROJ_INC_DIR = ../include/
 
 # the executable file
-PROJ_OUT = linear_sorts_tests.out
+PROJ_OUT = bst_test.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable
-PROJ_CFLAGS = 
+PROJ_CFLAGS =
 PROJ_CPPFLAGS =
 
 #PROJ_MACROS = _BSD_SOURCE
@@ -28,7 +28,7 @@ PROJ_ADD_OBJS =
 PROJ_LIBS =
 
 # linker flags
-PROJ_LDFLAGS = 
+PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
 PROJ_DEPENDS  =

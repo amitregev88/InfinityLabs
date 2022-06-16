@@ -9,6 +9,7 @@
 #include <assert.h>     /*  assert */
 #include <stdlib.h>    /* rand */
 #include <time.h>     /* clock */
+#include <stdio.h>    /* printf*/
 #include <comparison_and_linear_sorts.h>
 
 static void SwapInt(int *num1, int *num2);
@@ -60,17 +61,18 @@ int IsSorted(int arr[], size_t size)
 **************************************************************************************/
 void PrintSortTime(void (*SortFunc)(int arr[], size_t size),int arr[], size_t size, char *str)
 {
+    
+    clock_t  start = 0, end = 0;
+
     assert(SortFunc != NULL);
     assert(size > 0);
     assert(NULL != arr);
-    
-    clock_t  start = 0, end = 0;
 
     start = clock();
     SortFunc(arr, size);
     end = clock();
 
-    printf("The runtime of function  %s  took  %f sec\n", str, (double)((end - start)/CLOCKS_PER_SEC));
+    printf("The runtime of function  %s  took  %f sec\n", str, ((double)(end - start))/CLOCKS_PER_SEC);
 
 }
 
@@ -79,10 +81,12 @@ void PrintSortTime(void (*SortFunc)(int arr[], size_t size),int arr[], size_t si
 **************************************************************************************/
 void BubbleSort(int arr[], size_t size)
 { 
+    size_t i = 0, j = 0;
+
+
     assert(size > 0);
     assert(NULL != arr);
     
-    size_t i = 0, j = 0;
 
     while (i < size - 1)
     {
@@ -106,12 +110,12 @@ void BubbleSort(int arr[], size_t size)
 **************************************************************************************/
 void SelectionSort(int arr[], size_t size)
 {
-    assert(size > 0);
-    assert(NULL != arr);
-
     size_t i = 0, j = 0;
     int index_min = 0;
-    
+
+
+    assert(size > 0);
+    assert(NULL != arr);
 
     while (i < size - 1)
     {
@@ -137,12 +141,13 @@ void SelectionSort(int arr[], size_t size)
 
 void InsertionSort(int arr[], size_t size)
 {
+    int i = 0, j = 0, tmp = 0;
+
     assert(size > 0);
     assert(NULL != arr);
     
-    size_t i = 0, j = 0, tmp = 0;
     
-    for(i = 1; i < size; ++i)
+    for(i = 1; (size_t)i < size; ++i)
     {
         tmp = arr[i];
         j = i - 1;

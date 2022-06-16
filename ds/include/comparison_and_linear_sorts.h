@@ -10,7 +10,7 @@
 *
 * comparison_and_linear_sorts.h
 *
-* version 1.2 - last change  - Addition of two linear functions (CoutingSort and RadixSort)
+* version 1.3 - last change  - change parameter in  RadixSort function.
 ******************************************************************/
 
 
@@ -62,7 +62,7 @@ void CoutingSort(int arr[], int output [], size_t size);
 /*************************************************************************************
 * --- RadixSort --- sort a given arry using Radix Sort algorithm
 **************************************************************************************/
-void RadixSort(int arr[], int output[] size_t size, size_t base);
+void RadixSort(int arr[], int output[], size_t size, unsigned char num_of_bits);
 
 
 
