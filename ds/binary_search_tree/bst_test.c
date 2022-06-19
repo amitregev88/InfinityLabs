@@ -10,6 +10,9 @@
 #define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")
 #define TEST(x,a,y)  if ((x) a (y)) {IF_SUCCESS(1);}else{IF_SUCCESS(0);}
 
+static void PrintTree(bst_ty *tree);
+
+
 int IntCompare(const void* data1, const void* data2)
 {
 
@@ -17,7 +20,7 @@ int IntCompare(const void* data1, const void* data2)
 
 }
 
-int AddIntNum(void *data, void *num)
+int AddIntNum(void *data, const void *num)
 {
 
 	if (data == NULL || num == NULL)
@@ -42,6 +45,8 @@ size_t counter = 0;
 
 int root = 20, num25 = 25, num27 = 27 , num30 = 30, num21 = 21, num16 = 16, num23 = 23, num22 = 22;
 int num18 = 18, num6 = 6, num10 = 10;
+
+int num1 = 1;
 
 
 printf("Testing of BSTCreate function:\n");
@@ -86,13 +91,9 @@ BSTInsert(new_tree, &num18);
 
 printf("\nTesting of BSTBegin, BSTIter_Is_Equal, BSTEnd, BSTGet_Data, BSTNext functions\n");
 
-iter =  BSTBegin(new_tree);
-for(iter; !BSTIter_Is_Equal(iter,BSTEnd(new_tree)); iter = BSTNext(iter))
-{
-  printf("%d, ",*(int *)BSTGet_Data(iter));
-  
-}
-  printf("\nshould be \n 6, 10, 16, 18, 20, 21, 22, 23, 25, 27, 30\n");
+PrintTree(new_tree);
+
+printf("\nshould be \n 6, 10, 16, 18, 20, 21, 22, 23, 25, 27, 30\n");
 
 
 printf("\nTesting of BSTEnd ,BSTSize, BSTPrev, BSTGet_Data functions\n");
@@ -109,56 +110,52 @@ for(iter; counter > 1 ; iter = BSTPrev(iter))
 
 printf("%d ",*(int *)BSTGet_Data(iter));
 
- printf("\nshould be \n 30 27 25 23 22 21 20 18 16 10 6\n");
+printf("\nshould be \n 30 27 25 23 22 21 20 18 16 10 6\n");
 
- printf("\nTesting of BSTFind function\n");
+printf("\nTesting of BSTFind function\n");
 
- TEST(*(int *)BSTGet_Data(BSTFind(new_tree, &num21)), ==, 21);
+TEST(*(int *)BSTGet_Data(BSTFind(new_tree, &num21)), ==, 21);
 
 
- printf("\nTesting of ForEach function\n");
+printf("\nTesting of ForEach function\n");
 
   
-  TEST(BSTForeach());
+TEST(BSTForeach(BSTBegin(new_tree), BSTEnd(new_tree),AddIntNum, &num1), == ,0);
+
+PrintTree(new_tree);
+
+printf("\n");
 
 
 
 
+printf("\nTesting of Remove function\n");
 
 
+TEST(BSTRemove(new_tree,BSTBegin(new_tree)),==,&num6);
+TEST(BSTSize(new_tree), == , 10);
+TEST(BSTRemove(new_tree,BSTPrev(BSTEnd(new_tree))),==,&num30);
+TEST(BSTSize(new_tree), == , 9);
 
 
-
-
-
-
-/*
-
-iter =  BSTBegin(new_tree);
-
-BSTRemove(new_tree,iter);
-
-iter =  BSTBegin(new_tree);
-
-for(iter; !BSTIter_Is_Equal(iter,BSTEnd(new_tree)); iter = BSTNext(iter))
-{
-  printf("%d\n",*(int *)BSTGet_Data(iter));
-}
-
-
-
-
-*/
-
-
-
-
-/*BSTDestroy(new_tree);*/
-
+BSTDestroy(new_tree);
 return 0;
+
+
 }
 
+static void PrintTree(bst_ty *tree)
+{
 
+  bst_iter_ty iter =  BSTBegin(tree);
+
+  for(iter; !BSTIter_Is_Equal(iter,BSTEnd(tree)); iter = BSTNext(iter))
+  { 
+    printf("%d, ",*(int *)BSTGet_Data(iter)); 
+  }
+
+
+}
 
 
 

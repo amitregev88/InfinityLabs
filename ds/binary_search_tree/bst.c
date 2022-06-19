@@ -1,9 +1,9 @@
 /*************************************************************
-*
+* Author: Amit Regev
+* Reviewer:
+* Date: 12/6/22 
 * OL124 Binary Search Tree project
-*
-*     
-******************************************************************/
+*******************************************************************/
 
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc */
@@ -509,4 +509,5 @@ static void CopyIter(bst_iter_ty dest, bst_iter_ty src)
     {
         src.iter_node->left->parent = dest.iter_node;
     }
+   
 }
