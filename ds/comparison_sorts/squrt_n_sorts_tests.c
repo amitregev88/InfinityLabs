@@ -12,7 +12,7 @@
 #define TEST(x,y)  x == y? IF_SUCCESS(1) : IF_SUCCESS(0)
 
 
-#define BUFFER 10000
+#define BUFFER 30000
 
 static int arr[BUFFER] = {0};
 

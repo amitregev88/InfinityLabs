@@ -1,19 +1,15 @@
 /*************************************************************
 * Author: Amit Regev
-* Reviewer:
+* Reviewer: Noam Dan Hadad
 * Date: 16/6/22 
 * OL124 calculator project
 ***************************************************************/
 
-
-#include <ctype.h> /* isdigit */ 
 #include <string.h> /* strlen */
 #include <ctype.h> /* isdigit */
 #include <stdlib.h> /* strtod */
 #include "calculator.h"
 #include "stack.h"
-
-
 
 
 typedef void (*FuncPtr_ty)(stack_ty *operand_stack);

@@ -1,9 +1,8 @@
 /*************************************************************
-*
-* OL124 comparison sorts project
-*
-*    Comparison Sorts 
-******************************************************************/
+* Author: Amit Regev
+* Reviewer: Amir Shachar
+* OL124 Comparison Sorts 
+*******************************************************************/
 
 
 #include <assert.h>     /*  assert */
@@ -28,7 +27,7 @@ void RandInsert(int arr[], size_t size)
 
     for(i = 0; i < size; ++i)
     {
-        arr[i] = rand();
+        arr[i] = rand() % 1000;
     }
 }
 
