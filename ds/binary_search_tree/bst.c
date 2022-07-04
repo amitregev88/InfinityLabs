@@ -261,7 +261,6 @@ void *BSTRemove(bst_ty *bst , bst_iter_ty iter)
         CopyIter(iter, temp);
         free(temp.iter_node);
         return data;
-    
     }
 
     iter_prev = BSTPrev(iter);
@@ -277,12 +276,10 @@ void *BSTRemove(bst_ty *bst , bst_iter_ty iter)
 
    
     iter_prev.iter_node->left->parent = iter_prev.iter_node->parent;
-   
       
     if(IterSideChild(iter_prev)== 1)
     {
         iter_prev.iter_node->parent->left = iter_prev.iter_node->left;
-
     }
 
     else
@@ -290,9 +287,7 @@ void *BSTRemove(bst_ty *bst , bst_iter_ty iter)
         iter_prev.iter_node->parent->right = iter_prev.iter_node->left;
     }
 
-
-    free(iter_prev.iter_node);
-        
+    free(iter_prev.iter_node);       
     return data;
 }
         
