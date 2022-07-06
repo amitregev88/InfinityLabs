@@ -35,5 +35,51 @@ int *BinarySearch(int *sort_arr, size_t size, int to_find)
 }   
 
 
-int *BinarySearchRec(int *sort_arr, size_t size, int to_find)
+int *BinarySearchRec(int *sort_arr, size_t size, int to_find, int left , int right)
+{
+    int middle = 0;
+    
+    if(left > right)
+    {
+        return NULL;
+    }
+
+    middle = (left + right) / 2;
+
+    if(sort_arr[middle] >  to_find) 
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+BinarySearch(a[0..N-1], x, left, right) {
+  if (right < left)
+    return not_found
+  middle = floor((left + right)/2)
+  if (a[middle] > x)
+    return BinarySearch(a, x, left, middle-1)
+  else if (a[middle] < x)
+    return BinarySearch(a, x, middle+1, right)
+  else
+    return middle
+}
+
+
+
+
+
+
+
+
+
+}
 
