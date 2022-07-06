@@ -123,10 +123,10 @@ printf("\nTesting of Remove function\n");
 
 TEST(AVLRemove(new_tree, &num27),==,&num27);
 TEST(AVLSize(new_tree), == , 10);
-/*TEST(AVLRemove(new_tree, &num25),==,&num25);
-TEST(AVLSize(new_tree), == , 9);*/
-TEST(AVLRemove(new_tree, &num30),==,&num30);
+TEST(AVLRemove(new_tree, &num25),==,&num25);
 TEST(AVLSize(new_tree), == , 9);
+TEST(AVLRemove(new_tree, &num30),==,&num30);
+TEST(AVLSize(new_tree), == , 8);
 
 AVLDestroy(new_tree);
 

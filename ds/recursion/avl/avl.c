@@ -77,6 +77,7 @@ void AVLDestroy(avl_ty* avl)
 /*Function returns the number of items stored in AVL*/
 size_t AVLSize(const avl_ty *avl)
 {
+    assert(avl);
     return AVLSizeRec(avl->root);
 }
 
@@ -440,9 +441,11 @@ static node_ty *AVLRemoveRec(avl_ty *avl, node_ty *root, void *key, void **_data
 
     case 0:
   
+        *_data = root->data;
+        
         if(!root->left && !root->right)  /* in case node is a leaf */ 
         {
-             *_data = root->data; 
+             
             free(root);
             return NULL;
         }
@@ -451,7 +454,6 @@ static node_ty *AVLRemoveRec(avl_ty *avl, node_ty *root, void *key, void **_data
         {
             node_ty *tmp = NULL;
             tmp = root->right;
-            *_data = tmp->data;
             free(root);
             return tmp;
         }
@@ -460,7 +462,6 @@ static node_ty *AVLRemoveRec(avl_ty *avl, node_ty *root, void *key, void **_data
         {
             node_ty *tmp = NULL;
             tmp = root->left;
-            *_data = tmp->data;
             free(root);
             return tmp;
         }
@@ -469,7 +470,6 @@ static node_ty *AVLRemoveRec(avl_ty *avl, node_ty *root, void *key, void **_data
         {
             node_ty *tmp = NULL;
             tmp = GetPrevNode(root); 
-            *_data = tmp->data;        
             SwapNode(tmp,root);
             root->left = AVLRemoveRec(avl, root->left, tmp->key,_data);
         }

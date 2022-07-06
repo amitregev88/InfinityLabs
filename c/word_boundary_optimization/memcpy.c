@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-void Memcpy(void *dest, void *src, size_t n)
+void *Memcpy(void *dest, void *src, size_t n)
 {
 	char *d = dest;
     char *s = src;
@@ -15,12 +15,14 @@ void Memcpy(void *dest, void *src, size_t n)
 	size_t len_word = sizeof(size_t); 
 	
 		
-	for (;(size_t)(s+i)%len_word && i < n; ++i)
+	/*incase the head is not in aligned*/
+	
+	for (;(size_t)(d+i)%len_word && i < n; ++i)
 	{
 		*(d + i) = *(s + i);
 	}
 	
-	for (;(size_t)(s + i) % len_word == 0 && (n - i) >= len_word; i += len_word)  
+	for (; (n - i) >= len_word; i += len_word)  
 	{
 		*(size_t *)(d + i) = *(size_t *)(s + i);
 	}	
@@ -28,6 +30,7 @@ void Memcpy(void *dest, void *src, size_t n)
 	{
 		*(d + i) = *(s + i);
 	}
+	return dest;
 } 
 
 /*
