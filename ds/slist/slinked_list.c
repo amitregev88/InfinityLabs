@@ -88,7 +88,7 @@ slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data)
 			
 	if (NULL == new_node)
 	{
-		printf("Memory allocation error\n");
+
 		where.node = NULL;
 		return where;
 	}

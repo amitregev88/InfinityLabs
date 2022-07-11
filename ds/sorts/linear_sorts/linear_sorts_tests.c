@@ -8,7 +8,7 @@
 #include <time.h> /* clock */
 #include <assert.h> /* assert */
 
-#include "comparison_and_linear_sorts.h"
+#include "sorts.h"
 
 
 #define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")

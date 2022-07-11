@@ -6,7 +6,7 @@
 
 #include <stdio.h> /* printf */
 
-#include "comparison_and_linear_sorts.h"
+#include "sorts.h"
 
 #define IF_SUCCESS(A) A == 1? printf("Function passed test successfully\n") : printf("Function failed test\n ")
 #define TEST(x,y)  x == y? IF_SUCCESS(1) : IF_SUCCESS(0)
