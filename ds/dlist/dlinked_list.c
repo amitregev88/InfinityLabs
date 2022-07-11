@@ -235,26 +235,17 @@ int DListForEach(dlist_node_ty *from, const dlist_node_ty *to, int (*action)(voi
 }
 
 void DListSplice(dlist_node_ty *dest, dlist_node_ty *from, dlist_node_ty *to)
-
-	
 {
 	dlist_node_ty *temp_src = to->prev;
-	
-	
+		
 	from->prev->next = to;
-	to->prev = DListGetPrev(from);
-	
+	to->prev = DListGetPrev(from);	
 	
 	dest->prev->next = from;
 	from->prev = dest->prev;
 	
-	
 	dest->prev = temp_src;
 	temp_src->next = dest;
-	
-	
-	
-	
 }
 /*************************************************************************************
 * --- Is Same Node ---  returns 1 if node1=node2 , returns 0  otherwise

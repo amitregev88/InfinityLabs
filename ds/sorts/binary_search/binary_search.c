@@ -5,11 +5,11 @@
 * OL124 Binary Search iterative and recursively.
 *******************************************************************/
 
-#include<stdio.h>
+#include<stdio.h> /*printf*/
 
 #define ARR_SIZE 20
 
-int BinarySearch(int *sort_arr, int size, int to_find)
+int BinarySearchIterative(int *sort_arr, int size, int to_find)
 {
     int left_bound = 0;
     int right_bound = size - 1;
@@ -37,7 +37,6 @@ int BinarySearch(int *sort_arr, int size, int to_find)
     }
     return -1;
 }   
-
 
 int BinarySearchRec(int *sort_arr, int to_find, int left , int right)
 {
@@ -67,7 +66,7 @@ int BinarySearchRec(int *sort_arr, int to_find, int left , int right)
   return -1;
 }
 
-void PrintRes(int res)
+static void PrintRes(int res)
 {
   if(res == -1)
   {
@@ -80,7 +79,6 @@ void PrintRes(int res)
   }
 
 }
-
 
 int main()
 {
@@ -103,13 +101,13 @@ int main()
 
     printf("\n\nSearcing 6 by BinarySearch function:\n");
 
-    find_res = BinarySearch(arr,ARR_SIZE,6);
+    find_res = BinarySearchIterative(arr,ARR_SIZE,6);
 
     PrintRes(find_res);
 
     printf("\n\nSearcing 21 by BinarySearch function:\n");
 
-    find_res = BinarySearch(arr,ARR_SIZE,21);
+    find_res = BinarySearchIterative(arr,ARR_SIZE,21);
 
     PrintRes(find_res);
 

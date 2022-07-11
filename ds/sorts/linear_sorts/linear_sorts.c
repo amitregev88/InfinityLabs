@@ -7,7 +7,7 @@
 
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc */
-#include "comparison_and_linear_sorts.h"
+#include "sorts.h"
 
 void CoutingSort(int arr[], int output [], size_t size)
 {
@@ -72,7 +72,7 @@ void CoutingSort(int arr[], int output [], size_t size)
 /*************************************************************************************
 * --- RadixSort --- sort a given arry using Radix Sort algorithm
 **************************************************************************************/
-void RadixSort(int arr[], int output[], size_t size, unsigned char num_of_bits)
+/*void RadixSort(int arr[], int output[], size_t size, unsigned char num_of_bits)
 {
 
     size_t i = 0;
@@ -100,7 +100,7 @@ void RadixSort(int arr[], int output[], size_t size, unsigned char num_of_bits)
     }
 
 }
-
+*/
 
 
 
@@ -149,7 +149,7 @@ int IsSorted(int arr[], size_t size)
 
 
 
-static void RadixCountSort(int arr[],int output[],size_t size,unsigned char num_of_bits, size_t exp)
+/*static void RadixCountSort(int arr[],int output[],size_t size,unsigned char num_of_bits, size_t exp)*/
 
 
 

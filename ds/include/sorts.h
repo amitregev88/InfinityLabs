@@ -8,14 +8,14 @@
 * linear_sorts_tests.c
 *
 *
-* comparison_and_linear_sorts.h
+* sorts.h
 *
-* version 1.3 - last change  - change parameter in  RadixSort function.
+* version 1.4 - last change  - change MergeSort, QuickSort, CompareQuickSort
 ******************************************************************/
 
 
-#ifndef OL124_Comparison_And_Linear_Sorts_H
-#define OL124_Comparison_And_Linear_Sorts_H
+#ifndef OL124_Sorts_H
+#define OL124_Sorts_H
 
 #include <stddef.h> /* size_t */
 
@@ -25,18 +25,16 @@
 **************************************************************************************/
 void RandInsert(int arr[], size_t size);
 
-
 /*************************************************************************************
 * --- IsSorted --- returns 1 if array is sorted, 0 otherwise
 **************************************************************************************/
 int IsSorted(int arr[], size_t size);
 
-
 /*************************************************************************************
 * --- PrintSortTime --- insert our sort and print its time of action compered to qsort
+						(for BubbleSort, SelectionSort, SelectionSort)
 **************************************************************************************/
 void PrintSortTime(void (*SortFunc)(int arr[], size_t size),int arr[], size_t size, char *str);
-
 
 /*************************************************************************************
 * --- BubbleSort --- sort a given arry using Bubble Sort algorithm
@@ -58,14 +56,26 @@ void InsertionSort(int arr[], size_t size);
 **************************************************************************************/
 void CoutingSort(int arr[], int output [], size_t size);
 
-
 /*************************************************************************************
 * --- RadixSort --- sort a given arry using Radix Sort algorithm
 **************************************************************************************/
 void RadixSort(int arr[], int output[], size_t size, unsigned char num_of_bits);
 
+/*************************************************************************************
+* --- MergeSort --- sort a given arry using Merge Sort  algorithm
+**************************************************************************************/
+int MergeSort(int *arr_to_sort, size_t num_elements);
+
+/*************************************************************************************
+* --- QuickSort --- sort a given arry using Quick Sort  algorithm
+**************************************************************************************/
+void QuickSort(void *base, size_t nmeb, size_t size, int (*compar)(const void *, const void *));
+
+/*************************************************************************************
+* --- CompareQuickSort --- print the time that take for QuickSort and for qsort
+*                          to exacute.
+**************************************************************************************/
+void CompareQuickSort(void *base, size_t nmeb, size_t size, int (*compar)(const void *, const void * ));
 
 
-
-
-#endif /* OL124_Comparison_And_Linear_Sorts_H */
+#endif /* OL124_Sorts_H */

@@ -9,7 +9,7 @@
 #include <stdlib.h>    /* rand */
 #include <time.h>     /* clock */
 #include <stdio.h>    /* printf*/
-#include <comparison_and_linear_sorts.h>
+#include <sorts.h>
 
 static void SwapInt(int *num1, int *num2);
 
