@@ -4,31 +4,21 @@
 * Date: 11/7/22 
 * OL124 heap implementation (base on dynamic vector)
 *******************************************************************/
-
-#include<stdlib.h> /*malloc*/
+#include <stdlib.h> /*malloc*/
 #include <string.h> /*memcpy*/
 #include <assert.h>/*assert*/
+#include <stddef.h> /*size_t*/
+#include "heap.h"
 #include "dynamic_vector.h"
 
-
-/***************************
- * OL124 HEAP TREE project
- * heap.h
- * heap.c
- * heap_test.c
- *
- * version 1.4
- ***************************/
-
-
-#ifndef __HEAP_TREE_H__
-#define __HEAP_TREE_H__
-
-#include <stddef.h> /*size_t*/
+#define CAPACITY 30
 
 /* max heap - root is maximum*/
-typedef struct heap heap_ty;
-
+struct heap
+{
+    dynamic_vector_ty *vector;
+    compare_ty *cmp;    
+};
 
 /***********************************************************
  * --- HEAPCreate ---
@@ -37,17 +27,44 @@ typedef struct heap heap_ty;
  ***********************************************************/
 heap_ty *HEAPCreate(compare_ty compare)
 {
+    dynamic_vector_ty *dvector = NULL;
+    heap_ty *new_heap = NULL;
+    
+    assert(compare);
 
+    new_heap = malloc(sizeof(heap_ty));
+    if(!new_heap)
+    {
+        return NULL;
+    }
 
+    dvector = VectorCreate(CAPACITY, sizeof(void *));
+    if (!dvector)
+    {
+        /*clean up*/
+        free(new_heap);
+        return NULL;
+    }
 
+    new_heap->vector = dvector;
+    new_heap->cmp = compare;
 
+    return new_heap;
 }
 
 /***********************************************************
  * --- HEAPDestroy ---
  * Function frees all the alements in the tree.
  ***********************************************************/
-void HEAPDestroy(heap_ty* heap);
+void HEAPDestroy(heap_ty* heap)
+{
+    assert(heap);
+
+    VectorDestroy(heap->vector);
+
+    free(heap);
+    heap = NULL;
+}
 
 /***********************************************************
  * --- HEAPPush ---
@@ -65,19 +82,31 @@ void HEAPPop(heap_ty* heap);
  * --- HEAPPeek ---
  * return the data of the root
  ***********************************************************/
-void *HEAPPeek(heap_ty* heap);
+void *HEAPPeek(heap_ty* heap)
+{
+    assert(heap);
+    return VectorGetAccessToElement(heap->vector,0);
+}
 
 /***********************************************************
  * --- HEAPSize ---
  * Function returns the number of items stored in HEAP
  ***********************************************************/
-size_t HEAPSize(const heap_ty *heap);
+size_t HEAPSize(const heap_ty *heap)
+{
+    assert(heap);
+    return VectorSize(heap->vector);
+}
 
 /***********************************************************
  * --- HEAPIsEmpty ---
  * Function returns 1 - if Empty, 0 - not Empty
  ***********************************************************/
-int HEAPIsEmpty(const heap_ty *heap);
+int HEAPIsEmpty(const heap_ty *heap)
+{
+    assert(heap);
+    return VectorIsEmpty(heap->vector);
+}
 
 /***********************************************************
  * --- HEAPRemove ---
@@ -85,5 +114,7 @@ int HEAPIsEmpty(const heap_ty *heap);
  ***********************************************************/
 void* HEAPRemove(heap_ty *heap, void *to_remove, int (*is_match)(const void *data, const void *to_remove));
 
+static HeapifyUp()
 
-#endif /* __HEAP_TREE_H__ */
+
+static void HeapifyDown(heap)
