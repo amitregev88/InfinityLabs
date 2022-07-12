@@ -92,7 +92,7 @@ int VectorPushBack(dynamic_vector_ty *vector, void *element)
 		
 	if (NULL == vector)
 	{
-		printf("Memory allocation error\n");
+		return 1;
 	}
 
 	if (vector->size == vector->capacity)
@@ -101,7 +101,7 @@ int VectorPushBack(dynamic_vector_ty *vector, void *element)
 		tmp = VectorReserve(vector, SIZE_FACTOR * vector->capacity);
 		if	(tmp == NULL)
 		{
-			return 0;
+			return 1;
 		}
 		
 		vector->capacity *= SIZE_FACTOR;
@@ -117,7 +117,7 @@ int VectorPushBack(dynamic_vector_ty *vector, void *element)
 	memcpy((char *)(vector->data) + ((vector->size) * vector->size_of_element), element, vector->size_of_element);
 	
 	++vector->size;
-	return 1;
+	return 0;
 	
 }
 

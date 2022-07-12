@@ -78,12 +78,8 @@ sortlist_iter_ty SortLInsert(sortlist_ty *sortlist, void *data)
 	
 	if(1 == SortLIsEmpty(sortlist))
 	{
-		
 		iter.node = DListInsert(iter.node, data);
 		return iter;
-		
-		
-	
 	}
 		
 	else

@@ -1,5 +1,24 @@
 {
     "files.associations": {
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "vector": "c",
+        "array": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "memory": "c",
+        "optional": "c",
+        "string_view": "c",
+        "fstream": "c",
+        "istream": "c",
+        "ostream": "c",
+        "sstream": "c",
+        "streambuf": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "cpp",
+        "initializer_list": "c",
+        "utility": "c",
+        "dynamic_vector.h": "c"
     }
 }
