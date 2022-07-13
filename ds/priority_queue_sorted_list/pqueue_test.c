@@ -87,19 +87,17 @@ void PQUEUE_TEST(void)
 	TEST(*(int *)PQPeek(pqueue), num4); 
 	
 	printf ("\nTesting of PQDeQueue() function\n");
-	TEST(PQDeQueue(pqueue), &num1);
+	TEST(PQDeQueue(pqueue), &num4);
 	TEST(PQSize(pqueue), 3); 
 	
 	printf("\nTesting of PQIsEmpty() function in case the list is not empty:\n");
 	TEST(PQIsEmpty(pqueue), 0);
-	
 	
 	printf("\nTesting of PQErase() function :\n");
 
 	TEST(*(int *)PQErase(pqueue, IsIntMatch, &num2), num2);
 
 	TEST(PQSize(pqueue), 2); 
-
 		
 	PQDestroy(pqueue);	
 	

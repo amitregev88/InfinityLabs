@@ -8,7 +8,7 @@
 #include <stddef.h> /* size_t */
 #include <stdlib.h>	/* malloc */
 #include <assert.h>	/* assert */
-#include <time.h>
+#include <unistd.h> /*sleep*/
 #include "scheduler.h"
 #include "task.h"
 #include "pqueue.h"

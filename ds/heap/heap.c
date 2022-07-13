@@ -198,7 +198,7 @@ static void HeapifyUp(heap_ty *heap) /*for push*/
 
     parent_iter = HisParent(heap,index);
 
-    while(parent_iter && heap->cmp(data, parent_iter) > 0)
+    while(parent_iter && heap->cmp((void *)*(size_t *)data, (void *)*(size_t *)parent_iter) > 0)
     {
         Swap(data, parent_iter);
         index = (index -1)/ 2;
@@ -217,6 +217,7 @@ static void HeapifyDown(heap_ty *heap) /*for pop*/
     data = VectorGetAccessToElement(heap->vector,index_root);
 
     max_child = HisMaxChild(heap, index_root);
+
 
     while(max_child && heap->cmp((void *)(*(size_t *)data), (void *)(*(size_t *)max_child)) < 0)
     {
@@ -268,7 +269,7 @@ static void *HisMaxChild(heap_ty *heap, size_t index)
 
     }
         
-    if (heap->cmp(VectorGetAccessToElement(heap->vector,2 * index +1),VectorGetAccessToElement(heap->vector,2 * index + 2)) > 0)
+    if (heap->cmp(*(void **)VectorGetAccessToElement(heap->vector,2 * index +1),*(void **)VectorGetAccessToElement(heap->vector,2 * index + 2)) > 0)
     {
         return VectorGetAccessToElement(heap->vector,2 * index +1);
     }

@@ -61,8 +61,12 @@ void *PQDeQueue(pqueue_ty *pqueue)
 	void *data = NULL;
 	assert(NULL != pqueue);
 	
-	data = SortLGetData(SortLBegin(pqueue->list));
+	/*data = SortLGetData(SortLBegin(pqueue->list));*/
+
+	data = SortLGetData(SortLGetPrev(SortLEnd(pqueue->list)));
 	
+	/*SortLPopFront(pqueue->list);*/
+
 	SortLPopBack(pqueue->list);
 	
 	return data;
@@ -96,7 +100,8 @@ const void *PQPeek(const pqueue_ty *pqueue)
 {
 	assert(NULL != pqueue);
 	
-	
+	/*return SortLGetData(SortLBegin(pqueue->list));*/
+
 	return SortLGetData(SortLGetPrev(SortLEnd(pqueue->list)));
 }
 

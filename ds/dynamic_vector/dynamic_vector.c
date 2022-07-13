@@ -32,8 +32,6 @@ dynamic_vector_ty *VectorCreate(size_t capacity , size_t size_of_element)
 		return NULL;
 	}
 
-	
-	
 	/* memory allocation for the dynamic vector*/	
 	dynamic_vector->data = (void *) malloc (size_of_element * capacity); 
 	if (dynamic_vector->data == NULL)

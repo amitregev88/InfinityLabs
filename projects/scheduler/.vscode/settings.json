@@ -3,6 +3,7 @@
         "scheduler.h": "c",
         "assert.h": "c",
         "time.h": "c",
-        "task.h": "c"
+        "task.h": "c",
+        "unistd.h": "c"
     }
 }

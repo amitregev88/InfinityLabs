@@ -22,7 +22,7 @@ PROJ_CPPFLAGS =
 PROJ_MACROS =
 
 # additional object files (created by other projects)
-PROJ_ADD_OBJS = pqueue.o sortlist.o dlinked_list.o uid.o
+PROJ_ADD_OBJS = pqueue.o heap.o dynamic_vector.o uid.o
 
 # additional libraries
 PROJ_LIBS =
@@ -31,6 +31,6 @@ PROJ_LIBS =
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  = ../../ds/priority_queue/Makefile ../../ds/uid/Makefile
+PROJ_DEPENDS  = ../../ds/priority_queue_heap/Makefile ../../ds/uid/Makefile
 
 include $(ROOT_DIR)/make/Project.mak
