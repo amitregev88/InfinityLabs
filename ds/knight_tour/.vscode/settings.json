@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "calculator.h": "c",
+        "cctype": "c",
+        "stdio.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "hashtable.h": "c",
+        "stdlib.h": "c",
+        "dlinked_list.h": "c",
+        "*.tcc": "c",
+        "knight_tour.h": "c"
+    }
+}
