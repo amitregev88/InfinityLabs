@@ -12,12 +12,9 @@ int main(void)
 
     track[64] = '\0'; 
    
-    
-    KnightPath(track, 2, 4);
-
     for(;i<64;++i)
     {
-        /*KnightPath(track, i/8, i % 8);*/
+        KnightPath(track, i/8, i % 8);
     }
     
     return 0;
