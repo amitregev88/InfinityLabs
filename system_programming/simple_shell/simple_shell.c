@@ -9,7 +9,7 @@
 #include <stdio.h>/*printf, getline*/
 #include <string.h>/*strcmp*/
 #include <unistd.h> /* fork, execvp */
-#include <stdlib.h> /* free*/
+#include <stdlib.h> /*malloc, free*/
 #include <sys/wait.h> /* wait */
 
 #define KEEP_RUNNING 1
@@ -24,7 +24,12 @@ int main(void)
     char *arguments = 0;
     pid_t pid;
     int i = 0;
-    int status = 0;
+
+    args = malloc (sizeof(char *) * MAX_ARGS);
+    if(!args)
+    {
+        return 1;
+    }
 
     while(KEEP_RUNNING)
     {
@@ -33,26 +38,19 @@ int main(void)
         {
 			if (!feof(stdin))
    			{				
-                free(command_line);
+                free(args);
       			return 1;
 			}
         }
 
-        args = malloc (sizeof(char *) * MAX_ARGS);
-        if(!args)
-        {
-            free(command_line);
-            return 1;
-        }
-
         arguments = strtok(command_line,DELIMS);
-        while(arguments != NULL)
+        
+        for(i= 0;arguments != NULL;++i)
         {
             args[i] = arguments;
-            ++i;
             arguments = strtok(NULL,DELIMS);
-
         }
+
         args[i] = NULL;   
         
         if(!strcmp(args[0], "exit"))
@@ -63,14 +61,16 @@ int main(void)
         }
 
         pid = fork();
+
         if (pid == -1) /* failed to fork */
 		{
             free(args);
       		free(command_line);
+            perror("fork failed");
             return 1;
    		}
            
-        else if(pid == 0)   /*fork child*/
+        if(pid == 0)   /*child process*/
         {             
             if (execvp(args[0],args) == -1)
 			{
@@ -79,18 +79,11 @@ int main(void)
       			return 1;
 			}		    
         }
+        
+        /*parent process*/
 
-        else if (pid > 0) /*fork parent*/
-        {
-            if(-1 == wait(&status))
-            {
-                free(command_line);
-                free(args);
-
-                return 1;
-
-            }             
-        }                      
+        waitpid(-1, NULL, 0);
+                    
     }
 
     return 0;
