@@ -2,7 +2,7 @@
 # make clean/all CONFIG=Debug/Release ARCH=linux64/raspi ECHO=0/1
 
 # the parrent dir of "arch" dir
-ROOT_DIR = ../../..
+ROOT_DIR = ../../../..
 
 #PROJ_SRCS = $(wildcard *.c)
 PROJ_SRCS = ping.c 
@@ -11,7 +11,7 @@ PROJ_SRCS = ping.c
 PROJ_INC_DIR = 
 
 # the executable file
-PROJ_OUT = a.out
+PROJ_OUT = ping.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable
