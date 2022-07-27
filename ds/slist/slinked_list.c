@@ -105,9 +105,7 @@ slist_iter_ty SListInsert(slist_ty *list, slist_iter_ty where, void *data)
 		list->tail->next = new_node;
 		new_node->next = NULL;
 		new_node->data = NULL;
-		list->tail = new_node;
-		
-		
+		list->tail = new_node;	
 	}
 	
 	

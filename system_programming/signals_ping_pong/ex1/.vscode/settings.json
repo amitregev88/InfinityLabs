@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "ss": "c",
+        "random": "c",
+        "unistd.h": "c",
+        "signalfd.h": "c",
+        "signal.h": "c",
+        "functional": "c"
+    }
+}
