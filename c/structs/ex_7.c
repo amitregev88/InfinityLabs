@@ -19,5 +19,8 @@ int main()
 	return 0; 
 }
 
+/*types and variables*/
+/*#define my_sizeof(x) (char*) (&(((__typeof__(x) *)0)[1])) - (char *)(&(((__typeof__(x) *)0)[0]))*/
+
 
 

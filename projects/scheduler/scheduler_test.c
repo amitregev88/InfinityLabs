@@ -69,6 +69,7 @@ int TaskRemove(void *a)
     task_remove_ty *iter = (task_remove_ty *)a;
 
     SchedulerRemove(iter->sched, iter->uid_task);
+    printf("task1 stopped\n");a
    
    return 0;    
 }
@@ -78,7 +79,7 @@ int TaskRemove(void *a)
 int main()
 {
     scheduler_ty *sched = SchedulerCreate();
-/*
+
     uid_ty taskuid1;
 
     uid_ty taskuid2;
@@ -88,7 +89,7 @@ int main()
     uid_ty taskuid4;
 
     uid_ty taskuid5;
-*/
+
 
     char str1[] = "Task 1";
 
@@ -98,18 +99,19 @@ int main()
 
     task_remove_ty iter;
 
-    /*taskuid1 =*/ SchedulerAdd(sched, 3, TaskOne, str1);
+    taskuid1 = SchedulerAdd(sched, 3, TaskOne, str1);
 
-   /* taskuid2 = */SchedulerAdd(sched, 7, TaskTwo, str2);
+    taskuid2 = SchedulerAdd(sched, 7, TaskTwo, str2);
 
-  /*  taskuid3 =*/ SchedulerAdd(sched, 10, TaskThree, str3);
+    taskuid3 = SchedulerAdd(sched, 10, TaskThree, str3);
 
-  /*  taskuid4 =*/ SchedulerAdd(sched,  31, TaskRemove, &iter);
+    iter.sched = sched;
+    iter.uid_task = taskuid1;
+    
+    taskuid4 = SchedulerAdd(sched,  7, TaskRemove, &iter);
 
-    /*iter.sched = sched;
-    iter.uid_task = taskuid1;*/
 
-    /*taskuid5 = */SchedulerAdd(sched, 100, StopScheduler, sched);
+    taskuid5 = SchedulerAdd(sched, 100, StopScheduler, sched);
 
     printf("Testing of SchedulerRemove function - task 1 will be removed after 31 sec without to stop the scheduler\n");
 

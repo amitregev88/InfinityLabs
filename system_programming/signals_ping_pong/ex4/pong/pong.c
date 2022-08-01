@@ -9,38 +9,40 @@
 /*#include <siginfo.h>*/
 
 static int sig_arrived = 0;
-pid_t pong_pid;
 
 
-void signal_handler_ping(int signum, siginfo_t *sinfo, void *param)
+
+void signal_handler_pong(int signum, siginfo_t *sinfo, void *param)
 {
     sig_arrived = 1;
-    pong_pid = sinfo->si_pid;
-    printf("ping - process ID : %d\n", getpid());
+    printf("pong - process ID : %d\n",  getpid());
 
     /*kill(getppid(),SIGUSR1); */
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
     struct sigaction sa;
+    pid_t ping_pid = atoi(argv[1]);
 
-    sa.sa_sigaction =  signal_handler_ping;
+    sa.sa_sigaction =  signal_handler_pong;
     sa.sa_flags = SA_SIGINFO;
      
 
-    sigaction(SIGUSR2, &sa, NULL);
+    sigaction(SIGUSR1, &sa, NULL);
 
     while (1)
     {
+        
+        kill(ping_pid, SIGUSR2);
+        
         while (sig_arrived == 0)
         {
             sleep(100);
         }
 
         sig_arrived = 0;
-        kill(pong_pid, SIGUSR1);
     }
 
     return 0;

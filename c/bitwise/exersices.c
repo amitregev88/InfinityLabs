@@ -140,7 +140,7 @@ int main()
 */
 /*
 /*********************Mirror Byte By Loop**************************************/
-/*
+
 #include <stdio.h> 
 
  unsigned char Mirror_Byte(unsigned char n)
@@ -148,7 +148,7 @@ int main()
 	int i = 7, j = 0, tmp = 0;  
 	
 	while  (i >= 0) /* unsigned char is 8 bits*/
-/*
+
 	{
 		tmp |= ((n>>j)&1)<< i;
 		j++;
@@ -158,7 +158,7 @@ int main()
 	
 }
 	 
-int main()
+/*int main()
 {
 	unsigned char number = 11;
 	unsigned char mirror = 0;
@@ -167,9 +167,9 @@ int main()
 	
 	printf("The number is %d after mirror: %d\n", number, mirror);
 	return 0;
-} 
+} */
 /*******************************************Mirror_Byte_By_LUT*************/
-/*
+
 unsigned char ByteMirrorLut(unsigned char num)
 {
     
@@ -179,14 +179,14 @@ unsigned char ByteMirrorLut(unsigned char num)
     lut_mirror[0] = 0;
     lut_mirror[255] = 255;
     
-    for (i = 1; i < 255; ++i)
+    for (i = 1; i < 128  ; ++i)
     {      
     
-           if (lut_mirror[i] == 0)
-           {
+           /*if (lut_mirror[i] == 0)*/
+           /*{*/
                lut_mirror[i] = Mirror_Byte((unsigned char)i);
                lut_mirror[lut_mirror[i]] = i;
-           }
+          /* }*/
     }
     return  lut_mirror[num];
 }
@@ -197,10 +197,10 @@ int main()
      unsigned char num = 200;  
        
      printf("The number is %u after mirror: %u\n", num, ByteMirrorLut(num));
+return 0;
 }
             
 
-return 0;
 	
 /******************the function checks if bit 2 and 6 are on***************************/	
 /*
@@ -345,12 +345,12 @@ return 0;
 }
 
 /*******************************************************************************/
-
+/*
 #include <stdio.h> /* printf, scanf*/
-#include <stdlib.h> /* malloc, free*/
+/*#include <stdlib.h> /* malloc, free*/
 
 
-void print_float_binary(float f)
+/*void print_float_binary(float f)
 {
  unsigned int *float_int = (unsigned int )&f;
  int i;
@@ -368,4 +368,4 @@ void print_float_binary(float f)
       printf("0");
    }
  printf("\n");
-}         
+}*/         

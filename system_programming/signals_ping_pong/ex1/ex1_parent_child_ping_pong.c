@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/signalfd.h>
 #include <sys/types.h>  
+#include <string.h>
 
 static int sig_arrived = 0;
 
@@ -29,21 +30,30 @@ int main()
     struct sigaction parent_handler;
     struct sigaction child_handler;
 
+    memset (&parent_handler, 0 , sizeof(parent_handler)); /*init the struct*/
     parent_handler.sa_sigaction = signal_handler_parent;
+    memset (&child_handler, 0 , sizeof(child_handler));
     child_handler.sa_sigaction = signal_handler_child;
 
 
-    sigaction(SIGUSR1, &parent_handler, NULL);
-    sigaction(SIGUSR2, &child_handler, NULL);
+    if (sigaction(SIGUSR1, &parent_handler, NULL)<0)
+    {
+        printf("error sigaction\n");
 
+    }
+    if (sigaction(SIGUSR2, &child_handler, NULL)<0)
+    {
+        printf("error sigaction\n");
 
+    }
+    
     pid = fork();
     if (pid == -1)
     {
         perror("error fork\n");
         return 1;
     }
-
+    
     while (1)
     {
         

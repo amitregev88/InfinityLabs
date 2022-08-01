@@ -135,15 +135,12 @@ size_t PQSize(const pqueue_ty *pqueue)
 void *PQErase(pqueue_ty *pq, int (*is_match)(const void *data, const void *param), void *param)
 {
 
-
 	sortlist_iter_ty iter_find = {NULL};
 	void *data = NULL;
 	
 	
 	assert(NULL != pq);
 	assert(NULL != is_match);
-
-	
 		
 	iter_find = SortLFindIf(SortLBegin(pq->list), SortLEnd(pq->list), is_match, param);
 	
