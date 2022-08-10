@@ -42,7 +42,7 @@ int main (int argc ,char **argv)
     size_t ret_val = 0;
     size_t num_threads = 0;
 
-    if(argc <= 2)
+    /*if(argc <= 2)
     {
         num_threads = 1;
 
@@ -51,7 +51,7 @@ int main (int argc ,char **argv)
     {
 
         num_threads = atoi(argv[1]);
-    }
+    }*/
     
     threads = malloc(num_threads * sizeof(pthread_t));
     /*if(!threads)

@@ -3,7 +3,8 @@
 
 #define KEEP_RUNNING 1
 
-unsigned char g_flag = 0;
+static unsigned char is_data_ready = 0;
+static char *data = NULL;
 
 void *ProducerAct(void *param)
 {
@@ -11,12 +12,15 @@ void *ProducerAct(void *param)
 
     while(KEEP_RUNNING)
     {
-        while(!g_flag)
+        while(is_data_ready)
         {
-            __atomic_add_fetch(&g_flag, 1, __ATOMIC_RELAXED);
-            puts("this is producer routine\n");
-            __atomic_sub_fetch(&g_flag, 1, __ATOMIC_RELAXED);
+            /*empty*/
         }
+
+    data = "this is producer routine\n";
+    printf("%s", data);
+    __atomic_store_8(&is_data_ready,1,__ATOMIC_SEQ_CST);
+       
     }
     return NULL;
 }
@@ -27,12 +31,13 @@ void *ConsumerAct(void *param)
 
     while(KEEP_RUNNING)
     {
-        while(!g_flag)
+        while(!is_data_ready)
         {
-            __atomic_add_fetch(&g_flag, 1, __ATOMIC_RELAXED);
-            puts("this is consumer routine\n");
-            __atomic_sub_fetch(&g_flag, 1, __ATOMIC_RELAXED);
+           /*empty*/ 
         }
+            data = "this is consumer routine\n";
+            printf("%s", data);
+            __atomic_store_8(&is_data_ready,0,__ATOMIC_SEQ_CST);
     }
     return NULL;
 }
@@ -42,17 +47,18 @@ int main()
     pthread_t consumer;
     pthread_t producer;
 
+    if (pthread_create(&producer, NULL, ProducerAct ,NULL) != 0)
+    {
+        perror("pthread_create of producer failed\n");
+        return 1;
+    }
+
     if (pthread_create(&consumer, NULL, ConsumerAct ,NULL) != 0)
     {
         perror("pthread_create of consumer failed\n");
         return 1;
     }
 
-    if (pthread_create(&producer, NULL, ProducerAct ,NULL) != 0)
-    {
-        perror("pthread_create of producer failed\n");
-        return 1;
-    }
 
 
     if (pthread_join(consumer, NULL)  != 0)
@@ -66,6 +72,8 @@ int main()
         perror("pthread_join of producer failed\n");
         return 1;
     }
+
+    
 
     return 0;
 

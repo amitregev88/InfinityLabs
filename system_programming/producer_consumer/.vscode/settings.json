@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "semaphore.h": "c"
+        "semaphore.h": "c",
+        "assert.h": "c",
+        "dlinked_list.h": "c"
     }
 }

@@ -5,13 +5,13 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = ex1.c
+PROJ_SRCS = ex4.c circ_buffer_yotam.c
 
 # list of directories containing header files
-PROJ_INC_DIR = 
+PROJ_INC_DIR = ../../ds/include
 
 # the executable file
-PROJ_OUT = ex1.out
+PROJ_OUT = ex4.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable
@@ -22,7 +22,7 @@ PROJ_CPPFLAGS =
 PROJ_MACROS =
 
 # additional object files (created by other projects)
-PROJ_ADD_OBJS =
+PROJ_ADD_OBJS = 
 
 # additional libraries
 PROJ_LIBS = pthread
@@ -31,6 +31,5 @@ PROJ_LIBS = pthread
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  =
-
+PROJ_DEPENDS  = 
 include $(ROOT_DIR)/make/Project.mak
