@@ -12,6 +12,38 @@
 #include <stdlib.h> /*malloc, free*/
 #include <sys/wait.h> /* wait */
 
+/*
+1. while (1)
+
+2. getline -> stdin
+3. if (strcmp - exit) -> exit
+
+4. args = strtok(getline)
+5 while args != null
+    arr[i] =args
+    args = strtok(NULL)
+    i++
+
+6. fork
+6.1 child process -> exevp()
+6.2 parent -> wait 
+
+
+
+
+
+
+
+
+
+                    */
+
+
+
+
+
+
+
 #define KEEP_RUNNING 1
 #define MAX_ARGS 10
 #define DELIMS " \t\r\n\a"
