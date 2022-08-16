@@ -27,26 +27,14 @@
 6. fork
 6.1 child process -> exevp()
 6.2 parent -> wait 
-
-
-
-
-
-
-
-
-
-                    */
-
-
-
-
-
+*/
 
 
 #define KEEP_RUNNING 1
 #define MAX_ARGS 10
 #define DELIMS " \t\r\n\a"
+
+
 
 int main(void)
 {

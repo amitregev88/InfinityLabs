@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "ss": "c",
-        "random": "c"
+        "random": "c",
+        "unistd.h": "c"
     }
 }

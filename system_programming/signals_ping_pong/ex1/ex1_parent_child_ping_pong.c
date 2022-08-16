@@ -30,9 +30,12 @@ int main()
     struct sigaction parent_handler;
     struct sigaction child_handler;
 
-    memset (&parent_handler, 0 , sizeof(parent_handler)); /*init the struct*/
+    sigemptyset(&parent_handler.sa_mask);
+    sigemptyset(&child_handler.sa_mask);
+    parent_handler.sa_flags=0;
+    child_handler.sa_flags=0;
+    
     parent_handler.sa_sigaction = signal_handler_parent;
-    memset (&child_handler, 0 , sizeof(child_handler));
     child_handler.sa_sigaction = signal_handler_child;
 
 
