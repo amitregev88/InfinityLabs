@@ -5,13 +5,13 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = ex4.c circ_buffer_yotam.c
+PROJ_SRCS = ex6.c 
 
 # list of directories containing header files
-PROJ_INC_DIR = ../../ds/include
+PROJ_INC_DIR = 
 
 # the executable file
-PROJ_OUT = ex4.out
+PROJ_OUT = ex6.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable

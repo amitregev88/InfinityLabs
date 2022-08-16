@@ -14,7 +14,7 @@
             "cppStandard": "c++11",
             "intelliSenseMode": "${default}",
             "includePath": [
-                "../../ds/include"
+                
             
                 
             ]
