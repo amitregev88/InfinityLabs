@@ -8,28 +8,31 @@
 
 /*#include <siginfo.h>*/
 
-static int sig_arrived = 0;
+static int volatile g_sig_arrived = 0;
 pid_t parent_pid;
 pid_t child_pid;
 
 
 void signal_handler_parent(int signum, siginfo_t *sinfo, void *param)
 {
-    sig_arrived = 1;
-    printf("parent - process ID : %d\n", getpid());
+    (void)param;
+    (void)sinfo;
+    (void)signum;
+
+    g_sig_arrived =1;
 
 }
 
 
-int main()
+int main(void)
 {
     struct sigaction sa;
 
     char *args[3] = {"../child/child.Debug.out", "&",NULL};
     sa.sa_sigaction =  signal_handler_parent;
-    sa.sa_flags = 0; /*not necessary*/
-     
+    sa.sa_flags = 0;
 
+    sigemptyset(&sa.sa_mask);
     sigaction(SIGUSR2, &sa, NULL);
 
     child_pid = fork();
@@ -53,14 +56,17 @@ int main()
     while (1)
     {
         
-        sig_arrived = 0;
+        g_sig_arrived = 0;
         sleep(1);
         kill(child_pid, SIGUSR1);
         
-        while (sig_arrived == 0)
+        while (g_sig_arrived == 0)
         {
             sleep(100);
         }
+        
+        printf("parent - process ID : %d\n", getpid());
+        fflush(stdout);
 
     }
 
