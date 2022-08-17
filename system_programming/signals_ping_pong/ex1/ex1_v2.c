@@ -10,15 +10,11 @@
 static int sig_arrived = 0;
 
 
-void signal_handler_child(int sig_num, siginfo_t *infom, void *param)
-{
-   
-    sig_arrived = 1;
-}
-
-void signal_handler_parent(int sig_num, siginfo_t *infom, void *param)
-{
-    
+void handler_func(int sig_num, siginfo_t *infom, void *param)
+{  
+    (void) sig_num; 
+    (void) infom;
+    (void) param;
     sig_arrived = 1;
 }
 
@@ -27,28 +23,20 @@ int main()
 {
     pid_t pid = 0;
 
-    struct sigaction parent_handler;
-    struct sigaction child_handler;
+    struct sigaction handler;
+    handler.sa_sigaction = handler_func;
+    handler.sa_flags=0;
+  
+    sigemptyset(&handler.sa_mask);
 
     
-    memset(&signal_handler_parent, 0, sizeof(signal_handler_parent));
-    memset(&signal_handler_child, 0, sizeof(signal_handler_child));
-
-    sigemptyset(&parent_handler.sa_mask);
-    sigemptyset(&child_handler.sa_mask);
-    parent_handler.sa_flags=0;
-    child_handler.sa_flags=0;
-    
-    parent_handler.sa_sigaction = signal_handler_parent;
-    child_handler.sa_sigaction = signal_handler_child;
-
-
-    if (sigaction(SIGUSR1, &parent_handler, NULL)<0)
+    if (sigaction(SIGUSR1, &handler, NULL)<0)
     {
         printf("error sigaction\n");
 
     }
-    if (sigaction(SIGUSR2, &child_handler, NULL)<0)
+
+    if (sigaction(SIGUSR2, &handler, NULL)<0)
     {
         printf("error sigaction\n");
 
@@ -73,8 +61,8 @@ int main()
 
             if(sig_arrived)
             {
-                fflush(NULL);
                 printf("ping\n");
+                fflush(stdout);
                 sig_arrived = 0;
             }
 
@@ -94,10 +82,12 @@ int main()
 
             if(sig_arrived)
             {
-                fflush(NULL);
                 printf("pong\n");
+                fflush(stdout);
                 sig_arrived = 0;
             }
+            
+            sleep(1);
             
 
         }

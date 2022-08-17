@@ -5,13 +5,13 @@
 ROOT_DIR = ../../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = ex1_parent_child_ping_pong.c 
+PROJ_SRCS = ex1_v2.c 
 
 # list of directories containing header files
 PROJ_INC_DIR = 
 
 # the executable file
-PROJ_OUT = ex1_parent_child_ping_pong.out
+PROJ_OUT = ex1_v2.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable

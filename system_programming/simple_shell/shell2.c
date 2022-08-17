@@ -156,7 +156,7 @@ static void ForkAndExec(char *cmd, char *args[])
 static int IsBuildinCommand(char *command)
 {
 
-    if(!strcmp(command, "exit"))
+    if(strcmp(command, "exit\n") == 0)
     {
 
         return 1;
