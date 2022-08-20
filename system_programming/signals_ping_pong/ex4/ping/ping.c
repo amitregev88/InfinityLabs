@@ -8,17 +8,19 @@
 
 /*#include <siginfo.h>*/
 
-static int sig_arrived = 0;
+static int g_sig_arrived = 0;
 pid_t pong_pid;
 
 
 void signal_handler_ping(int signum, siginfo_t *sinfo, void *param)
 {
-    sig_arrived = 1;
+    
+    (void)signum;
+    (void)param;
+    g_sig_arrived = 1;
     pong_pid = sinfo->si_pid;
-    printf("ping - process ID : %d\n", getpid());
 
-    /*kill(getppid(),SIGUSR1); */
+    
 }
 
 
@@ -28,18 +30,23 @@ int main()
 
     sa.sa_sigaction =  signal_handler_ping;
     sa.sa_flags = SA_SIGINFO;
+
+    sigemptyset(&sa.sa_mask);
      
 
     sigaction(SIGUSR2, &sa, NULL);
 
     while (1)
     {
-        while (sig_arrived == 0)
+        while (g_sig_arrived == 0)
         {
             sleep(100);
         }
 
-        sig_arrived = 0;
+        g_sig_arrived = 0;
+        printf("ping - process ID : %d\n", getpid());
+        fflush(stdout);
+        sleep(1);
         kill(pong_pid, SIGUSR1);
     }
 

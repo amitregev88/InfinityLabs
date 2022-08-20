@@ -8,16 +8,17 @@
 
 /*#include <siginfo.h>*/
 
-static int sig_arrived = 0;
+static int volatile g_sig_arrived = 0;
 
 
 
 void signal_handler_pong(int signum, siginfo_t *sinfo, void *param)
 {
-    sig_arrived = 1;
-    printf("pong - process ID : %d\n",  getpid());
+    (void)signum;
+    (void)sinfo;
+    (void)param;
+    g_sig_arrived = 1;
 
-    /*kill(getppid(),SIGUSR1); */
 }
 
 
@@ -28,6 +29,8 @@ int main(int argc, char **argv)
 
     sa.sa_sigaction =  signal_handler_pong;
     sa.sa_flags = SA_SIGINFO;
+
+    sigemptyset(&sa.sa_mask);
      
 
     sigaction(SIGUSR1, &sa, NULL);
@@ -37,12 +40,14 @@ int main(int argc, char **argv)
         
         kill(ping_pid, SIGUSR2);
         
-        while (sig_arrived == 0)
+        while (g_sig_arrived == 0)
         {
             sleep(100);
         }
+        
+        printf("pong - process ID : %d\n",  getpid());
 
-        sig_arrived = 0;
+        g_sig_arrived = 0;
     }
 
     return 0;

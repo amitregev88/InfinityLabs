@@ -8,7 +8,7 @@
 /*#include <siginfo.h>*/
 
 
-static int g_sig_arrived = 0;
+static int volatile g_sig_arrived = 0;
 
 
 
