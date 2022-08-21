@@ -1,5 +1,10 @@
-#include <pthread.h>
 #include <stdio.h>
+#include <pthread.h>
+#include <errno.h>
+#include <string.h> /*strerror*/
+
+
+
 
 int global_arr[100000] = {0};
 pthread_attr_t detach_thread;
@@ -20,21 +25,17 @@ int main (void)
     time_t start , end ;
     pthread_attr_init(&detach_thread);
     pthread_attr_setdetachstate(&detach_thread,PTHREAD_CREATE_DETACHED);
-    
-    
+        
     start = time(NULL);
 
     for(i=0; i<100000; ++i)
     {
-
-        
-        while (pthread_create(&threads[i],&detach_thread,InitArr,(void *)i) != 0)
+  
+        if(pthread_create(&threads[i],&detach_thread,InitArr,(void *)i) != 0)
         {
-                /*empty*/
-            
+            printf("creation of thread No %d failed\n", i);
+            fprintf(stderr, "pthread_create failed: %s\n\n", strerror(errno));
         }
-
-
 
     }
 
@@ -43,20 +44,6 @@ int main (void)
     printf(" took  %ld sec\n",end-start);
 
     printf(" global_arr[%d]  %d\n",i-1 ,global_arr[99999]);
-
-/*
-    sleep(10);
-
-    for(i=0;i<100000;++i)
-    {
-        if(i != global_arr[i])
-        {
-            printf("error creation of thead No %d\n", i);
-            break;
-
-        }
-    }
-*/
 
     return 0; 
 

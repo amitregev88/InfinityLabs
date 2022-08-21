@@ -1,8 +1,10 @@
-#include <pthread.h>
 #include <stdio.h>
-
+#include <pthread.h>
+#include <errno.h>
+#include <string.h> /*strerror*/
 
 int global_arr[100000] = {0};
+
 
 void *InitArr(void *num_indx)
 {
@@ -11,7 +13,6 @@ void *InitArr(void *num_indx)
 
 	return NULL;
 }
-
 
 int main (void)
 {
@@ -23,34 +24,14 @@ int main (void)
 
     for(i=0; i<100000; ++i)
     {
-
-        while (pthread_create(&threads[i],NULL,InitArr,(void *)i) != 0)
+        if(pthread_create(&threads[i],NULL,InitArr,(void *)i) != 0)
         {
-            printf("creation of thread %d failed\n", i);
-            
+            printf("creation of thread No %d failed\n", i);
+            fprintf(stderr, "pthread_create failed: %s\n\n", strerror(errno));
         }
-
-
     }
-
     end = time(NULL);
-
     printf(" took  %ld sec\n",end-start);
-/*
-    sleep(10);
-
-    for(i=0;i<100000;++i)
-    {
-        if(i != global_arr[i])
-        {
-            printf("error creation of thead No %d\n", i);
-            break;
-
-        }
-    }
-*/
 
     return 0; 
-
-
 }

@@ -1,6 +1,7 @@
-#include <pthread.h>
-#include <stdio.h>
 
+#include <stdio.h>  /*printf*/
+#include <unistd.h> /*sleep*/
+#include <pthread.h>    /*pthead create*/
 
 int global_arr[100000] = {0};
 
@@ -12,7 +13,6 @@ void *InitArr(void *num_indx)
 	return NULL;
 }
 
-
 int main (void)
 {
     int i = 0;
@@ -23,9 +23,7 @@ int main (void)
 
     for(i=0; i<100000; ++i)
     {
-
         pthread_create(&threads[i],NULL,InitArr,(void *)i);
-
     }
 
     end = time(NULL);
@@ -44,8 +42,5 @@ int main (void)
         }
     }
 
-
     return 0; 
-
-
 }
