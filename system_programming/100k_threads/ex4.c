@@ -40,7 +40,7 @@ int main (int argc ,char **argv)
     time_t start , end ;
     size_t sum =0;
     size_t ret_val = 0;
-    size_t num_threads = 1;
+    size_t num_threads = 2;
 
     /*if(argc <= 2)
     {
@@ -54,16 +54,16 @@ int main (int argc ,char **argv)
     }*/
     
     threads = malloc(num_threads * sizeof(pthread_t));
-    /*if(!threads)
+    if(!threads)
     {
         return 1;
-    }*/
+    }
     ranges = malloc(num_threads * sizeof(range_ty));
-    /*if(!ranges)
+    if(!ranges)
     {
         free(threads);
         return 1;
-    }*/
+    }
 
     start = time(NULL);
 

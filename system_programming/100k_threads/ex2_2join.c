@@ -1,16 +1,17 @@
 #include <stdio.h> /*printf*/
-#include <pthread.h> 
-#include <errno.h> 
 #include <string.h> /*strerror*/
+#include <errno.h> 
+#include <pthread.h> 
+
+#define NUM_OF_THREADS 100000
 
 
-
-
-int global_arr[100000] = {0};
+int global_arr[NUM_OF_THREADS] = {0};
 
 void *InitArr(void *num_indx)
 {
-	int index = (int)num_indx;
+	size_t index = (size_t)num_indx;
+
 	global_arr[index] = index;
 
 	return NULL;
@@ -19,25 +20,33 @@ void *InitArr(void *num_indx)
 
 int main (void)
 {
-    int i = 0;
-    pthread_t threads[100000];
+    size_t i = 0;
+    pthread_t threads[NUM_OF_THREADS];
     time_t start , end ;
     
     
     start = time(NULL);
 
-    for(i=0; i<100000; ++i)
+    for(i=0; i<NUM_OF_THREADS; ++i)
     {
 
-        while (pthread_create(&threads[i],NULL,InitArr,(void *)i) != 0)
+        if(pthread_create(&threads[i],NULL,InitArr,(void *)i) == 0)
         {
-            if(pthread_join(threads[i-1], NULL) != 0)
+            if(pthread_join(threads[i], NULL) != 0)
             {
-                printf("pthread_join failed - thread No %d \n", i);
+                printf("pthread_join failed - thread No %ld \n", i);
                 fprintf(stderr, "pthread_join failed: %s\n\n", strerror(errno));
+                return errno;
+                
             }
         }
 
+        else
+        {
+            printf("pthread_create failed - thread No %ld \n", i);
+            fprintf(stderr, "pthread_create failed: %s\n\n", strerror(errno));
+            return errno;
+        }
 
     }
 
@@ -45,23 +54,8 @@ int main (void)
 
     printf(" took  %ld sec\n",end-start);
 
-    printf(" global_arr[%d]  %d\n",i-1 ,global_arr[99999]);
-
-/*
-    sleep(10);
-
-    for(i=0;i<100000;++i)
-    {
-        if(i != global_arr[i])
-        {
-            printf("error creation of thead No %d\n", i);
-            break;
-
-        }
-    }
-*/
+    printf(" global_arr[%ld]  %d\n",i-1 ,global_arr[NUM_OF_THREADS - 1]);
 
     return 0; 
-
 
 }

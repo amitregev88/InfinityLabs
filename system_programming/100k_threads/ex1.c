@@ -2,12 +2,13 @@
 #include <stdio.h>  /*printf*/
 #include <unistd.h> /*sleep*/
 #include <pthread.h>    /*pthead create*/
+#define NUM_OF_THREADS 100000
 
-int global_arr[100000] = {0};
+int global_arr[NUM_OF_THREADS] = {0};
 
 void *InitArr(void *num_indx)
 {
-	int index = (int)num_indx;
+	size_t index = (size_t)num_indx;
 	global_arr[index] = index;
 
 	return NULL;
@@ -15,13 +16,13 @@ void *InitArr(void *num_indx)
 
 int main (void)
 {
-    int i = 0;
-    pthread_t threads[100000];
+    size_t i = 0;
+    pthread_t threads[NUM_OF_THREADS];
     time_t start , end ;
     
     start = time(NULL);
 
-    for(i=0; i<100000; ++i)
+    for(i=0; i<NUM_OF_THREADS; ++i)
     {
         pthread_create(&threads[i],NULL,InitArr,(void *)i);
     }
@@ -32,13 +33,12 @@ int main (void)
 
     sleep(10);
 
-    for(i=0;i<100000;++i)
+    for(i=0;i<NUM_OF_THREADS;++i)
     {
         if(i != global_arr[i])
         {
-            printf("error creation of thead No %d\n", i);
+            printf("error creation of thead No %ld\n", i);
             break;
-
         }
     }
 

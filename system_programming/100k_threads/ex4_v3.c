@@ -28,7 +28,7 @@ void *Sum_Of_Divisors(void *param)
         }
     }
 
-    return (void *)sum_of_divisors;
+    return *(void **)&sum_of_divisors;
 }
 
 
@@ -39,7 +39,7 @@ int main (int argc ,char **argv)
     range_ty *ranges;
     time_t start , end ;
     size_t sum =0;
-    size_t ret_val = 0;
+    void * ret_val = NULL;
     size_t num_threads = 1;
 
 
@@ -64,7 +64,7 @@ int main (int argc ,char **argv)
 
     for(i=0; i<num_threads; ++i)
     {
-        ranges[i].from = LONG_NUM / num_threads * i + 1;
+        ranges[i].from = (LONG_NUM / num_threads) * i + 1;
         ranges[i].to = LONG_NUM / num_threads * (i+1);
 
         if(pthread_create(&threads[i],NULL,Sum_Of_Divisors,&ranges[i])!= 0)
@@ -76,13 +76,13 @@ int main (int argc ,char **argv)
     for(i=0; i<num_threads; ++i)
     {
 
-        if(pthread_join(threads[i], (void **)&ret_val) != 0)
+        if(pthread_join(threads[i], /* (void **) */&ret_val) != 0)
         {
             printf("thread create failed %ld\n",i);
         }
     }
 
-    sum += ret_val;
+    sum += (size_t)ret_val;
             
     end = time(NULL);
 
