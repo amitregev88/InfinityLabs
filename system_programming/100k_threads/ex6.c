@@ -42,28 +42,23 @@ int main (int argc ,char **argv)
     size_t ret_val = 0;
     size_t num_threads = 1;
 
-    /*if(argc <= 2)
-    {
-        num_threads = 1;
 
-    }
-    else
+    if(argc > 2)
     {
-
         num_threads = atoi(argv[1]);
-    }*/
+    }
     
     threads = malloc(num_threads * sizeof(pthread_t));
-    /*if(!threads)
+    if(!threads)
     {
         return 1;
-    }*/
+    }
     ranges = malloc(num_threads * sizeof(range_ty));
-    /*if(!ranges)
+    if(!ranges)
     {
         free(threads);
         return 1;
-    }*/
+    }
 
     start = time(NULL);
 
@@ -89,9 +84,7 @@ int main (int argc ,char **argv)
     }
 
     sum += ret_val;
-    
-
-        
+            
     end = time(NULL);
 
     printf(" took  %ld sec\n",end-start);
@@ -99,6 +92,4 @@ int main (int argc ,char **argv)
     printf("Sum Of Divisors %ld\n",sum);
 
     return 0; 
-
-
 }
