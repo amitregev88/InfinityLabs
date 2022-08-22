@@ -4,12 +4,12 @@
 #include <pthread.h>    /*pthead create*/
 #define NUM_OF_THREADS 100000
 
-int global_arr[NUM_OF_THREADS] = {0};
+int g_nums[NUM_OF_THREADS] = {0};
 
 void *InitArr(void *num_indx)
 {
 	size_t index = (size_t)num_indx;
-	global_arr[index] = index;
+	g_nums[index] = index;
 
 	return NULL;
 }
@@ -35,7 +35,7 @@ int main (void)
 
     for(i=0;i<NUM_OF_THREADS;++i)
     {
-        if(i != global_arr[i])
+        if(i != g_nums[i])
         {
             printf("error creation of thead No %ld\n", i);
             break;

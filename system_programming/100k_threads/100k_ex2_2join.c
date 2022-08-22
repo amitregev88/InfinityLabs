@@ -6,13 +6,13 @@
 #define NUM_OF_THREADS 100000
 
 
-int global_arr[NUM_OF_THREADS] = {0};
+int g_nums[NUM_OF_THREADS] = {0};
 
 void *InitArr(void *num_indx)
 {
 	size_t index = (size_t)num_indx;
 
-	global_arr[index] = index;
+	g_nums[index] = index;
 
 	return NULL;
 }
@@ -54,7 +54,7 @@ int main (void)
 
     printf(" took  %ld sec\n",end-start);
 
-    printf(" global_arr[%ld]  %d\n",i-1 ,global_arr[NUM_OF_THREADS - 1]);
+    printf(" g_nums[%ld]  %d\n",i-1 ,g_nums[NUM_OF_THREADS - 1]);
 
     return 0; 
 

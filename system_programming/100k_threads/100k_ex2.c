@@ -3,13 +3,13 @@
 #include <errno.h>
 #include <string.h> /*strerror*/
 
-int global_arr[100000] = {0};
+int g_nums[100000] = {0};
 
 
 void *InitArr(void *num_indx)
 {
 	int index = (int)num_indx;
-	global_arr[index] = index;
+	g_nums[index] = index;
 
 	return NULL;
 }

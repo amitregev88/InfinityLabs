@@ -1,5 +1,8 @@
 #include <stdio.h> /*printf*/
-#include <stdlib.h> /*atoi*/
+#include <string.h> /*strerror*/
+#include <stdlib.h> /*atoi, malloc, free*/
+#include <assert.h>
+#include <errno.h>
 #include <pthread.h>
 
 #define LONG_NUM 5000000000UL
@@ -18,8 +21,10 @@ void *Sum_Of_Divisors(void *param)
 
     size_t sum_of_divisors = 0;
     size_t i = 0;
+
+    assert(param);
     
-    for(i= range->from; i<= range->to ;++i)
+    for(i = range->from; i<= range->to ;++i)
     {
         if(0 == LONG_NUM % i)
         {
@@ -36,8 +41,10 @@ int main (int argc ,char **argv)
     size_t i = 0;
     pthread_t *threads;
     range_ty *ranges;
-    time_t start , end ;
-    size_t sum =0;
+    void *pool;
+    time_t start;
+    time_t end;
+    size_t sum = 0;
     void *ret_val = NULL;
     size_t num_threads = 1;
 
@@ -47,28 +54,30 @@ int main (int argc ,char **argv)
         num_threads = atoi(argv[1]);
     }
     
-    threads = malloc(num_threads * sizeof(pthread_t));
-    if(!threads)
+    pool = malloc(num_threads * sizeof(pthread_t) + num_threads * sizeof(range_ty));
+    if(!pool)
     {
+        strerror(errno);
         return 1;
+
     }
-    ranges = malloc(num_threads * sizeof(range_ty));
-    if(!ranges)
-    {
-        free(threads);
-        return 1;
-    }
+
+    threads = pool;
+
+    ranges = (range_ty *)(threads + num_threads);
 
     start = time(NULL);
 
-    for(i=0; i<num_threads; ++i)
+    for(i = 0; i<num_threads; ++i)
     {
         ranges[i].from = LONG_NUM / num_threads * i + 1;
-        ranges[i].to = LONG_NUM / num_threads * (i+1);
+        ranges[i].to = LONG_NUM / num_threads * (i + 1);
 
-        if(pthread_create(&threads[i],NULL,Sum_Of_Divisors,&ranges[i])!= 0)
+        if(pthread_create(&threads[i], NULL, Sum_Of_Divisors,&ranges[i]) != 0)
         {
-            printf("thread create failed %ld\n",i);
+            printf("thread create failed %ld\n", i);
+            strerror(errno);
+            return 1;
         }
     }
   
@@ -78,16 +87,20 @@ int main (int argc ,char **argv)
         if(pthread_join(threads[i], &ret_val) != 0)
         {
             printf("thread create failed %ld\n",i);
+            strerror(errno);
+            return 1;
         }
+
         sum += (size_t)ret_val;
     }
-
             
     end = time(NULL);
 
-    printf("took  %ld sec\n",end-start);
+    printf("took %ld sec\n",end - start);
 
     printf("Sum Of Divisors %lu\n",sum);
+
+    free(pool);
 
     return 0; 
 }
