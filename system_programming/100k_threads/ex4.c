@@ -1,6 +1,6 @@
+#include <stdio.h> /*printf*/
+#include <stdlib.h> /*atoi*/
 #include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #define LONG_NUM 5000000000UL
 
