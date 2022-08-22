@@ -3,10 +3,7 @@
 #include <stdio.h> /*stdin, getline*/
 #include <stdlib.h> /*free*/
 
-
 sem_t semaphore;
-
-
 
 int main()
 {

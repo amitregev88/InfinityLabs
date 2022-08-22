@@ -5,13 +5,13 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = semaphore.c
+PROJ_SRCS = sem_manipulation.c
 
 # list of directories containing header files
 PROJ_INC_DIR = 
 
 # the executable file
-PROJ_OUT = semaphore.out
+PROJ_OUT = sem_manipulation.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable
