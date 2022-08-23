@@ -21,13 +21,15 @@ union semun
 };
 
 static void ExitProgIfFail(void *status);
-static void Sem_Manipulation(int semid, struct sembuf *sops);
-static void SemaphoreCreate(char *file_name);
+static void Sem_Manipulation(int semid);
+static int SemaphoreCreate(char *file_name);
+static void ChangeSemVal(struct sembuf *sops, int sem_id, int val);
 
 
 int main(int argc, char** argv)
 {
     char * fname = NULL;
+    int sems_id = 0;
         
     if(argc < 2)
     {
@@ -38,19 +40,19 @@ int main(int argc, char** argv)
         fname = argv[1];
     }
 
-    SemaphoreCreate(fname);
+    sems_id = SemaphoreCreate(fname);
+    Sem_Manipulation(sems_id);
     
     return 0;
 }
 
-static void SemaphoreCreate(char *file_name)
+static int SemaphoreCreate(char *file_name)
 {    
     key_t key;
     int semid = 0;
-    union semun sema ;
-    struct sembuf sops = {0,0,0};
     FILE *fp = NULL;
     int status = 0;
+    union semun sema ;
 
     fp = fopen(file_name, "w+");
     
@@ -62,48 +64,31 @@ static void SemaphoreCreate(char *file_name)
 
     semid = semget(key,1,0666 | IPC_CREAT);
 
-    ExitProgIfFail((void *)semid);  
+    ExitProgIfFail((void *)(semid >= 0));  
 
     sema.val = 1;
 
     status = semctl(semid, 0, SETVAL, sema);
-    ExitProgIfFail((void *)status); 
+    ExitProgIfFail((void *)(status >= 0)); 
+
+    return semid;
     
-    Sem_Manipulation(semid,&sops);
        
 }
  
-static void ExitProgIfFail(void *status)
-{
-    if(NULL == status)
-    {
-        puts("error open file\n");
-        /*semctl(semid, 0, IPC_RMID);*/
-        exit(1);
-        return;
-    }
 
-    if(0 != (int)status)
-    {
-        strerror((int)status);
-        /*semctl(semid, 0, IPC_RMID);*/
-        exit((int)status);
-    }
-
-    return;
-}
-
-static void Sem_Manipulation(int semid, struct sembuf *sops)
+static void Sem_Manipulation(int semid)
 {
         
     char *command_line = NULL;
     size_t buffer_size = 0;
     char *arguments = 0;
     char **args = NULL;
-    int i;
-    int num = 1;
+    int i = 0;
+    int sem_val = 1;
     int status = 0;
     int is_running = 1;
+    struct sembuf sops = {0,0,0};
 
     args = malloc (sizeof(char *) * MAX_ARGS);
     if(!args)
@@ -112,9 +97,9 @@ static void Sem_Manipulation(int semid, struct sembuf *sops)
         return;
     }
 
-    sops->sem_num = 0; /*sema indx*/
-    sops->sem_op = 0; /**/
-    sops->sem_flg = 0; 
+    sops.sem_num = 0; /*sema indx*/
+    sops.sem_op = 0; /**/
+    sops.sem_flg = 0; 
 
     while(is_running)
     {
@@ -144,29 +129,30 @@ static void Sem_Manipulation(int semid, struct sembuf *sops)
 
         if (args[1])
         {
-            num = atoi(args[1]);      
+            sem_val = atoi(args[1]);      
         }
 
         if (args[2])
         {
-            sops->sem_flg = SEM_UNDO;
+            sops.sem_flg = SEM_UNDO;
         }
 
         switch (*command_line)
         {
         case 'D':
     
-            sops->sem_op -= num;
+            ChangeSemVal(&sops, semid, -sem_val);
             break;
 
         case 'I':
 
-            sops->sem_op += num;
+            ChangeSemVal(&sops, semid, sem_val);
             break;
 
         case 'V':
 
-            printf("Semaphore value is %d\n", sops->sem_op);
+            printf("Semaphore value is %d\n", semctl(semid,0,GETVAL));
+            fflush(stdout);
             
             break;
 
@@ -185,3 +171,29 @@ static void Sem_Manipulation(int semid, struct sembuf *sops)
 
 }
 
+static void ExitProgIfFail(void *status)
+{
+    
+    if(!status)
+    {
+        puts("error open file\n");
+        /*semctl(semid, 0, IPC_RMID);*/
+        exit(1);
+        return;
+    }
+
+    if(!(int)status)
+    {
+        strerror((int)status);
+        /*semctl(semid, 0, IPC_RMID);*/
+        exit((int)status);
+    }
+
+    return;
+}
+
+static void ChangeSemVal(struct sembuf *sops, int sem_id, int val)
+{
+    sops->sem_op = val;
+    semop(sem_id,sops,1);
+}

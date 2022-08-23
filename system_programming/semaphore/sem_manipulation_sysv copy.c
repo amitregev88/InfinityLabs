@@ -20,22 +20,17 @@ union semun
     struct seminfo  *__buf;  /* Buffer for IPC_INFO (Linux-specific) */     
 };
 
-
-
 static void ExitProgIfFail(int status);
-static int Sem_Manipulation(int semid, struct sembuf *sops);
+static void Sem_Manipulation(int semid);
+static int SemaphoreCreate(char *file_name);
+static void ChangeSemVal(struct sembuf *sops, int sem_id, int val);
 
 
 int main(int argc, char** argv)
 {
-    key_t key;
-    int semid = 0;
-    union semun sema ;
-    struct sembuf sops = {0,0,0};
     char * fname = NULL;
-    FILE *fp = NULL;
+    int sems_id = 0;
         
-    /*TODO chacker fail functions*/
     if(argc < 2)
     {
         fname = "filename";
@@ -45,83 +40,84 @@ int main(int argc, char** argv)
         fname = argv[1];
     }
 
-    fp = fopen(fname, "w+");
+    sems_id = SemaphoreCreate(fname);
+    Sem_Manipulation(sems_id);
+    
+    return 0;
+}
 
+static int SemaphoreCreate(char *file_name)
+{    
+    key_t key;
+    int semid = 0;
+    FILE *fp = NULL;
+    int status = 0;
+    union semun sema ;
 
-   /* create semaphore function */
-    key = ftok(fname, 'E');  
-    if(-1 == key)
-    {
-        perror("ftok");
-        exit(1); 
-    }
+    fp = fopen(file_name, "w+");
+    
+    ExitProgIfFail(fp);
+
+    key = ftok(file_name, 'E');
+
+    ExitProgIfFail((void *)key);  
 
     semid = semget(key,1,0666 | IPC_CREAT);
-    if(-1 ==semid)
-    {
-        perror("semget");
-        exit(1); 
-    }
+
+    ExitProgIfFail((void *)(semid >= 0));  
 
     sema.val = 1;
 
-    if (semctl(semid, 0, SETVAL, sema) == -1) 
-    {
-        perror("semctl");
-        exit(1); 
-    }
+    status = semctl(semid, 0, SETVAL, sema);
+    ExitProgIfFail((void *)(status >= 0)); 
 
-     
-    Sem_Manipulation(semid,&sops);
-
-    return 0;        
+    return semid;
+    
+       
 }
  
-static void ExitProgIfFail(int status)
-{
-    
-    /*semctl(semid, 0, IPC_RMID);*/
-    strerror(status);
-    exit(status);
-}
 
-static int Sem_Manipulation(int semid, struct sembuf *sops)
+static void Sem_Manipulation(int semid)
 {
         
     char *command_line = NULL;
-    int val = 0;
     size_t buffer_size = 0;
     char *arguments = 0;
     char **args = NULL;
-    int i;
-    int num = 1; 
+    int i = 0;
+    int sem_val = 1;
+    int status = 0;
+    int is_running = 1;
+    struct sembuf sops = {0,0,0};
 
     args = malloc (sizeof(char *) * MAX_ARGS);
     if(!args)
     {
-        return 1;
+        puts("malloc failed\n");
+        return;
     }
 
-    sops->sem_num = 0; /*sema indx*/
-    sops->sem_op = 0; /**/
-    sops->sem_flg = 0; 
+    sops.sem_num = 0; /*sema indx*/
+    sops.sem_op = 0; /**/
+    sops.sem_flg = 0; 
 
-
-    while(1)
+    while(is_running)
     {
-        printf("enter command: D - decrease, I - increase, V - getValue, X - Exit\n");
+        puts("enter command: D - decrease, I - increase, V - getValue, X - Exit\n");
+        fflush(stdout);
 
         if (getline(&command_line, &buffer_size, stdin) == -1)
         {
-			if (!feof(stdin))
-   			{				
-                puts("getline function error\n");
+			status = feof(stdin);
+   			
+            if (status == -1)
+            {
                 free(command_line);
-      			ExitProgIfFail(errno);
-			}
+      		    ExitProgIfFail((void *)status);
+            }
         }
 
-        arguments = strtok(command_line,DELIMS);
+        arguments = strtok(command_line, DELIMS);
 
         for(i = 0;arguments != NULL;++i)
         {
@@ -133,45 +129,63 @@ static int Sem_Manipulation(int semid, struct sembuf *sops)
 
         if (args[1])
         {
-            num = atoi(args[1]);
-            
+            sem_val = atoi(args[1]);      
         }
 
         if (args[2])
         {
-            sops->sem_flg = SEM_UNDO;
+            sops.sem_flg = SEM_UNDO;
         }
-    
 
         switch (*command_line)
         {
         case 'D':
     
-            sops->sem_op -= num;
+            ChangeSemVal(&sops, semid, -sem_val);
             break;
 
         case 'I':
 
-            sops->sem_op += num;
+            ChangeSemVal(&sops, semid, sem_val);
             break;
 
         case 'V':
 
-            printf("Semaphore value is %d\n", sops->sem_op);
+            printf("Semaphore value is %d\n", semctl(semid,0,GETVAL));
+            fflush(stdout);
             
             break;
 
         case 'X':
-            
-            
+
+            is_running = 0;     
             break;
 
-        
         default:
-            break;
-        }
+        break;
 
-        
+        }
     }
+
+    semctl(semid, 0, IPC_RMID);
+
 }
 
+static void ExitProgIfFail(int status)
+{
+    
+    if(!(int)status)
+    {
+        strerror((int)status);
+        /*semctl(semid, 0, IPC_RMID);*/
+        exit((int)status);
+    }
+
+    return;
+}
+
+static void ChangeSemVal(struct sembuf *sops, int sem_id, int val)
+{
+    sops->sem_op = val;
+    semop(sem_id,sops,1);
+}
