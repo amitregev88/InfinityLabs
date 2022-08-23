@@ -20,15 +20,22 @@ union semun
     struct seminfo  *__buf;  /* Buffer for IPC_INFO (Linux-specific) */     
 };
 
-static void ExitProgIfFail(void *status);
-static void Sem_Manipulation(int semid, struct sembuf *sops);
-static void SemaphoreCreate(char *file_name);
+
+
+static void ExitProgIfFail(int status);
+static int Sem_Manipulation(int semid, struct sembuf *sops);
 
 
 int main(int argc, char** argv)
 {
+    key_t key;
+    int semid = 0;
+    union semun sema ;
+    struct sembuf sops = {0,0,0};
     char * fname = NULL;
+    FILE *fp = NULL;
         
+    /*TODO chacker fail functions*/
     if(argc < 2)
     {
         fname = "filename";
@@ -38,100 +45,83 @@ int main(int argc, char** argv)
         fname = argv[1];
     }
 
-    SemaphoreCreate(fname);
-    
-    return 0;
-}
+    fp = fopen(fname, "w+");
 
-static void SemaphoreCreate(char *file_name)
-{    
-    key_t key;
-    int semid = 0;
-    union semun sema ;
-    struct sembuf sops = {0,0,0};
-    FILE *fp = NULL;
-    int status = 0;
 
-    fp = fopen(file_name, "w+");
-    
-    ExitProgIfFail(fp);
-
-    key = ftok(file_name, 'E');
-
-    ExitProgIfFail((void *)key);  
+   /* create semaphore function */
+    key = ftok(fname, 'E');  
+    if(-1 == key)
+    {
+        perror("ftok");
+        exit(1); 
+    }
 
     semid = semget(key,1,0666 | IPC_CREAT);
-
-    ExitProgIfFail((void *)semid);  
+    if(-1 ==semid)
+    {
+        perror("semget");
+        exit(1); 
+    }
 
     sema.val = 1;
 
-    status = semctl(semid, 0, SETVAL, sema);
-    ExitProgIfFail((void *)status); 
-    
+    if (semctl(semid, 0, SETVAL, sema) == -1) 
+    {
+        perror("semctl");
+        exit(1); 
+    }
+
+     
     Sem_Manipulation(semid,&sops);
-       
+
+    return 0;        
 }
  
-static void ExitProgIfFail(void *status)
+static void ExitProgIfFail(int status)
 {
-    if(NULL == status)
-    {
-        puts("error open file\n");
-        /*semctl(semid, 0, IPC_RMID);*/
-        exit(1);
-    }
-
-    if(0 != (int)status)
-    {
-        strerror((int)status);
-        /*semctl(semid, 0, IPC_RMID);*/
-        exit((int)status);
-    }
-
-    return;
+    
+    /*semctl(semid, 0, IPC_RMID);*/
+    strerror(status);
+    exit(status);
 }
 
-static void Sem_Manipulation(int semid, struct sembuf *sops)
+static int Sem_Manipulation(int semid, struct sembuf *sops)
 {
         
     char *command_line = NULL;
+    int val = 0;
     size_t buffer_size = 0;
     char *arguments = 0;
     char **args = NULL;
     int i;
-    int num = 1;
-    int status = 0;
-    int is_running = 1;
+    int num = 1; 
 
     args = malloc (sizeof(char *) * MAX_ARGS);
     if(!args)
     {
-        puts("malloc failed\n");
-        return;
+        return 1;
     }
 
     sops->sem_num = 0; /*sema indx*/
     sops->sem_op = 0; /**/
     sops->sem_flg = 0; 
 
-    while(is_running)
+
+    while(1)
     {
-        puts("enter command: D - decrease, I - increase, V - getValue, X - Exit\n");
-        fflush(stdout);
+        printf("enter command: D - decrease, I - increase, V - getValue, X - Exit\n");
 
         if (getline(&command_line, &buffer_size, stdin) == -1)
         {
-			status = feof(stdin);
-   			
-            if (status == -1)
-            {
+			if (!feof(stdin))
+   			{				
+                puts("getline function error\n");
                 free(command_line);
-      		    ExitProgIfFail((void *)status);
-            }
+      			ExitProgIfFail(errno);
+			}
         }
 
-        arguments = strtok(command_line, DELIMS);
+        arguments = strtok(command_line,DELIMS);
 
         for(i = 0;arguments != NULL;++i)
         {
@@ -143,13 +133,15 @@ static void Sem_Manipulation(int semid, struct sembuf *sops)
 
         if (args[1])
         {
-            num = atoi(args[1]);      
+            num = atoi(args[1]);
+            
         }
 
         if (args[2])
         {
             sops->sem_flg = SEM_UNDO;
         }
+    
 
         switch (*command_line)
         {
@@ -170,17 +162,16 @@ static void Sem_Manipulation(int semid, struct sembuf *sops)
             break;
 
         case 'X':
-
-            is_running = 0;     
+            
+            
             break;
 
+        
         default:
-        break;
-
+            break;
         }
+
+        
     }
-
-    semctl(semid, 0, IPC_RMID);
-
 }
 
