@@ -80,6 +80,7 @@ static void ExitProgIfFail(void *status)
         puts("error open file\n");
         /*semctl(semid, 0, IPC_RMID);*/
         exit(1);
+        return;
     }
 
     if(0 != (int)status)
