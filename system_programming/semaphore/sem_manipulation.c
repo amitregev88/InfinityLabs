@@ -57,17 +57,6 @@ int Sem_Manipulation()
         {
         case 'D':
 
-            if(sem_getvalue(&semaphore,&val))
-            {
-                ExitProgIfFail(errno);
-            }
-
-            if (0 == val)
-            {
-                puts("worng command\n");
-                break;
-            }
-            
             if (0 != sem_wait(&semaphore))
             {
                 ExitProgIfFail(errno);

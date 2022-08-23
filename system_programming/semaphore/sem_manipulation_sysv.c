@@ -7,29 +7,36 @@
 #include <sys/sem.h> /*semget*/
 #include <sys/shm.h>
 #include <sys/ipc.h> /*ftok*/
-#include <sys/types.h>
+
+#define MAX_ARGS 10
+#define DELIMS " \t\r\n\a"
 
 
+union semun 
+{
+    int val;    /* Value for SETVAL */
 
-int semid = 0;
+    struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
+    unsigned short  *array;  /* Array for GETALL, SETALL */
+    struct seminfo  *__buf;  /* Buffer for IPC_INFO (Linux-specific) */     
+};
 
 
-void ExitProgIfFail(int status);
-int Sem_Manipulation();
+static void ExitProgIfFail(int status);
+static int Sem_Manipulation(int semid, struct sembuf *sops);
 
 
 int main(int argc, char** argv)
 {
     key_t key;
     int semid = 0;
-    union semnum
-    
-    
+    union semun sema ;
+    struct sembuf sops = {0,0,0}; 
+        
     if(argc < 2)
     {
        puts("Error - enter a path\n");
        return 1;
-     
     }
 
     key = ftok(argv[1], 'E');  
@@ -46,39 +53,53 @@ int main(int argc, char** argv)
         exit(1); 
     }
 
-    if (semctl(semid, 0, SETVAL, arg) == -1) 
+    sema.val = 1;
+
+    if (semctl(semid, 0, SETVAL, sema) == -1) 
     {
         perror("semctl");
         exit(1); 
     }
 
-    }
-
-       
-    Sem_Manipulation();
+      
+    Sem_Manipulation(intsemid,   sops);
 
     return 0;        
 }
-
  
-void ExitProgIfFail(int status)
+static void ExitProgIfFail(int status)
 {
+    
+    semctl(semid, 0, IPC_RMID);
     strerror(status);
     exit(status);
 }
 
-int Sem_Manipulation()
+static int Sem_Manipulation(int semid, struct sembuf *sops)
 {
-    char **sem_act = NULL;
+    
+    
+    
+    
+    
+    
     char *command_line = NULL;
     int val = 0;
     size_t buffer_size = 0;
+    char *arguments = 0;
+    char **args = NULL;
+    int i;
 
-    if(0 != sem_init(&semaphore,0,0))
+    args = malloc (sizeof(char *) * MAX_ARGS);
+    if(!args)
     {
-        perror("sem_init failed\n");
-        ExitProgIfFail(errno);
+        return 1;
     }
+
+    sops->sem_num = 0;
+    sops->sem_op = 0;
+    sops->sem_flg = 0; 
+
 
     while(1)
     {
@@ -94,46 +115,54 @@ int Sem_Manipulation()
 			}
         }
 
+        arguments = strtok(command_line,DELIMS);
+
+        for(i = 0;arguments != NULL;++i)
+        {
+            args[i] = arguments;
+            arguments = strtok(NULL,DELIMS);
+        }
+
+        args[i] = NULL;   
+
+        if (args[1])
+        {
+            sops->sem_num = atoi(args[1]);
+            
+        }
+
+        if (args[2])
+        {
+            sops->sem_flg = SEM_UNDO;
+        }
+    
+
         switch (*command_line)
         {
         case 'D':
-
-            if(sem_getvalue(&semaphore,&val))
+    
+            if ()
             {
-                ExitProgIfFail(errno);
-            }
-
-            if (0 == val)
-            {
-                puts("worng command\n");
-                break;
-            }
-            
-            if (0 != sem_wait(&semaphore))
-            {
-                ExitProgIfFail(errno);
+                
             }
             break;
 
         case 'I':
 
-            if (0 != sem_post(&semaphore))
+            if ()
             {
-                ExitProgIfFail(errno);
+                ;
             }
             break;
 
         case 'V':
 
-            if(sem_getvalue(&semaphore,&val))
-            {
-                ExitProgIfFail(errno);
-            }
-            /*printf("%d\n", val);*/
+            printf("Semaphore value is %d\n", GETVAL);
+            
             break;
 
         case 'X':
-            /*sem_close(&semaphore);*/
+            
             exit(0);
             break;
 
@@ -142,8 +171,6 @@ int Sem_Manipulation()
             break;
         }
 
-        sem_getvalue(&semaphore,&val);
-        printf("%d\n", val);
         
     }
 }
