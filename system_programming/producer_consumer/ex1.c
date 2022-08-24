@@ -3,7 +3,7 @@
 
 #define KEEP_RUNNING 1
 
-static unsigned char is_data_ready = 0;
+static unsigned char g_is_data_ready = 0;
 static char *data = NULL;
 
 void *ProducerAct(void *param)
@@ -12,14 +12,14 @@ void *ProducerAct(void *param)
 
     while(KEEP_RUNNING)
     {
-        while(is_data_ready)
+        while(g_is_data_ready)
         {
             /*empty*/
         }
 
     data = "this is producer routine\n";
     printf("%s", data);
-    __atomic_store_8(&is_data_ready,1,__ATOMIC_SEQ_CST);
+    __atomic_store_8(&g_is_data_ready,1,__ATOMIC_SEQ_CST);
        
     }
     return NULL;
@@ -31,13 +31,13 @@ void *ConsumerAct(void *param)
 
     while(KEEP_RUNNING)
     {
-        while(!is_data_ready)
+        while(!g_is_data_ready)
         {
            /*empty*/ 
         }
             data = "this is consumer routine\n";
             printf("%s", data);
-            __atomic_store_8(&is_data_ready,0,__ATOMIC_SEQ_CST);
+            __atomic_store_8(&g_is_data_ready,0,__ATOMIC_SEQ_CST);
     }
     return NULL;
 }
