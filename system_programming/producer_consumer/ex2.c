@@ -54,7 +54,7 @@ void *ConsumerAct(void *param)
     
         printf("poped number %d from consumer\n", data);
 
-        __atomic_sub_fetch(&data_count,0,__ATOMIC_SEQ_CST);
+        __atomic_sub_fetch(&data_count,1,__ATOMIC_SEQ_CST);
 
 
     }

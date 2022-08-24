@@ -5,13 +5,13 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = ex6.c 
+PROJ_SRCS = ex2.c 
 
 # list of directories containing header files
-PROJ_INC_DIR = 
+PROJ_INC_DIR = ../../ds/include/
 
 # the executable file
-PROJ_OUT = ex6.out
+PROJ_OUT = ex2.out
 
 # list of ADDITIONAL compiler flags (prepended with "-" sign)
 #PROJ_CFLAGS = -Wunused-but-set-variable
@@ -22,14 +22,15 @@ PROJ_CPPFLAGS =
 PROJ_MACROS =
 
 # additional object files (created by other projects)
-PROJ_ADD_OBJS = 
+PROJ_ADD_OBJS = dlinked_list.o
 
 # additional libraries
 PROJ_LIBS = pthread
 
 # linker flags
-PROJ_LDFLAGS =
+PROJ_LDFLAGS = 
+PROJ_LDFLAGS = 
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  = 
+PROJ_DEPENDS  = ../../ds/dlist/Makefile
 include $(ROOT_DIR)/make/Project.mak
