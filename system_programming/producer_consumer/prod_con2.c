@@ -5,25 +5,63 @@
 *	Reviewer:												                *
 *	Version: 	1.00														*
 ****************************************************************************/
+/*
 
-/*  1. pthread create -> producer
-        1.1 while(num of iterations)        
+g_list pointer
+g_mutex_flag
+g_is_data_ready
 
-            1.2 for 0 -> magic_num
+1. Dlist create --> g_list
+
+2. init mutex
+
+3. for  
+        pthread create -> producer i = 0  --> i < magic_num
+        pthread create -> consumer i = 0  --> i < magic_num
+      
+4. for 
+        pthread join -> producer i = 0 producer i = 0  --> i < magic_num
+        pthread join -> consumer consumer i = 0  --> i < magic_num
+
+5. mutex destroy
+
+6. Dlist destroy g_list
+
+
+        producer routine:
+
+        1. while(num of iterations)
+
+        2. mutex lock -> g_mutex_flag
+
+        3  DlistPushFront(g_list)
+            write on data node 
+
+        4. mutex unlock -> g_mutex_flag 
+
+        5. add 1 to value of g_is_data_ready  - atomic operator
+
+        6. -- num of iterations
+
+        consumer routine:
+
+        1.  while(num of iterations)
+        
+        2. while(!g_is_data_ready)  //busy wait
+
+
                 update value of counter in local_arr
 
-            1.3 static counter ++;
+            1.3 static counter++;
 
             1.4 while(g_is_data_ready)  //busy wait
 
             1.5 copy from local_arr to g_arr
  
-            1.6 update value of g_is_data_free to 1 - atomic operator
 
             1.7 --num of iterations
         
 
-    2. pthread create -> consumer
 
         2.1 while (num of iterations) 
 
@@ -41,129 +79,130 @@
 
             2.7  --num of iterations
                  
-    3. pthread join -> producer
-    4. pthread join -> consumer
     
     */
-
 #include <stdio.h> /*printf*/
-#include <string.h> /* memcpy*/
+#include <stdlib.h>  /*exit*/
 #include <pthread.h> 
+#include <errno.h>
+#include "dlinked_list.h"
 
-#define ARR_SIZE 10
 
-static unsigned char g_is_data_ready = 0;
-static int g_arr[ARR_SIZE];
+#define NUM_OF_THREADS 4
 
+
+
+dlist_ty *g_list = NULL;
+static pthread_mutex_t mutex_list_lock = PTHREAD_MUTEX_INITIALIZER;
+static unsigned char data_count = 0; /*share data counter*/
 
 void *ProducerAct(void *param)
 {
-    static int counter = 1;
-    int prod_mums[ARR_SIZE] = {0};
-    int i = 0;
-    static int num_of_iterations = 3;
-    param = param;
-
-    
-    while(num_of_iterations)
-    {
-        for(i = 0; i < ARR_SIZE; ++i)
-        {
-            prod_mums[i] = counter;
-        }
-
-         ++counter;
-                
-        while(g_is_data_ready)
-        {
-            /*busy wait*/
-        }
-    
-        memcpy(g_arr,prod_mums,sizeof(int) * ARR_SIZE);
-
-        __atomic_store_8(&g_is_data_ready,1,__ATOMIC_SEQ_CST);
-
-        --num_of_iterations;
-    }
-    
-       
-    return NULL;
-}
-
-void *ConsumerAct(void *param)
-{
-    int sum_arr = 0;
-    int cons_nums[ARR_SIZE] = {0};
-    int i = 0;
-    static int num_of_iterations = 3;
+    static int num_of_iterations = 5;
+    int data = 1;
     param = param;
 
     while(num_of_iterations)
     {
         
-        while(!g_is_data_ready)
-        {
-            /*busy wait*/
-        }
-    
-        memcpy(cons_nums,g_arr,sizeof(int) * ARR_SIZE);
-          
-        __atomic_store_8(&g_is_data_ready,0,__ATOMIC_SEQ_CST);
+        pthread_mutex_lock(&mutex_list_lock);
+        
+        DListPushFront(g_list, data);
+        
+        pthread_mutex_unlock(&mutex_list_lock);
+        
+        printf("pushed number %d from producer\n", data);
 
-        for(i = 0; i < ARR_SIZE; ++i)
-        {
-            sum_arr += cons_nums[i];
-        }
-            
-        printf("SUM OF GLOBAL ARR IS : %d\n", sum_arr);
-
-        sum_arr = 0;
+        ++data;
 
         --num_of_iterations;
+
+        __atomic_add_fetch(&data_count, 1, __ATOMIC_SEQ_CST);       
+       
     }
+
+    return NULL;
+}
+
+void *ConsumerAct(void *param)
+{
+    static int num_of_iterations = 5;
+    int data = 0;
+    param = param;
+
+    while(num_of_iterations)
+    {
+        while(!data_count)
+        {
+           /*busy wait*/ 
+        }
+
+        pthread_mutex_lock(&mutex_list_lock);
+
+        if(!DListIsEmpty(g_list))
+        {
+            data = (int)DListPopBack(g_list);
+        }
+
+        pthread_mutex_unlock(&mutex_list_lock);
+    
+        printf("poped number %d from consumer\n", data);
+
+        --num_of_iterations;
+
+        __atomic_sub_fetch(&data_count,1,__ATOMIC_SEQ_CST);
+
+    }
+
     return NULL;
 }
 
 int main()
 {
-    pthread_t consumer;
-    pthread_t producer;
+    pthread_t producers[NUM_OF_THREADS];
+    pthread_t consumers[NUM_OF_THREADS];
+    int i = 0;
+    int status = 0;
 
-    if (pthread_create(&producer, NULL, ProducerAct ,NULL) != 0)
-    {
-        perror("pthread_create of producer failed\n");
-        return 1;
+    g_list = DListCreate();
+    ExitProgIfFail(g_list == NULL);
+
+    for (i = 0; i < NUM_OF_THREADS; ++i)
+	{
+		status = pthread_create(&producers[i],NULL, &ProducerAct, NULL);
+        ExitProgIfFail(status != 0);
+
+        status = pthread_create(&consumers[i],NULL, &ConsumerAct, NULL);
+        ExitProgIfFail(status != 0);
     }
 
-    if (pthread_create(&consumer, NULL, ConsumerAct ,NULL) != 0)
+	for (i = 0; i < NUM_OF_THREADS; ++i)
+	{
+		status = pthread_join(producers[i],NULL);
+        ExitProgIfFail(status != 0);
+
+		status = pthread_join(consumers[i],NULL);
+        ExitProgIfFail(status != 0);
+	}
+
+	pthread_mutex_destroy(&mutex_list_lock);
+
+	DListDestroy(g_list);
+
+	return 0;	
+}
+
+
+static void ExitProgIfFail(int status)
+{
+    if(status)
     {
-        perror("pthread_create of consumer failed\n");
-        return 1;
+        strerror(errno);
+        exit(status);
     }
 
-
-
-    if (pthread_join(consumer, NULL)  != 0)
-    {
-        perror("pthread_join of consumer failed\n");
-        return 1;
-    }
-
-    if (pthread_join(producer, NULL)  != 0)
-    {
-        perror("pthread_join of producer failed\n");
-        return 1;
-    }
-
-    
-
-    return 0;
-
+    return;
 }
 
 
 
-
-
-
-    

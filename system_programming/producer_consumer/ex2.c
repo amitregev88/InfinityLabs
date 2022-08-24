@@ -20,7 +20,7 @@ void *ProducerAct(void *param)
         
         pthread_mutex_lock(&list_lock);
         
-        DListPushFront(list, param);
+        DListPushFront(list, data);
 
         pthread_mutex_unlock(&list_lock);
 

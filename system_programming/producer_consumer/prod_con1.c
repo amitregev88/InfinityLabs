@@ -49,6 +49,7 @@
 
 #include <stdio.h> /*printf*/
 #include <string.h> /* memcpy*/
+
 #include <pthread.h> 
 
 #define ARR_SIZE 10
