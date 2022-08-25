@@ -64,7 +64,6 @@ dlist_node_ty *DListInsert(dlist_node_ty *where, void *data)
 	
 	if (NULL == new_node)
 	{
-		printf("Memory allocation error\n");
 		return NULL;
 	}
 	

@@ -83,41 +83,54 @@ g_is_data_ready
     */
 #include <stdio.h> /*printf*/
 #include <stdlib.h>  /*exit*/
+#include <assert.h>
 #include <pthread.h> 
 #include <errno.h>
 #include "dlinked_list.h"
 
 
-#define NUM_OF_THREADS 4
+#define NUM_OF_THREADS 3
+#define SIZE_ARR 10 
+
+static void ExitProgIfFail(int status);
 
 
-
-dlist_ty *g_list = NULL;
+dlist_ty *list = NULL;
 static pthread_mutex_t mutex_list_lock = PTHREAD_MUTEX_INITIALIZER;
-static unsigned char data_count = 0; /*share data counter*/
+static int volatile data_count = 0; /*share data counter*/
+
+
+static int *Produce(int num);
+static int SumArr(int *arr);
 
 void *ProducerAct(void *param)
 {
-    static int num_of_iterations = 5;
-    int data = 1;
-    param = param;
+    int num_of_iterations = 2;
+    int *numbers = NULL;
+    static int num = 0;
+    int status = 0;
+    size_t prod_thread_number = (size_t)param;
 
     while(num_of_iterations)
     {
-        
-        pthread_mutex_lock(&mutex_list_lock);
-        
-        DListPushFront(g_list, data);
-        
-        pthread_mutex_unlock(&mutex_list_lock);
-        
-        printf("pushed number %d from producer\n", data);
-
-        ++data;
-
         --num_of_iterations;
+        ++num;
 
-        __atomic_add_fetch(&data_count, 1, __ATOMIC_SEQ_CST);       
+        numbers = Produce(num);
+        ExitProgIfFail(numbers != NULL);
+        
+        status = pthread_mutex_lock(&mutex_list_lock);
+        ExitProgIfFail(status == 0);
+        
+        DListPushFront(list, (void *)numbers);
+        
+        
+        status = pthread_mutex_unlock(&mutex_list_lock);
+        ExitProgIfFail(status == 0);
+
+        __atomic_add_fetch(&data_count, 1, __ATOMIC_SEQ_CST);
+
+        printf("Producer No %ld --> sum of array %d \n",prod_thread_number, SumArr(numbers));
        
     }
 
@@ -126,29 +139,36 @@ void *ProducerAct(void *param)
 
 void *ConsumerAct(void *param)
 {
-    static int num_of_iterations = 5;
-    int data = 0;
-    param = param;
+    int num_of_iterations = 2;
+    int *data = NULL;
+    int status = 0;
+    
 
     while(num_of_iterations)
     {
+        --num_of_iterations;
+
         while(!data_count)
         {
            /*busy wait*/ 
         }
 
-        pthread_mutex_lock(&mutex_list_lock);
+        status = pthread_mutex_lock(&mutex_list_lock);
+        ExitProgIfFail(status == 0);
 
-        if(!DListIsEmpty(g_list))
+        if(!DListIsEmpty(list))
         {
-            data = (int)DListPopBack(g_list);
+            data = (int *)DListPopBack(list);
+            ExitProgIfFail(data != NULL);
         }
 
-        pthread_mutex_unlock(&mutex_list_lock);
-    
-        printf("poped number %d from consumer\n", data);
+        status = pthread_mutex_unlock(&mutex_list_lock);
+        ExitProgIfFail(status == 0);
 
-        --num_of_iterations;
+
+        printf("Consumer No %d --> sum of array %d \n",*(int *)param, SumArr(data));
+
+        free(data);
 
         __atomic_sub_fetch(&data_count,1,__ATOMIC_SEQ_CST);
 
@@ -157,37 +177,39 @@ void *ConsumerAct(void *param)
     return NULL;
 }
 
+
 int main()
 {
     pthread_t producers[NUM_OF_THREADS];
     pthread_t consumers[NUM_OF_THREADS];
-    int i = 0;
+    size_t i = 0;
     int status = 0;
 
-    g_list = DListCreate();
-    ExitProgIfFail(g_list == NULL);
+    list = DListCreate();
+    ExitProgIfFail(list != NULL);
+
 
     for (i = 0; i < NUM_OF_THREADS; ++i)
 	{
-		status = pthread_create(&producers[i],NULL, &ProducerAct, NULL);
-        ExitProgIfFail(status != 0);
+		status = pthread_create(&producers[i],NULL, &ProducerAct,(void *)i);
+        ExitProgIfFail(status == 0);
 
-        status = pthread_create(&consumers[i],NULL, &ConsumerAct, NULL);
-        ExitProgIfFail(status != 0);
+        status = pthread_create(&consumers[i],NULL, &ConsumerAct, (void *)i);
+        ExitProgIfFail(status == 0);
     }
 
 	for (i = 0; i < NUM_OF_THREADS; ++i)
 	{
 		status = pthread_join(producers[i],NULL);
-        ExitProgIfFail(status != 0);
+        ExitProgIfFail(status == 0);
 
 		status = pthread_join(consumers[i],NULL);
-        ExitProgIfFail(status != 0);
+        ExitProgIfFail(status == 0);
 	}
 
 	pthread_mutex_destroy(&mutex_list_lock);
 
-	DListDestroy(g_list);
+	DListDestroy(list);
 
 	return 0;	
 }
@@ -195,14 +217,42 @@ int main()
 
 static void ExitProgIfFail(int status)
 {
-    if(status)
+    if(!status)
     {
-        strerror(errno);
+        perror(NULL);
         exit(status);
     }
 
     return;
 }
 
+static int *Produce(int data)
+{
+    int i;
+    int *nums = (int *) malloc (sizeof(int) * SIZE_ARR);
+        
+    for(i = 0; i < SIZE_ARR; ++i)
+    {
+        *(nums + i) = data;
+    }
+
+    return nums;
+
+}
+
+static int SumArr(int *arr)
+{
+    int sum = 0;
+    int i = 0;
+
+    assert(arr);
+
+    for(i = 0; i < SIZE_ARR; ++i)
+    {
+        sum += *(arr + i);
+    }
+
+    return sum;
+}
 
 
