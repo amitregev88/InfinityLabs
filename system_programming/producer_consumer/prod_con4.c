@@ -15,8 +15,8 @@
 
 #include "circ_buffer.h"
 
-#define NUM_OF_PRODUCERS 2
-#define NUM_OF_CONSUMERS 4
+#define NUM_OF_PRODUCERS 4
+#define NUM_OF_CONSUMERS 6
 
 #define NUM_OF_ELEMENTS 50
 #define SIZE_ARR 10
@@ -41,7 +41,7 @@ typedef struct
 void *ProducerAct(void *param)
 {
    
-    int num_of_iterations = 2;
+    int num_of_iterations = 20;
     static int num = 0;
     int *res = NULL;
 
@@ -53,7 +53,7 @@ void *ProducerAct(void *param)
 
         res = Produce(num);
         ExitProgIfFail(res != NULL);
-        
+       
         sem_wait(&((sync_ty *)param)->semaphore_ready_to_write);
 
         pthread_mutex_lock(&((sync_ty *)param)->mutex_buffer_lock);
@@ -62,9 +62,10 @@ void *ProducerAct(void *param)
 
         pthread_mutex_unlock(&((sync_ty *)param)->mutex_buffer_lock);
 
+        sem_post(&((sync_ty *)param)->semaphore_ready_to_read);
+
         printf("Producer No %d --> sum of array %d \n",((sync_ty *)param)->thread_id, SumArr(res));
         
-        sem_post(&((sync_ty *)param)->semaphore_ready_to_read);         
 
     }
     return NULL;
@@ -72,13 +73,13 @@ void *ProducerAct(void *param)
 
 void *ConsumerAct(void *param)
 {
-    int num_of_iterations = 2;
+    int num_of_iterations = 5;
     int *data = NULL;
 
     while(num_of_iterations)
     {
         --num_of_iterations;
-
+      
         sem_wait(&((sync_ty *)param)->semaphore_ready_to_read);
 
         pthread_mutex_lock(&((sync_ty *)param)->mutex_buffer_lock);
@@ -90,6 +91,8 @@ void *ConsumerAct(void *param)
         printf("Consumer No %d --> sum of array %d \n",((sync_ty *)param)->thread_id, SumArr(data));
 
         sem_post(&((sync_ty *)param)->semaphore_ready_to_write);
+        
+        free(data);
     }
 
     return NULL;
@@ -113,7 +116,7 @@ int main()
     status = sem_init((&sync.semaphore_ready_to_read), 0, 0);
     ExitProgIfFail(0 == status);
 
-    status = sem_init((&sync.semaphore_ready_to_write), 0, 0);
+    status = sem_init((&sync.semaphore_ready_to_write), 0, NUM_OF_ELEMENTS);
     ExitProgIfFail(0 == status);
 
 
@@ -129,7 +132,7 @@ int main()
 	{
 		sync.thread_id = i;
 
-        status = pthread_create(&producers[i],NULL, &ConsumerAct, &sync);
+        status = pthread_create(&consumers[i],NULL, &ConsumerAct, &sync);
         ExitProgIfFail(0 == status);
     }
 

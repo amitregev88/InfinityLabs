@@ -66,8 +66,8 @@ void *ConsumerAct(void *param)
 
 int main()
 {
-    pthread_t producers[NUM_OF_THREADS];
-    pthread_t consumers[NUM_OF_THREADS];
+    pthread_t producers[NUM_OF_COMSUMERS];
+    pthread_t consumers[NUM_OF_COMSUMERS];
     int i;
 
     if(sem_init(&semaphore,0,0) != 0)
@@ -85,7 +85,7 @@ int main()
 
     list = DListCreate();
 
-    for (i = 0; i < NUM_OF_THREADS; ++i)
+    for (i = 0; i < NUM_OF_COMSUMERS; ++i)
 	{
 		if (pthread_create(&producers[i],NULL, &ProducerAct, (void *)i) != 0)
 		{
@@ -100,7 +100,7 @@ int main()
 		}
 	}
 
-	for (i = 0; i < NUM_OF_THREADS; ++i)
+	for (i = 0; i < NUM_OF_COMSUMERS; ++i)
 	{
 		if (pthread_join(producers[i],NULL) != 0)
 		{

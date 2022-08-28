@@ -6,6 +6,10 @@
 *************************************************************************************/
 #include <time.h>   /*time_t*/
 #include <unistd.h> /*pid_t*/
+
+#include <pthread.h> /*_atomic_fetch_add*/
+
+
 #include "uid.h"   
 
 
@@ -22,7 +26,7 @@ uid_ty GetUID(void)
 	
 	if (-1 != t)
 	{
-		new_uid.counter = ++count;
+		new_uid.counter = _atomic_fetch_add(&count,__ATOMIC_SEQ_CST);
 		new_uid.pid = getpid();
 		new_uid.timestamp = t;
 	}

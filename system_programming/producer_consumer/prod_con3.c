@@ -37,7 +37,7 @@ static void ExitProgIfFail(int status);
 void *ProducerAct(void *param)
 {
     
-    int num_of_iterations  = 2; 
+    int num_of_iterations  = 8; 
     int status = 0;
     int *data = NULL;
     static int num = 0;
