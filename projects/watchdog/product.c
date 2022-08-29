@@ -1,22 +1,18 @@
+Product.out :
+
+
 int main()
 {
     MAKE_ME_IMMORTAL()
 
+    thread 1-> main_thread - client app running
 
     DNR();
 
 
 }
 
-
-
-
-
-
-Product.out :
-
-    thread 1-> main_thread - app running
-   
+  
      MAKE_ME_IMMORTAL(interval time, counter_time, argv)
      
         0. get watchdogpid
@@ -63,7 +59,21 @@ Product.out :
 
 
     }
+
+
+    sighandler1 /*related to thread watchdog*/
+
+    signal_handler()
+    {
+        __add_store_atomic(&g_flag_fail, 1); 
+
+    }
+    
+
+
                  
+
+
 
                 
                 
