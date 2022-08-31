@@ -25,11 +25,11 @@ typedef struct
 
     data_ty *publisher_data; 
 
+    size_t thread_no;
 
 }sync_ty;
 
 
-    size_t g_thread_no = 0;
 
 static void ExitProgIfFail(int status);
 
@@ -43,7 +43,7 @@ void *ProducerAct(void *param)
 
     while(KEEP_RUNNING)
     {  
-
+       
         for(i = 0; i < NUM_OF_CONSUMERS; ++i)
         {
             sem_wait(&((sync_ty *)param)->done_read);
@@ -71,7 +71,7 @@ void *ConsumerAct(void *param)
 {
     int curr_uid = 0;
     int status = 0;
-
+       
 
     while(KEEP_RUNNING)
     {
@@ -90,7 +90,7 @@ void *ConsumerAct(void *param)
         status = pthread_mutex_unlock(&((sync_ty *)param)->data_guard);
         ExitProgIfFail(0 == status);
 
-        printf("data from observer num %lu is:  %u\n", g_thread_no, ((sync_ty *)param)->publisher_data->data);
+        printf("data from observer num %lu is:  %u\n",((sync_ty *)param)->thread_no , ((sync_ty *)param)->publisher_data->data);
     }
 
     return NULL;
@@ -112,6 +112,7 @@ int main()
 
     publisher_data.data = 0;
     publisher_data.uid = -1;
+    sync.thread_no = 0;
 
     sync.publisher_data = &publisher_data;
 
@@ -128,7 +129,7 @@ int main()
 
     for (i = 0; i < NUM_OF_CONSUMERS; ++i)
 	{
-		g_thread_no = i;
+		sync.thread_no = i;
 
         status = pthread_create(&obserders[i],NULL, &ConsumerAct,&sync);
         ExitProgIfFail(0 == status);

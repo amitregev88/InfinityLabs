@@ -1,7 +1,7 @@
 Product.out :
+h
 
-
-int main()
+int main(int argc, char **argc, char **envp)
 {
     MAKE_ME_IMMORTAL()
 
@@ -33,7 +33,7 @@ int main()
         1. add task to scheduler (interval) - (sends signal and atomic_increase the g_counter)
 
 
-        while (1)    
+        while (should_running)    
         {
             2. if (!WD_PID)- /*if watchdog proccess is not exist  - create it .*/
 
@@ -44,18 +44,31 @@ int main()
                     2.2.1 exec (watchdog.out)
 
 
-                2.3 run scheduler /*as parent process */
+                2.3 run scheduler /*in parent process */
 
            
-            3. if (flag_hanler_func == 1 ) /*signal arrived*/
+                3. while (g_counter_fail < num_of_fail)
+                {
+                    /*busy wait*/
 
-                    g_counter_fail = 0;
+                }
             
-            4.  if (g_counter_fail == num_of_fail)
+                4. stop sched 
 
-                    stop sched 
-                    SIGKILL
+        
+
+            else
+            {
+                SIGKILL WD_PID
+
+            }
+            
+
+            
         }
+
+
+
 
 
     }
@@ -65,7 +78,7 @@ int main()
 
     signal_handler()
     {
-        __add_store_atomic(&g_flag_fail, 1); 
+        __add_store_atomic(&g_flag_fail, 0); 
 
     }
     
@@ -78,7 +91,6 @@ int main()
                 
                 
         
-
 
 
 
