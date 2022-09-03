@@ -3,6 +3,7 @@
         "semaphore.h": "c",
         "assert.h": "c",
         "dlinked_list.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "limits": "c"
     }
 }

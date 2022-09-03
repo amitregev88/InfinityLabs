@@ -8,8 +8,8 @@
 #include <errno.h>
 #include <signal.h>    /*sigprocmask ,kill*/
 #include <semaphore.h> /*sem_init */
-#include <time.h>
 #include <pthread.h>   /*pthread_create*/
+#include <stdatomic.h> /*atomic_fetch_add_explicit*/
 #include <unistd.h>    /* getppid, fork*/
 
 #include "watchdog.h"
@@ -31,12 +31,13 @@ typedef struct
 
     char **argv;
 
-    
+    scheduler_ty *sched;
+
 } communicate_info_ty;
 
-volatile int g_counter_failures = 0;
-volatile int g_should_wait_for_ret_val = 1;
-sem_t g_signal_arrived;
+volatile atomic_int g_counter_failures = 0;
+volatile atomic_int g_should_wait_for_ret_val = 1;
+sem_t g_sema;
 
 /*int MakeMeImmortal(size_t interval, size_t max_of_failures, const char **argv)*/
 
@@ -49,26 +50,27 @@ int MMI(const size_t max_misses, const time_t interval, char *argv[])
     char *client_path_exe = NULL;
     int status = 0;
     communicate_info_ty signal;
-    
 
     signal.interval = interval;
     signal.max_of_failures = max_misses;
-    signal.argv = argv;
 
-    status = sem_init(&g_signal_arrived, 0, 0);
-    if (status)
+    if (0 != strcmp(argv[0], watchdog_path_exe)) /* checks if this is client's process*/
     {
-        perror("sem_init failed\n");
-        return FAILURE;
-    }
-       
-        /* masking SIGUSR1 and SIGUSR2*/
+        
+        /* masking SIGUSR1 SIGUSR2*/
 
         sigemptyset(&signalmask);
 		sigaddset(&signalmask, SIGUSR1);
 		sigaddset(&signalmask, SIGUSR2);
 		sigprocmask(SIG_BLOCK, &signalmask, NULL);
       
+
+        /*save the path of product executable in env var*/
+        setenv("PRODUCT_PATH", argv[0], 1);
+
+        /*swap pointers - argv[0] points to watchdog path*/
+        SwapPtr(&argv[0], &watchdog_path_exe);
+        signal.argv = &argv;
 
         /*create thread*/
 
@@ -78,16 +80,32 @@ int MMI(const size_t max_misses, const time_t interval, char *argv[])
             perror("pthread_create faild\n");
         }
 
+    }
 
-        /*waiting for signal from child process */
+    else /* watchdog process*/
+    {
 
-        sem_timedwait(&g_signal_arrived); /* 1. TODO*/
+        client_path_exe = getenv("PRODUCT_PATH");
 
-        /*if time out... -> return FAILURE */
-    
+        SwapPtr(&argv[0], &client_path_exe);
+        signal.argv = &argv;
+
+        KeepAlive((void *)&signal);
+    }
+
+    while (g_should_wait_for_ret_val)
+    {
+
+        sleep(10);
+
+        if (g_should_wait_for_ret_val != 0)
+        {
+            return FAILURE;
+        }
+    }
+
     return SUCCESS;
 }
-
 
 void *KeepAlive(void *param)
 {
@@ -100,6 +118,7 @@ void *KeepAlive(void *param)
     pid_t my_parent_pid = getppid();
     pid_t wd_pid;
     struct sigaction handler;
+    const char **pass_data = param;
     size_t interval = ((communicate_info_ty *)param)->interval;
     size_t max_failures = ((communicate_info_ty *)param)->max_of_failures;
     char **argv = ((communicate_info_ty *)param)->argv;
@@ -118,57 +137,6 @@ void *KeepAlive(void *param)
 	sigaddset(&signalmask, SIGUSR2);
 	sigprocmask(SIG_UNBLOCK, &signalmask, NULL);
 
-    
-
-    /* function handler - reset the g_counter_failures*/
-    void ResetFlagComu(int sig_num, siginfo_t *infom, void *param)
-    {
-
-        __atomic_store_8(&g_counter_failures, 0, __ATOMIC_SEQ_CST);
-    }
-
-    int TaskSendSignal(void *param)
-    {
-        int status = 0;
-
-        communicate_info_ty info;
-        info.max_of_failures = ((communicate_info_ty *)param)->max_of_failures;
-        info.sched = ((communicate_info_ty *)param)->sched;
-        
-        if (g_counter_failures == info.max_of_failures)
-        {
-
-            SchedulerStop(info.sched);
-
-            status = kill(SIGUSR1, SIGTERM);
-            if (status)
-            {
-                perror("kill func failed\n");
-                return FAILURE;
-            }
-
-            unsetenv("WD_PID");
-        }
-
-        atomic_fetch_add_explicit(&g_counter_failures, 1, __ATOMIC_SEQ_CST);
-
-        return SUCCESS;
-    }
-
-    void SwapPtr(char **p1, char **p2)
-    {
-        char *tmp = NULL;
-
-        tmp = *p1;
-        *p1 = *p2;
-        *p2 = tmp;
-    }
-
-
-    int WatchDog()
-    {
-
-
     status = sigaction(SIGUSR1, &ResetFlagComu, NULL);
     if (status)
     {
@@ -176,7 +144,12 @@ void *KeepAlive(void *param)
         return FAILURE;
     }
 
-
+    status = sem_init(&g_sema, 0, 0);
+    if (status)
+    {
+        perror("sem_init failed\n");
+        return FAILURE;
+    }
 
     if (NULL == getenv("WD_PID")) /*check if parent process is not exist*/
     {
@@ -250,8 +223,46 @@ void *KeepAlive(void *param)
 
 }
 
+    /* function handler - reset the g_counter_failures*/
+    void ResetFlagComu(int sig_num, siginfo_t *infom, void *param)
+    {
 
+        __atomic_store_8(&g_counter_failures, 0, __ATOMIC_SEQ_CST);
+    }
 
+    int TaskSendSignal(void *param)
+    {
+        int status = 0;
 
+        communicate_info_ty info;
+        info.max_of_failures = ((communicate_info_ty *)param)->max_of_failures;
+        info.sched = ((communicate_info_ty *)param)->sched;
+        
+        if (g_counter_failures == info.max_of_failures)
+        {
 
+            SchedulerStop(info.sched);
+
+            status = kill(SIGUSR1, SIGTERM);
+            if (status)
+            {
+                perror("kill func failed\n");
+                return FAILURE;
+            }
+
+            unsetenv("WD_PID");
+        }
+
+        atomic_fetch_add_explicit(&g_counter_failures, 1, __ATOMIC_SEQ_CST);
+
+        return SUCCESS;
+    }
+
+    void SwapPtr(char **p1, char **p2)
+    {
+        char *tmp = NULL;
+
+        tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
     }

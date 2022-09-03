@@ -9,11 +9,11 @@
 
 typedef struct 
 {
-    int data;
+    int producer_num;
 
     int uid;
 
-}data_ty;
+}producer_data_ty;
 
 
 static pthread_mutex_t data_lock = PTHREAD_MUTEX_INITIALIZER;
