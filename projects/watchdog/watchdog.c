@@ -21,6 +21,7 @@
 #include <semaphore.h> /*sem_init */
 #include <pthread.h>   /*pthread_create*/
 #include <unistd.h>    /* getppid, fork*/
+#include <stdatomic.h> /*atomic_store*/
 
 #include "wd.h"
 #include "scheduler.h"

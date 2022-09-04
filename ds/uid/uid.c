@@ -26,7 +26,7 @@ uid_ty GetUID(void)
 	
 	if (-1 != t)
 	{
-		new_uid.counter = _atomic_fetch_add(&count,__ATOMIC_SEQ_CST);
+		new_uid.counter = __atomic_fetch_add(&count,__ATOMIC_SEQ_CST);
 		new_uid.pid = getpid();
 		new_uid.timestamp = t;
 	}
