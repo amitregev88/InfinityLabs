@@ -3,6 +3,7 @@
         "stddef.h": "c",
         "pthread.h": "c",
         "stdio.h": "c",
-        "errno.h": "c"
+        "errno.h": "c",
+        "watchdog.h": "c"
     }
 }

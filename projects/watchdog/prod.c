@@ -2,25 +2,22 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "watchdog.h"
+#include <unistd.h> /*sleep*/
+#include "wd.h"
 
 
 int main(int argc, char *argv[], char *envp[])
-{
-    int status;
-   
-    status = MMI(size_t interval, size_t max_of_failures, char *exec_client_path);
-    if (status != 0)
+{  
+    MMI(2, 7, argv);
+
+    while(1)
     {
-        return -1;
 
-    }
+        sleep(100);
 
-    /*
-        code of the client app
+    }    
     
     
-    */
 
     DNR();
 

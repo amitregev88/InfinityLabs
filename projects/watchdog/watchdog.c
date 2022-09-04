@@ -10,8 +10,9 @@
 /****************************************************************************/
 
 /******************************************************************************************************/
-/*                                             includes
+/*                                             includes                                               */
 /******************************************************************************************************/
+#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>  /*sprintf */
 #include <string.h> /* strlen*/
 #include <stdlib.h> /*setenv, getenv */
@@ -21,19 +22,19 @@
 #include <pthread.h>   /*pthread_create*/
 #include <unistd.h>    /* getppid, fork*/
 
-#include "watchdog.h"
+#include "wd.h"
 #include "scheduler.h"
 /******************************************************************************************************/
-/*                                             macros 
+/*                                             macros                                                 */
 /******************************************************************************************************/
 #define WATCHDOG_PATH "/home/amit/git/projects/watchdog/watchdog.out"
 /******************************************************************************************************/
-/*                                             enums 
+/*                                             enums                                                  */
 /******************************************************************************************************/
 enum {SUCCESS = 0, FAILURE = 1};
 enum {FALSE = 0, TRUE = 1};
 /******************************************************************************************************/
-/*                                             forward declaration  
+/*                                             forward declaration                                    */
 /******************************************************************************************************/
 typedef struct
 {
@@ -55,9 +56,9 @@ typedef struct
 typedef void* (*thread_routine_ty)(void *);
 typedef int (*task_routine_ty)(void *);
 /******************************************************************************************************/
-/*                                              functions  declaration 
+/*                                              functions  declaration                                */
 /******************************************************************************************************/
-static char **AllocArgv(const char **argv);
+static char **AllocArgv(char **argv);
 static void *PreapeThreadNRunWD(mmy_args_ty *data);
 static int DisableEnableMasking(sigset_t *signalset, size_t set_mask);
 static void SignalArrived(int param);
@@ -67,7 +68,7 @@ static int ForkNExec(char** argv, pid_t *pid);
 int WatchDog(size_t max_checks, time_t interval, char **argv, size_t wd_status);
 int DoNotResuscitate(void);
 /******************************************************************************************************/
-/*                                             global variables   
+/*                                             global variables                                       */
 /******************************************************************************************************/
 volatile size_t g_counter_failures = 0;
 volatile size_t g_should_stop = 0;
@@ -75,8 +76,9 @@ volatile size_t g_wd_exist = 0;
 volatile size_t g_is_other_ready = 0;
 pthread_t g_wd_thread;
 /******************************************************************************************************/
-/*                                             make me immortal function definition
+/*                                             make me immortal function definition                   */
 /******************************************************************************************************/
+
 int MMI(const size_t max_misses, const time_t interval, char *argv[])
 {
     mmy_args_ty info;
@@ -102,9 +104,9 @@ int MMI(const size_t max_misses, const time_t interval, char *argv[])
     return SUCCESS;
 }
 /******************************************************************************************************/
-/*                                             AllocArgv function definition
+/*                                             AllocArgv function definition                          */
 /******************************************************************************************************/
-static char **AllocArgv(const char **argv)
+static char **AllocArgv(char **argv)
 {
     size_t counter_args = 0;
     size_t i = 0;
@@ -134,8 +136,8 @@ static char **AllocArgv(const char **argv)
     return argv_wd;
 }
 /*******************************************************************************************************/
-/*                                             PreapeThreadNRunWD function definition
-/******************************************************************************************************/
+/*                                             PreapeThreadNRunWD function definition                  */
+/*******************************************************************************************************/
 static void *PreapeThreadNCallWD(mmy_args_ty *data)
 {
     sigset_t signalunmask = {0};
@@ -165,8 +167,8 @@ static void *PreapeThreadNCallWD(mmy_args_ty *data)
     return NULL;
 }
 /*******************************************************************************************************/
-/*                                             PreapeThreadNRunWD function definition
-/******************************************************************************************************/
+/*                                             PreapeThreadNRunWD function definition                  */
+/*******************************************************************************************************/
 int WatchDog(size_t max_checks, time_t interval, char **argv, size_t wd_status)
 {
 	scheduler_ty *sched = NULL;
@@ -175,7 +177,7 @@ int WatchDog(size_t max_checks, time_t interval, char **argv, size_t wd_status)
     sched_signal_data_ty signal_info = {0};
     
     /* create scheduler */
-    scheduler_ty *scheduler = SchdCreate();
+    scheduler_ty *scheduler = SchedulerCreate();
 
     /* checks if this first time calling to WatchDog function  */
     if (NULL == getenv("WD_PID"))
@@ -203,8 +205,8 @@ int WatchDog(size_t max_checks, time_t interval, char **argv, size_t wd_status)
 	return SUCCESS;
 }
 /*******************************************************************************************************/
-/*                                             DisableEnableMasking function definition
-/******************************************************************************************************/
+/*                                             DisableEnableMasking function definition                */
+/*******************************************************************************************************/
 static int DisableEnableMasking(sigset_t *signalset, size_t set_mask)
 {
     sigemptyset(&signalset);
@@ -223,8 +225,8 @@ static int DisableEnableMasking(sigset_t *signalset, size_t set_mask)
     return SUCCESS;
 }
 /*******************************************************************************************************/
-/*              SignalArrived -  SIGUSR1 handler - function definition
-/******************************************************************************************************/
+/*              SignalArrived -  SIGUSR1 handler - function definition                                 */
+/*******************************************************************************************************/
 static void SignalArrived(int param)
 {
 	atomic_store(&g_counter_failures, 0);
@@ -234,21 +236,21 @@ static void SignalArrived(int param)
     fflush(stdout);
 }
 /*******************************************************************************************************/
-/*              LetMeDie -  SIGUSR2 handler - function definition
-/******************************************************************************************************/
+/*              LetMeDie -  SIGUSR2 handler - function definition                                      */
+/*******************************************************************************************************/
 static void LetMeDie(int param)
 {
 	atomic_store(&g_should_stop, 1);
 }
 /*******************************************************************************************************/
-/*              CheckIfAliveNSendPing - function definition
-/******************************************************************************************************/
+/*              CheckIfAliveNSendPing - function definition                                            */
+/*******************************************************************************************************/
 static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
 {
     /*check if dnr function is called*/
     if (atomic_load(&g_should_stop))
     {
-        SchdStop(data->sched);
+        SchedulerStop(data->sched);
         return SUCCESS;
     }
 
@@ -286,8 +288,8 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
     return SUCCESS;
 }
 /*******************************************************************************************************/
-/*             ForkNExec - function definition
-/******************************************************************************************************/
+/*             ForkNExec - function definition                                                         */
+/*******************************************************************************************************/
 static int ForkNExec(char** argv, pid_t *pid)
 {
 	char curr_pid[10];
@@ -317,8 +319,8 @@ static int ForkNExec(char** argv, pid_t *pid)
 	return SUCCESS;
 }
 /*******************************************************************************************************/
-/*             DoNotResuscitate - function definition
-/******************************************************************************************************/
+/*             DoNotResuscitate - function definition                                                  */
+/*******************************************************************************************************/
 int DoNotResuscitate(void)
 {
 	kill(atoi(getenv("WD_PID")), SIGUSR2);
