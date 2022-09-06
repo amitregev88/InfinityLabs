@@ -20,17 +20,17 @@
 #include <pthread.h>   /*pthread_create*/
 #include <unistd.h>    /* getppid, fork*/
 #include <stdatomic.h> /*atomic_store*/
-#include <sys/wait.h>
-#include "wd.h"
-#include "wg_private_api.h"
 
+#include "wd.h"
 #include "./scheduler/scheduler.h"
 /******************************************************************************************************/
 /*                                             macros                                                 */
 /******************************************************************************************************/
 #define WATCHDOG_PATH "./wd_app"
 #define MAX_DIGITS 20
-/******************************************************************************************************/  
+/******************************************************************************************************/
+/*                                             enums                                                  */
+/******************************************************************************************************/
 enum
 {
     SUCCESS = 0,
@@ -38,8 +38,8 @@ enum
 };
 enum
 {
-    DISABLE = 0,
-    ENABLE = 1
+    FALSE = 0,
+    TRUE = 1
 };
 /******************************************************************************************************/
 /*                                             forward declaration                                    */
@@ -72,6 +72,8 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data);
 static int ForkNExec(char **argv);
 static int SetHandlers(void);
 static void SetFlagsAccordingToParentStatus(size_t max_of_misses);
+int WatchDog(char **argv, size_t max_checks, time_t interval);
+int DoNotResuscitate(void);
 /******************************************************************************************************/
 /*                                             global variables                                       */
 /******************************************************************************************************/
@@ -94,7 +96,7 @@ int MMI(const size_t max_misses, const time_t interval, char *argv[])
     info.argv = argv;
 
     /* masking SIGUSR1 and SIGUSR2*/
-    DisableEnableMasking(&signalmask, ENABLE);
+    DisableEnableMasking(&signalmask, TRUE);
 
     /*create thread for comunicate with WatchDog proceess and will revive him if needed */
     pthread_create(&g_wd_thread, NULL, (thread_routine_ty)PreapeThreadNCallWD, &info);
@@ -128,7 +130,7 @@ static char **AllocArgv(mmi_args_ty *info)
     argv_wd[0] = WATCHDOG_PATH;
 
     argv_wd[1] = (char *)malloc(sizeof(char) * MAX_DIGITS);
-    sprintf(argv_wd[1],"%lu", info->max_of_failures); /*size_t to char*/
+    sprintf(argv_wd[1],"%lu", info->max_of_failures);
 
     argv_wd[2] = (char *)malloc(sizeof(char) * MAX_DIGITS);
     sprintf(argv_wd[2],"%lu", info->interval);
@@ -154,9 +156,9 @@ static void *PreapeThreadNCallWD(mmi_args_ty *data)
 
     WatchDog(alloc_argv, data->max_of_failures, data->interval);
 
-    /*free(alloc_argv[1]);
+    free(alloc_argv[1]);
     free(alloc_argv[2]);  
-    free(alloc_argv);*/
+    free(alloc_argv);
 
     return NULL;
 }
@@ -165,29 +167,31 @@ static void *PreapeThreadNCallWD(mmi_args_ty *data)
 /*******************************************************************************************************/
 int WatchDog(char **argv, size_t max_checks, time_t interval)
 {
+    scheduler_ty *sched = NULL;
     sigset_t signalunmask = {0};
     sched_signal_data_ty signal_info = {0};
     scheduler_ty *scheduler = NULL;
 
+
     SetHandlers();
 
     /*unmask signals for WD thread */
-    DisableEnableMasking(&signalunmask, DISABLE);
+    DisableEnableMasking(&signalunmask, FALSE);
 
     signal_info.argv = argv;
     signal_info.max_of_failures = max_checks;
-    signal_info.sched = scheduler;
+    signal_info.sched = sched;
 
     /* create scheduler */
-    scheduler = SchdCreate();
+    scheduler = SchedulerCreate();
 
-    SchdAdd(scheduler, interval, (task_routine_ty)CheckIfAliveNSendPing, &signal_info);
+    SchedulerAdd(scheduler, interval, (task_routine_ty)CheckIfAliveNSendPing, &signal_info);
 
     SetFlagsAccordingToParentStatus(max_checks);
 
-    SchdRun(scheduler);
+    SchedulerRun(scheduler);
 
-    SchdDestroy(scheduler);
+    SchedulerDestroy(scheduler);
 
     return SUCCESS;
 }
@@ -216,9 +220,9 @@ static int DisableEnableMasking(sigset_t *signalset, size_t set_mask)
 /*******************************************************************************************************/
 static void SignalArrived(int sig_num, siginfo_t *infom, void *param)
 {
-    (void)param;
-    (void)infom;
-    (void)sig_num;
+    param = param;
+    infom = infom;
+    sig_num = sig_num;
 
     __atomic_store_n(&g_counter_failures, 0, __ATOMIC_SEQ_CST);
     __atomic_store_n(&g_is_other_ready, 1, __ATOMIC_SEQ_CST);
@@ -231,9 +235,9 @@ static void SignalArrived(int sig_num, siginfo_t *infom, void *param)
 /*******************************************************************************************************/
 static void LetMeDie(int sig_num, siginfo_t *infom, void *param)
 {
-    (void)param;
-    (void)infom;
-    (void)sig_num;
+    param = param;
+    infom = infom;
+    sig_num = sig_num;
 
     atomic_store(&g_should_stop, 1);
 }
@@ -245,7 +249,7 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
     /*check if dnr function is called*/
     if (atomic_load(&g_should_stop))
     {
-        SchdStop(data->sched);
+        SchedulerStop(data->sched);
         return SUCCESS;
     }
 
@@ -259,7 +263,7 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
         kill(g_other_pid, SIGUSR1);
         printf("process ID ->> %d, sending a signal to process ID: %d\n", getpid(), g_other_pid);
         /* check if errno updated to no pid */
-       /* g_other_pid = 0; */  
+       /* g_other_pid = 0; */    /*for kill current process */
     }
 
     /*checks if wd isn't exist or g_counter is greater than  max possible failures*/
@@ -273,12 +277,11 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
             /* kill another process */
             kill(g_other_pid, SIGKILL);
         }
-        wait(NULL);
 
         ForkNExec(data->argv);
     }
 
-    return 1; /*repeat*/
+    return SUCCESS;
 }
 /*******************************************************************************************************/
 /*             ForkNExec - function definition                                                         */
@@ -295,20 +298,18 @@ static int ForkNExec(char **argv)
 
     __atomic_store_n(&g_is_other_ready, 0, __ATOMIC_SEQ_CST);
 
-    
-    /*char to int*/
-    sprintf(curr_pid, "%d", getpid());
-    setenv("WD_PID", curr_pid, 1);
-
     /*update pid_wd_env in the struct*/
     pid = fork();
 
 
     /*incase is a child process */
     if (0 == pid)
-    {   
+    {
+        /*char to int*/
+        sprintf(curr_pid, "%d", getppid());
+        setenv("WD_PID", curr_pid, 1);
         printf("process ID ->> %d, created by process ID: %d\n", getpid(), g_other_pid);
-        execv(argv[0], argv);
+        execvp(argv[0], argv);
     }
     
     /*update the g_other_pid to WD_PID*/
@@ -322,7 +323,7 @@ static int ForkNExec(char **argv)
 /*******************************************************************************************************/
 /*             DoNotResuscitate - function definition                                                  */
 /*******************************************************************************************************/
-int DNR(void)
+int DoNotResuscitate(void)
 {
     kill(atoi(getenv("WD_PID")), SIGUSR2);
 
@@ -363,7 +364,7 @@ static void SetFlagsAccordingToParentStatus(size_t max_of_misses)
     /*if parent is not exist*/
     if (NULL == getenv("WD_PID"))
     {
-        __atomic_store_n(&g_counter_failures, max_of_misses + 1, __ATOMIC_SEQ_CST);
+        __atomic_store_n(&g_counter_failures, max_of_misses, __ATOMIC_SEQ_CST);
         __atomic_store_n(&g_is_other_ready, 0, __ATOMIC_SEQ_CST);
         __atomic_store_n(&g_other_pid, 0, __ATOMIC_SEQ_CST);
     }

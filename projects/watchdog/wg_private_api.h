@@ -8,20 +8,13 @@
 #define HRD25_WATCHDOG_H
 
 #include <stddef.h>
+#include <time.h>
 
-typedef struct watchdog watchdog_ty;
 
 /*************************************************************************************
 
 **************************************************************************************/
-int MakeMeImmortal(size_t interval, size_t max_of_failures, char *exec_client_path);
-
-/*************************************************************************************
-
-**************************************************************************************/
-int  DoNotResuscitate();
-
-
+int WatchDog(char **argv, size_t max_checks, time_t interval);
 
 
 #endif 

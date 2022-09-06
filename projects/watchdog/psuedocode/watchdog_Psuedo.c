@@ -9,9 +9,28 @@ g_is_other ready
 
 g_should_run
 
+g_other_pid
+
 enum {FALSE = 0 , TRUE = 1}
 enum {SUCCESS = 0 , FAILURE = 1}
 
+
+
+struct1 -> pass all data are needed from mmi function to preparation_for_wd_func and wd functions  
+{
+    char **argv1 - preparation_for_wd_func --> AllocArgv
+
+    thread_created_flag --> preparation_for_wd_func-->watchdog()-->schedulerAdd-->Task-->ForkNExec
+
+    interval --> preparation_for_wd_func-->watchdog()-->schedulerAdd
+
+    max_missess --> preparation_for_wd_func-->watchdog()-->schedulerAdd--> Task
+
+    scheduler pointer - watchdog()-->schedulerAdd-->Task
+
+
+
+}
 
 
 struct1 -> pass all data are needed from mmi function to preparation_for_wd_func and wd functions  

@@ -4,6 +4,8 @@
         "pthread.h": "c",
         "stdio.h": "c",
         "errno.h": "c",
-        "watchdog.h": "c"
+        "watchdog.h": "c",
+        "watchdog_private_api.h": "c",
+        "wd.h": "c"
     }
 }
