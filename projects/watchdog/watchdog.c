@@ -16,15 +16,14 @@
 #include <stdlib.h> /*setenv, getenv */
 #include <errno.h>
 #include <signal.h>    /*sigprocmask ,kill, sigemptyset, sigaddset .*/
-#include <semaphore.h> /*sem_init */
-#include <pthread.h>   /*pthread_create*/
+#include <pthread.h>   /*pthread_create , pyhread_join*/
 #include <unistd.h>    /* getppid, fork*/
-#include <stdatomic.h> /*atomic_store*/
-#include <sys/wait.h>
+#include <stdatomic.h> /*atomic_load*/
+#include <sys/wait.h>   /*wait*/
 #include "wd.h"
 #include "wg_private_api.h"
 
-#include "./scheduler/scheduler.h"
+#include "scheduler.h"
 /******************************************************************************************************/
 /*                                             macros                                                 */
 /******************************************************************************************************/
@@ -176,10 +175,10 @@ int WatchDog(char **argv, size_t max_checks, time_t interval)
 
     signal_info.argv = argv;
     signal_info.max_of_failures = max_checks;
-    signal_info.sched = scheduler;
 
     /* create scheduler */
     scheduler = SchdCreate();
+    signal_info.sched = scheduler;
 
     SchdAdd(scheduler, interval, (task_routine_ty)CheckIfAliveNSendPing, &signal_info);
 
@@ -235,7 +234,7 @@ static void LetMeDie(int sig_num, siginfo_t *infom, void *param)
     (void)infom;
     (void)sig_num;
 
-    atomic_store(&g_should_stop, 1);
+    __atomic_store_n(&g_should_stop, 1, __ATOMIC_SEQ_CST);
 }
 /*******************************************************************************************************/
 /*              CheckIfAliveNSendPing - function definition                                            */
@@ -374,4 +373,3 @@ static void SetFlagsAccordingToParentStatus(size_t max_of_misses)
         __atomic_store_n(&g_other_pid, atoi(getenv("WD_PID")), __ATOMIC_SEQ_CST);
     }
 }
-
