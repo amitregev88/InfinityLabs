@@ -8,21 +8,17 @@
 #include <stdlib.h> /*atoi*/
 #include "wg_private_api.h"
 #include <stdio.h>
+#include <unistd.h> /*getpid*/
 
 int main(int argc, char *argv[])
 {  
    
     (void)argc;
     
-    printf("WATCHDOG .....\n");
-    printf("%s\n\n",*(argv + 3));
-
-
-    WatchDog(argv + 3, atoi(argv[1]), atoi(argv[2]));
+    printf("WATCHDOG PROCESS ---> PID:%d\n",getpid());
+    
+    WatchDog(atoi(argv[1]), atoi(argv[2]), argv + 3);
 
     return 0;
 
-}
-
-
-
+}static int SetHandlers(void)

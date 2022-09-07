@@ -2,17 +2,22 @@
 
 /*gcc -g  watchdog.c ./scheduler/dlist.c ./scheduler/pqueue.c ./scheduler/scheduler.c ./scheduler/sorted_list.c ./scheduler/tasker.c ./scheduler/uid.c prod.c -I ./scheduler -pthread -o product*/
 
+#include <stdio.h> /*printf*/
 #include <unistd.h> /*sleep*/
+#include <unistd.h> /*getpid*/
 #include "wd.h"
 
 
 int main(int argc, char *argv[])
-{  
+{
     (void)argc;
-    MMI(2, 7, argv);
-  
-    sleep(20);
+    MMI(5, 3, argv);
 
+    printf("PRODUCT APP IS RUNNING --> PID:%d\n",getegid());
+
+    puts("DNR WILL CALLED in 12 sec\n");
+  
+    sleep(12);
 
     DNR();
 

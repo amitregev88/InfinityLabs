@@ -3,13 +3,13 @@
 /*	Project:	Watcgdog													*/
 /*	Date: 		28/08/2022													*/
 /*	Name: 		Amit Regev													*/
-/*	Reviewer:	Osher Harari												*/
+/*	Reviewer:																*/
 /*	Version: 	1.00														*/
 /****************************************************************************/
 
-/****************************************************************************/
-/*                     includes                                             */
-/****************************************************************************/
+/******************************************************************************************************/
+/*                                             includes                                               */
+/******************************************************************************************************/
 #define _POSIX_C_SOURCE 200112L
 #include <stdio.h>  /*sprintf */
 #include <string.h> /* strlen*/
@@ -20,18 +20,16 @@
 #include <unistd.h>    /* getppid, fork*/
 #include <stdatomic.h> /*atomic_load*/
 #include <sys/wait.h>   /*wait*/
-
 #include "wd.h"
 #include "wg_private_api.h"
+
 #include "scheduler.h"
-/***************************************************************************/
-/*                                             macros                      */
-/***************************************************************************/
-#define WATCHDOG_PATH "/home/amit/git/projects/watchdog/wd_app"
+/******************************************************************************************************/
+/*                                             macros                                                 */
+/******************************************************************************************************/
+#define WATCHDOG_PATH "./wd_app"
 #define MAX_DIGITS 20
-/****************************************************************************/
-/*                          enums                                           */
-/****************************************************************************/  
+/******************************************************************************************************/  
 enum
 {
     SUCCESS = 0,
@@ -42,9 +40,9 @@ enum
     DISABLE = 0,
     ENABLE = 1
 };
-/******************************************************************************/
-/*                    forward declaration                                     */
-/******************************************************************************/
+/******************************************************************************************************/
+/*                                             forward declaration                                    */
+/******************************************************************************************************/
 typedef struct
 {
     size_t interval;        /* mmi-->thread_func --> wd_func */
@@ -61,34 +59,34 @@ typedef struct
 
 typedef void *(*thread_routine_ty)(void *);
 typedef int (*task_routine_ty)(void *);
-/****************************************************************************/
-/*                 functions  declaration                                   */
-/****************************************************************************/
+/******************************************************************************************************/
+/*                                              functions  declaration                                */
+/******************************************************************************************************/
 static char **AllocArgv(mmi_args_ty *info);
 static void *PreapeThreadNCallWD(mmi_args_ty *data);
 static int DisableEnableMasking(sigset_t *signalset, size_t set_mask);
-static void Sighandler_SigArrived(int sig_num, siginfo_t *infom, void *param);
-static void Sighandler_LetMeDie(int sig_num, siginfo_t *infom, void *param);			
-static void Set_G_VarAccordingToParentStatus(size_t max_of_misses);
+static void SignalArrived(int sig_num, siginfo_t *infom, void *param);
+static void LetMeDie(int sig_num, siginfo_t *infom, void *param);
 static int CheckIfAliveNSendPing(sched_signal_data_ty *data);
 static int ForkNExec(char **argv);
 static int SetHandlers(void);
-/*****************************************************************************/
-/*                  global variables                                         */
-/*****************************************************************************/
+static void SetFlagsAccordingToParentStatus(size_t max_of_misses);
+/******************************************************************************************************/
+/*                                             global variables                                       */
+/******************************************************************************************************/
 volatile size_t g_counter_failures = 0;
 volatile size_t g_should_stop = 0;
 volatile pid_t g_other_pid = 0;
 volatile size_t g_is_other_ready = 0;
-pthread_t g_wd_thread = 0;
-/****************************************************************************/
-/*                             make me immortal function definition         */
-/****************************************************************************/
+pthread_t g_wd_thread;
+/******************************************************************************************************/
+/*                                             make me immortal function definition                   */
+/******************************************************************************************************/
+
 int MMI(const size_t max_misses, const time_t interval, char *argv[])
 {
-    mmi_args_ty info = {0};
+    mmi_args_ty info;
     sigset_t signalmask = {0};
-    time_t deadline = time(NULL) + (interval * max_misses);
 
     info.interval = interval;
     info.max_of_failures = max_misses;
@@ -97,25 +95,20 @@ int MMI(const size_t max_misses, const time_t interval, char *argv[])
     /* masking SIGUSR1 and SIGUSR2*/
     DisableEnableMasking(&signalmask, ENABLE);
 
-    /*create thread for comunicate with WatchDog proceess 
-    and will revive him if needed */
+    /*create thread for comunicate with WatchDog proceess and will revive him if needed */
     pthread_create(&g_wd_thread, NULL, (thread_routine_ty)PreapeThreadNCallWD, &info);
 
     /* waiting for WD thread to be created */
-    while (!g_is_other_ready) 
+    while (!g_is_other_ready) /*TODO time out*/
     {
-        if(time(NULL) > deadline)
-        {
-            DisableEnableMasking(&signalmask, DISABLE);
-            return FAILURE;
-        }
+        /* busy wait */
     }
 
     return SUCCESS;
 }
-/*****************************************************************************/
-/*                      AllocArgv function definition                        */
-/*****************************************************************************/
+/******************************************************************************************************/
+/*                                             AllocArgv function definition                          */
+/******************************************************************************************************/
 static char **AllocArgv(mmi_args_ty *info)
 {
     size_t counter_args = 0;
@@ -129,7 +122,7 @@ static char **AllocArgv(mmi_args_ty *info)
         ++i;
     }
 
-    argv_wd = (char **)malloc((3 + counter_args) * sizeof(char *));
+    argv_wd = (char **)malloc(counter_args * sizeof(char *));
 
     argv_wd[0] = WATCHDOG_PATH;
 
@@ -147,9 +140,9 @@ static char **AllocArgv(mmi_args_ty *info)
 
     return argv_wd;
 }
-/****************************************************************************/
-/*                  PreapeThreadNRunWD function definition                  */
-/****************************************************************************/
+/*******************************************************************************************************/
+/*                                             PreapeThreadNRunWD function definition                  */
+/*******************************************************************************************************/
 static void *PreapeThreadNCallWD(mmi_args_ty *data)
 {
     char **alloc_argv = NULL;
@@ -158,18 +151,18 @@ static void *PreapeThreadNCallWD(mmi_args_ty *data)
     /*preapre args for WD app from argv*/
     alloc_argv = AllocArgv(data);
 
-    WatchDog(data->max_of_failures, data->interval, alloc_argv);
-    
-    free(alloc_argv[1]);
+    WatchDog(alloc_argv, data->max_of_failures, data->interval);
+
+    /*free(alloc_argv[1]);
     free(alloc_argv[2]);  
-    free(alloc_argv);
+    free(alloc_argv);*/
 
     return NULL;
 }
-/****************************************************************************/
-/*                         PreapeThreadNRunWD function definition           */
-/****************************************************************************/
-int WatchDog(size_t max_checks, time_t interval, char **argv)
+/*******************************************************************************************************/
+/*                                             PreapeThreadNRunWD function definition                  */
+/*******************************************************************************************************/
+int WatchDog(char **argv, size_t max_checks, time_t interval)
 {
     sigset_t signalunmask = {0};
     sched_signal_data_ty signal_info = {0};
@@ -189,7 +182,7 @@ int WatchDog(size_t max_checks, time_t interval, char **argv)
 
     SchdAdd(scheduler, interval, (task_routine_ty)CheckIfAliveNSendPing, &signal_info);
 
-    Set_G_VarAccordingToParentStatus(max_checks);
+    SetFlagsAccordingToParentStatus(max_checks);
 
     SchdRun(scheduler);
 
@@ -197,9 +190,9 @@ int WatchDog(size_t max_checks, time_t interval, char **argv)
 
     return SUCCESS;
 }
-/****************************************************************************/
-/*             DisableEnableMasking function definition                     */
-/****************************************************************************/
+/*******************************************************************************************************/
+/*                               DisableEnableMasking function definition                              */
+/*******************************************************************************************************/
 static int DisableEnableMasking(sigset_t *signalset, size_t set_mask)
 {
     sigemptyset(signalset);
@@ -217,10 +210,10 @@ static int DisableEnableMasking(sigset_t *signalset, size_t set_mask)
 
     return SUCCESS;
 }
-/****************************************************************************/
-/*              Sighandler_SigArrived -  SIGUSR1 handler - function definition      */                          
-/****************************************************************************/
-static void Sighandler_SigArrived(int sig_num, siginfo_t *infom, void *param)
+/*******************************************************************************************************/
+/*              SignalArrived -  SIGUSR1 handler - function definition                                 */
+/*******************************************************************************************************/
+static void SignalArrived(int sig_num, siginfo_t *infom, void *param)
 {
     (void)param;
     (void)infom;
@@ -232,10 +225,10 @@ static void Sighandler_SigArrived(int sig_num, siginfo_t *infom, void *param)
     printf("process ID --> %d\n", getpid());
     fflush(stdout);
 }
-/****************************************************************************/
-/*              LetMeDie -  SIGUSR2 handler - function definition           */
-/****************************************************************************/
-static void Sighandler_LetMeDie(int sig_num, siginfo_t *infom, void *param)
+/*******************************************************************************************************/
+/*              LetMeDie -  SIGUSR2 handler - function definition                                      */
+/*******************************************************************************************************/
+static void LetMeDie(int sig_num, siginfo_t *infom, void *param)
 {
     (void)param;
     (void)infom;
@@ -243,9 +236,9 @@ static void Sighandler_LetMeDie(int sig_num, siginfo_t *infom, void *param)
 
     __atomic_store_n(&g_should_stop, 1, __ATOMIC_SEQ_CST);
 }
-/****************************************************************************/
-/*              CheckIfAliveNSendPing - function definition                 */
-/****************************************************************************/
+/*******************************************************************************************************/
+/*              CheckIfAliveNSendPing - function definition                                            */
+/*******************************************************************************************************/
 static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
 {
     /*check if dnr function is called*/
@@ -262,10 +255,10 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
     if ((atomic_load(&g_counter_failures) <= data->max_of_failures) && g_is_other_ready)
     {
         /* sending a signal */
-        printf("process ID ->> %d, sending a signal to process ID: %d\n", getpid(), g_other_pid);
-        /*g_other_pid = 0;*/
         kill(g_other_pid, SIGUSR1);
+        printf("process ID ->> %d, sending a signal to process ID: %d\n", getpid(), g_other_pid);
         /* check if errno updated to no pid */
+       /* g_other_pid = 0; */  
     }
 
     /*checks if wd isn't exist or g_counter is greater than  max possible failures*/
@@ -286,9 +279,9 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
 
     return 1; /*repeat*/
 }
-/****************************************************************************/
-/*             ForkNExec - function definition                              */
-/****************************************************************************/
+/*******************************************************************************************************/
+/*             ForkNExec - function definition                                                         */
+/*******************************************************************************************************/
 static int ForkNExec(char **argv)
 {
     char curr_pid[10];
@@ -315,37 +308,32 @@ static int ForkNExec(char **argv)
     {   
         printf("process ID ->> %d, created by process ID: %d\n", getpid(), g_other_pid);
 
-        fflush(stdout);
-    
-        __atomic_store_n(&g_is_other_ready, 1, __ATOMIC_SEQ_CST);
-
+        printf("%s\n",argv[0]);
         execv(argv[0], argv);
-
-        puts("exec fail");
     }
     
     /*update the g_other_pid to WD_PID*/
     __atomic_store_n(&g_other_pid, pid, __ATOMIC_SEQ_CST);
 
+    /*incase  parent process - waitng for signal from the child process */
+    /*wait(NULL);*/
 
     return SUCCESS;
 }
-/****************************************************************************/
-/*             DoNotResuscitate - function definition                       */
-/****************************************************************************/
+/*******************************************************************************************************/
+/*             DoNotResuscitate - function definition                                                  */
+/*******************************************************************************************************/
 int DNR(void)
 {
-    __atomic_store_n(&g_should_stop, 1, __ATOMIC_SEQ_CST);
-    
-    kill(g_other_pid, SIGUSR2);
-    
+    kill(atoi(getenv("WD_PID")), SIGUSR2);
+
     pthread_join(g_wd_thread, NULL);
 
     return SUCCESS;
 }
-/****************************************************************************/
-/*             SetHandlers - function definition                            */
-/****************************************************************************/
+/*******************************************************************************************************/
+/*             SetHandlers - function definition                                                       */
+/*******************************************************************************************************/
 static int SetHandlers(void)
 {
     struct sigaction handler1;
@@ -356,10 +344,11 @@ static int SetHandlers(void)
     sigemptyset(&handler2.sa_mask);
 
     /*define handler function to SIGUSR1 and SIGUSR2*/
-    handler1.sa_sigaction = Sighandler_SigArrived;
-    handler2.sa_sigaction = Sighandler_LetMeDie;
+    handler1.sa_sigaction = SignalArrived;
+    handler2.sa_sigaction = LetMeDie;
     handler1.sa_flags = SA_SIGINFO;
     handler2.sa_flags = SA_SIGINFO;
+
 
     /*init sigaction strucr for handler1 and handler2*/
     sigaction(SIGUSR1, &handler1, NULL);
@@ -367,10 +356,10 @@ static int SetHandlers(void)
 
     return SUCCESS;
 }
-/****************************************************************************/
-/*             Set_G_VarAccordingToParentStatus - function definition        */
-/****************************************************************************/
-static void Set_G_VarAccordingToParentStatus(size_t max_of_misses)
+/*******************************************************************************************************/
+/*             SetFlagsAccordingToParentStatus - function definition                                   */
+/*******************************************************************************************************/
+static void SetFlagsAccordingToParentStatus(size_t max_of_misses)
 {
     /*if parent is not exist*/
     if (NULL == getenv("WD_PID"))
