@@ -3,16 +3,13 @@
 /*gcc -g watchdog_app.c watchdog.c ./scheduler/dlist.c ./scheduler/pqueue.c ./scheduler/scheduler.c ./scheduler/sorted_list.c ./scheduler/tasker.c ./scheduler/uid.c -I ./scheduler/ -pthread -o wd_app*/
 
 
-
-
+#include <stdio.h>	/*printf*/
 #include <stdlib.h> /*atoi*/
-#include "wg_private_api.h"
-#include <stdio.h>
 #include <unistd.h> /*getpid*/
+#include "wd_private_api.h"
 
 int main(int argc, char *argv[])
 {  
-   
     (void)argc;
     
     printf("WATCHDOG PROCESS ---> PID:%d\n",getpid());
@@ -20,5 +17,4 @@ int main(int argc, char *argv[])
     WatchDog(atoi(argv[1]), atoi(argv[2]), argv + 3);
 
     return 0;
-
-}static int SetHandlers(void)
+}

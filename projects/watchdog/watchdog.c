@@ -22,7 +22,7 @@
 #include <sys/wait.h>   /*wait*/
 
 #include "wd.h"
-#include "wg_private_api.h"
+#include "wd_private_api.h"
 #include "scheduler.h"
 /***************************************************************************/
 /*                                             macros                      */
@@ -263,6 +263,7 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
     {
         /* sending a signal */
         printf("process ID ->> %d, sending a signal to process ID: %d\n", getpid(), g_other_pid);
+        fflush(stdout);
         /*g_other_pid = 0;*/
         kill(g_other_pid, SIGUSR1);
         /* check if errno updated to no pid */
@@ -275,6 +276,7 @@ static int CheckIfAliveNSendPing(sched_signal_data_ty *data)
         if (0 != g_other_pid)
         {
             printf("process ID ->> %d, killed by process ID: %d\n", g_other_pid, getpid());
+            fflush(stdout);
 
             /* kill another process */
             kill(g_other_pid, SIGKILL);
@@ -314,7 +316,6 @@ static int ForkNExec(char **argv)
     if (0 == pid)
     {   
         printf("process ID ->> %d, created by process ID: %d\n", getpid(), g_other_pid);
-
         fflush(stdout);
     
         __atomic_store_n(&g_is_other_ready, 1, __ATOMIC_SEQ_CST);
