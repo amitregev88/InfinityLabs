@@ -1,29 +1,81 @@
+#include <cstddef>
+#include <iostream> //cout
+
+#include <cstring> //strlen , strcpy
+
+using namespace std;
+
+
+
 class String
 {
 public:
 
-    String(char *);  // default Ctor
+    explicit String(const char *str);  // default Ctor
 
-    String(const String& other_str); //copy init func
+    String(const String& other_str); //copy constractor func
 
-    int Length(char*) const; // member function 
 
-    String operator=(const String& other_str);
+    String& operator=(const String& other_str); //operator assingment func
 
-    char *Cstr
+    ~String(); //Dtor
 
-    
+    size_t Length() const; // member function
+    const char *Cstr()const; // member function
+   
 
 private:
     char *m_str;
 };
 
-
-
-int main ()
+/************************Ctor*******************************/
+String::String(const char *str)
+{   
+    m_str = new char[strlen(str) + 1];
+    strcpy(m_str, str);
+}
+/************************Dtor*******************************/
+String::~String()
 {
+    delete[] m_str;
+    m_str = nullptr;    
+}
+/***************operator assingment func********************/
+String& String::operator=(const String& other_str)
+{
+    strcpy(m_str, other_str.m_str);
 
-    String s1 ("hello")
+    return *this;
+}
+/****************copy constractor func************************/
+String::String(const String& other_str) 
+{
+     m_str = new char[strlen(other_str.m_str) + 1];
+     strcpy(m_str, other_str.m_str);
+}
+/***************member function*****************************/
+size_t String:: Length() const
+{
+    return strlen(m_str);
+}
+/***************member function****************************/
+const char *String::Cstr()const
+{
+    return m_str;
+}
+/******************main function*****************************/
+int main()
+{
+    String s1("hello");
+
+    String s2(s1);
+    s1 = s2;
+
+    cout << "length of string:" << s1.Length()<< endl;
 
 
+    const char *str= s1.Cstr();
+    cout << "str is: " << str << endl;
+
+    return 0;
 }

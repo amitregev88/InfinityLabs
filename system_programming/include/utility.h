@@ -1,4 +1,4 @@
-/*************************************************************************************
+/************************************************************************************/
 /*																					*/ 
 /*	utility func																	*/
 /*	Amit regev																		*/
@@ -8,10 +8,8 @@
 #ifndef HRD25_UTILITY_H
 #define HRD25_UTILITY_H
 
-
 #include <stdio.h>	/*	perror(), fprintf()	*/
 #include <errno.h>	/*	errno()		*/
-
 
 /*************************************************************************************
 
@@ -20,9 +18,11 @@ int ReturnErnoIfFail(int status, char *msg, int ret_val)
 {
 	if(!status)
 	{
-		perror("%s", *msg);
+		perror(msg);
 		return ret_val;
 	}
+	
+	return 0;
 }
 /**************************************************************************************/
 
@@ -31,9 +31,11 @@ int ReturnIfFail(int status, char *msg, int ret_val)
 {
 	if(!status)
 	{
-		fprintf(msg, stderr);
+		fprintf(stderr,msg,"%s");
 		return ret_val;
 	}
+	
+	return 0;
 }
 /**************************************************************************************/
 
@@ -42,9 +44,11 @@ int ExitErnoIfFail(int status, char *msg, int ret_val)
 {
 	if(!status)
 	{
-		perror("%s",msg);
+		perror(msg);
 		exit(ret_val);
 	}
+	
+	return 0;
 }
 /*************************************************************************************/
 
@@ -53,23 +57,13 @@ int ExitIfFail(int status, char *msg, int ret_val)
 {
 	if(!status)
 	{
-		fprintf(msg, stderr);
+		fprintf(stderr,msg,"%s");
 		exit(ret_val);
 	}
+	
+	return 0;
 }
 
 
 /**************************************************************************************/
-
-
-
-
 #endif 
-
-
-
-
-
-
-
-

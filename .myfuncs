@@ -13,10 +13,10 @@ alias gob='gcc -c'
  
  
  # C++ Compilation aliases:
-alias cpd1='g++ -std=c++11 -pedantic-errors -Wall -Wextra -g'
+alias gd+='g++ -std=c++11 -pedantic-errors -Wall -Wextra -g'
 alias cpr1='g++ -std=c++11 -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
 alias cpd8='g++ -std=c++98 -pedantic-errors -Wall -Wextra -g'
-alias cpc8='g++ -std=c++98 -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
+alias pc8='g++ -std=c++98 -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
 alias cpd1nw='g++ -std=c++11 -Wall -Wextra -g'
 alias cpd8nw='g++ -std=c++98 -Wall -Wextra -g'
 #
