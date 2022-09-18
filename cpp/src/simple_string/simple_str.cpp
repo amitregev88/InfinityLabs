@@ -5,8 +5,6 @@
 
 using namespace std;
 
-
-
 class String
 {
 public:
@@ -24,6 +22,8 @@ public:
     const char *Cstr()const; // member function
     bool operator==(const String& o_) const; // member function
     bool String:: operator==(const char *str) const; // member function
+    bool String:: operator<(const String& o_) const; // member function
+    bool String:: operator>(const String& o_) const; // member function
    
 
 private:
@@ -34,7 +34,7 @@ private:
 String::String(const char *str)
 {   
     m_str = new char[strlen(str) + 1];
-    strcpy(m_str, str);
+    memcpy(m_str, str, strlen(str) + 1);
 }
 /************************Dtor*******************************/
 String::~String()
@@ -45,7 +45,7 @@ String::~String()
 /***************operator assingment func********************/
 String& String::operator=(const String& other_str)
 {
-    strcpy(m_str, other_str.m_str);
+    memcpy(m_str, other_str.m_str, strlen(other_str.m_str) + 1);
 
     return *this;
 }
@@ -75,7 +75,16 @@ bool String:: operator==(const char *str) const
 {
     return((strcmp(str, m_str) == 0) ? 1 : 0);
 }
-
+/******************member function*****************************/
+bool String:: operator<(const String& o_) const
+{
+    return((strcmp(m_str, o_.m_str) < 0) ? 1 : 0);
+}
+/******************member function*****************************/
+bool String:: operator>(const String& o_) const
+{
+    return((strcmp(m_str, o_.m_str) > 0) ? 1 : 0);
+}
 /******************main function*****************************/
 int main()
 {
@@ -85,7 +94,6 @@ int main()
     s1 = s2;
 
     cout << "length of string:" << s1.Length()<< endl;
-
 
     const char *str= s1.Cstr();
     cout << "str is: " << str << endl;
