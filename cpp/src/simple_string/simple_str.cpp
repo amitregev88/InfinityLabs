@@ -22,6 +22,8 @@ public:
 
     size_t Length() const; // member function
     const char *Cstr()const; // member function
+    bool operator==(const String& o_) const; // member function
+    bool String:: operator==(const char *str) const; // member function
    
 
 private:
@@ -63,6 +65,17 @@ const char *String::Cstr()const
 {
     return m_str;
 }
+/******************member function*****************************/
+bool String:: operator==(const String& o_) const
+{
+    return((strcmp(o_.m_str, m_str) == 0) ? 1 : 0);
+}
+/******************member function*****************************/
+bool String:: operator==(const char *str) const
+{
+    return((strcmp(str, m_str) == 0) ? 1 : 0);
+}
+
 /******************main function*****************************/
 int main()
 {

@@ -15,7 +15,7 @@ ostream& operator<<(ostream& os_, const X& x_);
 
 class X
 {
-public:
+public: 
 	bool operator ==(const X& o_) const {return m_a == o_.m_a; }
 	//Java style inline - not allowed in our coding standard
 
@@ -38,6 +38,8 @@ int main()
 	return 0;
 
 }
+
+
 
 ostream& operator<<(ostream& os_, const X& x_)
 {
