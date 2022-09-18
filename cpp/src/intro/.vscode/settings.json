@@ -45,6 +45,7 @@
         "streambuf": "cpp",
         "typeinfo": "cpp",
         "cassert": "cpp",
-        "cerrno": "cpp"
+        "cerrno": "cpp",
+        "cstring": "cpp"
     }
 }
