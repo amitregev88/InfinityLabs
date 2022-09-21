@@ -5,39 +5,47 @@
 /*                 HRD025                   */
 /********************************************/
 
+#include <iostream>
 
 #ifndef __COMPLEX__
 #define __COMPLEX__
 
 
-complexes operator+=(complexes& _n1, const complexes& _n2);
-complexes operator-=(complexes& _n1, const complexes& _n2);
-complexes operator*=(complexes& _n1, const complexes& _n2);
-complexes operator/=(complexes& _n1, const complexes& _n2);
-complexes operator+(const complexes& _n1, complexes& n2);
-complexes operator-(const complexes& _n1, complexes& n2);
-complexes operator*(const complexes& _n1, const complexes& _n2);
-complexes operator/(const complexes& _n1, const complexes& _n2);
-bool operator==(const complexes& _n1, const complexes& _n2);
-bool operator!=(const complexes& _n1, const complexes& _n2);
+Complex& operator+=(Complex&, const Complex&);
+Complex& operator-=(Complex&, const Complex&);
+Complex& operator*=(Complex&, const Complex&);
+Complex& operator/=(Complex&, const Complex&);
 
-//cin?
-//cout?
+const Complex operator+(const Complex&, const Complex&);
+const Complex operator-(const Complex&, const Complex&);
+const Complex operator*(const Complex&, const Complex&);
+const Complex operator/(const Complex&, const Complex&);
+
+bool operator==(const Complex&, const Complex&);
+bool operator!=(const Complex&, const Complex&);
+
+std::ostream& operator<<(std::ostream& os_, const Complex&);
+std::istream& operator>>(std::istream& is_, Complex&);
 
 
-
-class complexes
+class Complex
 {
     public:
-    void SetReal(int _num);
-    void SetImaginary(int _num);
-    int GetReal()const;
-    int GetImaginary()const;
+    Complex(double real = 0, double imag = 0); //non explicit on purpose
+    //copy and = generated
+
+
+    void SetReal(double cmplx_);
+    void SetImaginary(double cmplx_);
+
+    double GetReal()const;
+    double GetImaginary()const;
 
 
     private:
+    Complex(const Complex&);//for disabling , Do Not IMPLEMENT
     int m_num_real;
     int m_num_imaginary;
 }
 
-#endif
+#endif __COMPLEX__;

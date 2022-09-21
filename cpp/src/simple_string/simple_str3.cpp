@@ -7,10 +7,17 @@ using namespace std;
 
 class String;
 
-bool operator==(const String& o_) const; // member function
-bool operator==(const char *str) const; // member function
-bool operator<(const String& o_) const; // member function
-bool operator>(const String& o_) const; // member function
+namespace ilrd
+{
+
+bool operator==(const String&, const String&); // member function
+bool operator==(const char *, const String&);   // member function
+bool operator==(const String&, const char *); // member function
+
+bool operator>(const String&, const String&); // member function
+bool operator>(const char *, const String&);  // member function
+bool operator>(const String&, const char *); // member function
+
 
 class String
 {
@@ -32,6 +39,9 @@ public:
 private:
     char *m_str;
     static char *AllocNcopyIMP(const char *o_);
+
+};
+
 };
 
 /************************Ctor*******************************/
