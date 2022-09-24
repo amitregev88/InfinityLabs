@@ -48,7 +48,7 @@ String::String(const char *str)
     
     m_str = AllocNcpy(str);
 
-    memcmp(m_str,str, len);
+    memcpy(m_str,str, len);
 
     Inc();
 }
@@ -60,6 +60,7 @@ String::~String()
 /***************operator assingment func********************/
 String& String::operator=(const String& other_str)
 {
+    
     if(other_str.Cstr() != m_str)
     {
         m_str = other_str.m_str;
