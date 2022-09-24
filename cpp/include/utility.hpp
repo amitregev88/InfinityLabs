@@ -11,10 +11,10 @@
 
 #if __cplusplus<201103
 #define NULL_PTR NULL
-#define NOEXCEPT throw()
+#define NO_EXCEPT throw()
 #else
 #define NULL_PTR nullptr
-#define NONEXCEPT noexcept
+#define NO_EXCEPT noexcept
 
 #endif // #if __cplusplus<201103
 

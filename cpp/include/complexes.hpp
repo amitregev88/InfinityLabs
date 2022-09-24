@@ -2,9 +2,8 @@
 /*	File:		complexes.hpp												*/
 /*	Date: 		18/09/2022													*/
 /*	Name: 		Amit Regev												    */
-/*	Reviewer:																*/
+/*	Reviewer:	Boaz														*/
 /****************************************************************************/
-
 #ifndef __COMPLEXES__
 #define __COMPLEXES__
 
@@ -15,27 +14,30 @@ namespace ilrd
 
 class Complex;
 
-inline Complex& operator+=(Complex &, const Complex &);
-inline Complex& operator-=(Complex &, const Complex &);
-inline Complex& operator*=(Complex &, const Complex &);
-inline Complex& operator/=(Complex &, const Complex &);
+inline Complex& operator+=(Complex&, const Complex &);
+inline Complex& operator-=(Complex&, const Complex &);
+inline Complex& operator*=(Complex&, const Complex &);
+inline Complex& operator/=(Complex&, const Complex &);
 
-inline const Complex operator+(Complex, const Complex &);
-inline const Complex operator-(Complex, const Complex &);
-inline const Complex operator*(Complex, const Complex &);
-inline const Complex operator/(Complex, const Complex &);
+inline const Complex operator+(Complex, const Complex&);
+inline const Complex operator-(Complex, const Complex&);
+inline const Complex operator*(Complex, const Complex&);
+inline const Complex operator/(Complex, const Complex&);
  
-inline bool operator==(Complex, Complex);
-inline bool operator!=(Complex, Complex);
+inline bool operator==(Complex, const Complex&);
+inline bool operator!=(Complex, const Complex&);
  
 inline std::ostream& operator<<(std::ostream& os_, const Complex &num_);
 std::istream& operator>>(std::istream& is_, Complex &num_);
 
 class Complex
 {
-public: // Uses generated copy constractor, assignment operator and destructor
+public: 
     inline Complex(double real_ = 0, double imaginary_ = 0); 
-                                                    // uses implicit conversion
+                                                    //non explicit on purpose
+                                                    //implicit conversion
+
+    //copy constractor, assignment operator and destructor are generated
     inline void SetReal(double);
     inline void SetImaginary(double);
     inline double GetReal() const;
@@ -71,85 +73,85 @@ inline double Complex::GetImaginary() const
     return (m_imaginary);
 }
 /****************************************************************************/
-inline Complex& operator+=(Complex &num1_, const Complex &num2_)
+inline Complex& operator+=(Complex &n1_, const Complex &n2_)
 {
-    num1_.SetReal(num1_.GetReal() + num2_.GetReal());
-    num1_.SetImaginary(num1_.GetImaginary() + num2_.GetImaginary());
+    n1_.SetReal(n1_.GetReal() + n2_.GetReal());
+    n1_.SetImaginary(n1_.GetImaginary() + n2_.GetImaginary());
 
-    return (num1_);
+    return (n1_);
 }
 /****************************************************************************/
-inline Complex& operator-=(Complex &num1_, const Complex &num2_)
+inline Complex& operator-=(Complex &n1_, const Complex &n2_)
 {
-    num1_.SetReal(num1_.GetReal() - num2_.GetReal());
-    num1_.SetImaginary(num1_.GetImaginary() - num2_.GetImaginary());
+    n1_.SetReal(n1_.GetReal() - n2_.GetReal());
+    n1_.SetImaginary(n1_.GetImaginary() - n2_.GetImaginary());
 
-    return (num1_);
+    return (n1_);
 }
 /****************************************************************************/
-inline Complex& operator*=(Complex &num1_, const Complex &num2_)
+inline Complex& operator*=(Complex &n1_, const Complex &n2_)
 {
-    num1_.SetReal(num1_.GetReal() * num2_.GetReal());
-    num1_.SetImaginary(num1_.GetImaginary() * num2_.GetImaginary());
+    n1_.SetReal(n1_.GetReal() * n2_.GetReal());
+    n1_.SetImaginary(n1_.GetImaginary() * n2_.GetImaginary());
 
-    return (num1_);
-}
-
-/****************************************************************************/
-inline Complex& operator/=(Complex &num1_, const Complex &num2_)
-{
-    num1_.SetReal(num1_.GetReal() / num2_.GetReal());
-    num1_.SetImaginary(num1_.GetImaginary() / num2_.GetImaginary());
-
-    return (num1_);
+    return (n1_);
 }
 
 /****************************************************************************/
-inline const Complex operator+(Complex num1_, const Complex &num2_)
+inline Complex& operator/=(Complex &n1_, const Complex &n2_)
 {
-    return (num1_ += num2_);
+    n1_.SetReal(n1_.GetReal() / n2_.GetReal());
+    n1_.SetImaginary(n1_.GetImaginary() / n2_.GetImaginary());
+
+    return (n1_);
 }
 
 /****************************************************************************/
-inline const Complex operator-(Complex num1_, const Complex& num2_)
+inline const Complex operator+(Complex n1_, const Complex &n2_)
 {
-    return (num1_ -= num2_);
+    return (n1_ += n2_);
 }
 
 /****************************************************************************/
-inline const Complex operator*(Complex num1_, const Complex& num2_)
+inline const Complex operator-(Complex n1_, const Complex& n2_)
 {
-    return (num1_ *= num2_);
+    return (n1_ -= n2_);
 }
 
 /****************************************************************************/
-inline const Complex operator/(Complex num1_, const Complex& num2_)
+inline const Complex operator*(Complex n1_, const Complex& n2_)
 {
-    return (num1_ /= num2_);
+    return (n1_ *= n2_);
+}
+
+/****************************************************************************/
+inline const Complex operator/(Complex n1_, const Complex& n2_)
+{
+    return (n1_ /= n2_);
 }
  
 /****************************************************************************/ 
-inline bool operator==(Complex num1_, Complex num2_)
+inline bool operator==(Complex n1_, const Complex& n2_)
 {
-    return (num1_.GetReal() == num2_.GetReal() && 
-            num1_.GetImaginary() == num2_.GetImaginary());
+    return (n1_.GetReal() == n2_.GetReal() && 
+            n1_.GetImaginary() == n2_.GetImaginary());
 }
 
 /****************************************************************************/
-inline bool operator!=(Complex num1_, Complex num2_)
+inline bool operator!=(Complex n1_, const Complex& n2_)
 {
-    return (!operator==(num1_, num2_));
+    return (!operator==(n1_, n2_));
 }
 
 /****************************************************************************/
 inline std::ostream& operator<<(std::ostream& os_, const Complex &num_)
 {   
-    return (os_ << num_.GetReal() <<" " <<num_.GetImaginary() << 'i');
+    return (os_ << "("<<num_.GetReal() <<", " <<num_.GetImaginary() << "i)");
 }
 
 /****************************************************************************/
 
-} // namespace ilrd
+} 
 
-#endif /*	ifndef __COMPLEXES__									    */
-/*********************************End Of Header******************************/
+#endif //	ifndef __COMPLEXES__
+

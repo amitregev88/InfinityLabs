@@ -10,14 +10,13 @@
 #include "simple_str.hpp"
 #include "utility.hpp"		
 
-namespace ilrd
+namespace ilrd	
 {
 /*******************************Function Definitions*************************/
 String::String(const char *str_): m_str(AllocAndCopyIMP(str_))
-{}
-
+{}  	
 /****************************************************************************/
-String::~String()
+String::~String() NO_EXCEPT
 {
 	delete[] m_str;
 	m_str = NULL_PTR; 
@@ -49,27 +48,50 @@ const char *String::Cstr() const
 /*****************************Operators**************************************/
 bool operator==(const char *literalstr_, const String& str_)
 {
-	assert(str_);
+	assert(str_.Cstr());
 
-	return (!strcmp(literalstr_, str_.m_str));
-}
-
-/****************************************************************************/
-bool String::operator>(const String& o_) const
-{
-	return (strcmp(m_str, o_.m_str,r) > 0);
+	return (!strcmp(literalstr_, str_.Cstr()));
 }
 /****************************************************************************/
-bool String::operator<(const String &o_) const
+bool operator==(const String& str_, const char *literalstr_)
 {
-	return (strcmp(m_str, o_.m_str,r) < 0);
+	return (!strcmp(str_.Cstr(),literalstr_));
 }
-
 /****************************************************************************/
-bool String::operator==(const String& o_) const
+bool operator==(const String& s1_, const String& s2_)
 {
-	
-	return (strcmp(m_str, o_.m_str,r) == 0);
+	return (!strcmp(s1_.Cstr(),s2_.Cstr()));
+}
+/****************************************************************************/
+bool operator>(const String& s1_, const String& s2_)
+{
+	return (strcmp(s1_.Cstr(), s2_.Cstr()) > 0);
+}
+/****************************************************************************/
+bool operator>(const String&s1_, const char* str_)
+{
+	return (strcmp(s1_.Cstr(), str_) > 0);
+}
+/****************************************************************************/
+bool operator>(const char* str_, const String& s1_)
+{
+	return (strcmp(str_, s1_.Cstr()) > 0);
+}
+/****************************************************************************/
+
+bool operator<(const String& s1_, const String& s2_)
+{
+	return (strcmp(s1_.Cstr(), s2_.Cstr()) < 0);
+}
+/****************************************************************************/
+bool operator<(const String& s1_, const char* str_)
+{
+	return (strcmp(s1_.Cstr(), str_) < 0);
+}
+/****************************************************************************/
+bool operator<(const char* str_, const String& s1)
+{
+	return (strcmp(str_, s1.Cstr()) < 0);
 }
 /****************************************************************************/
 std::ostream& operator<<(std::ostream& os_, const String& str_)
@@ -77,6 +99,7 @@ std::ostream& operator<<(std::ostream& os_, const String& str_)
 	return os_ << str_.Cstr();
 }
 /****************************************************************************/
+
 //static
 char* String::AllocAndCopyIMP(const char *str_)
 {
@@ -92,4 +115,4 @@ char* String::AllocAndCopyIMP(const char *str_)
 	return dest;
 }
 
-}
+} //end ilrd namespace 
