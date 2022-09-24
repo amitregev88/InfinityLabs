@@ -1,102 +1,95 @@
-#include <cstddef>
-#include <iostream> //cout
+/****************************************************************************/
+/*	File:		string.cpp													*/
+/*	Date: 		15/09/2022													*/
+/*	Name: 		Amit Regev												    */
+/****************************************************************************/
+#include <cassert>	// assert()
+#include <cstddef>	// size_t
+#include <cstring>	// strlen(), memcpy()
 
-#include <cstring> //strlen , strcpy
+#include "simple_str.hpp"
+#include "utility.hpp"		
 
-using namespace std;
-
-class String
+namespace ilrd
 {
-public:
+/*******************************Function Definitions*************************/
+String::String(const char *str_): m_str(AllocAndCopyIMP(str_))
+{}
 
-    explicit String(const char *str);  // default Ctor
-
-    String(const String& other_str); //copy constractor func
-
-
-    String& operator=(const String& other_str); //operator assingment func
-
-    ~String(); //Dtor
-
-    size_t Length() const; // member function
-    const char *Cstr()const; // member function
-    bool operator==(const String& o_) const; // member function
-    bool String:: operator==(const char *str) const; // member function
-    bool String:: operator<(const String& o_) const; // member function
-    bool String:: operator>(const String& o_) const; // member function
-   
-
-private:
-    char *m_str;
-};
-
-/************************Ctor*******************************/
-String::String(const char *str)
-{   
-    m_str = new char[strlen(str) + 1];
-    memcpy(m_str, str, strlen(str) + 1);
-}
-/************************Dtor*******************************/
+/****************************************************************************/
 String::~String()
 {
-    delete[] m_str;
-    m_str = nullptr;    
+	delete[] m_str;
+	m_str = NULL_PTR; 
 }
-/***************operator assingment func********************/
-String& String::operator=(const String& other_str)
+/****************************************************************************/
+String::String(const String& o_): m_str(AllocAndCopyIMP(o_.m_str))
+{}
+/****************************************************************************/
+String & String::operator=(const String& o_)
 {
-    memcpy(m_str, other_str.m_str, strlen(other_str.m_str) + 1);
+	// Handles self assignment
+	char *to_delete = m_str;
+	m_str = AllocAndCopyIMP(o_.m_str);
 
-    return *this;
-}
-/****************copy constractor func************************/
-String::String(const String& other_str) 
-{
-     m_str = new char[strlen(other_str.m_str) + 1];
-     strcpy(m_str, other_str.m_str);
-}
-/***************member function*****************************/
-size_t String:: Length() const
-{
-    return strlen(m_str);
-}
-/***************member function****************************/
-const char *String::Cstr()const
-{
-    return m_str;
-}
-/******************member function*****************************/
-bool String:: operator==(const String& o_) const
-{
-    return((strcmp(o_.m_str, m_str) == 0) ? 1 : 0);
-}
-/******************member function*****************************/
-bool String:: operator==(const char *str) const
-{
-    return((strcmp(str, m_str) == 0) ? 1 : 0);
-}
-/******************member function*****************************/
-bool String:: operator<(const String& o_) const
-{
-    return((strcmp(m_str, o_.m_str) < 0) ? 1 : 0);
-}
-/******************member function*****************************/
-bool String:: operator>(const String& o_) const
-{
-    return((strcmp(m_str, o_.m_str) > 0) ? 1 : 0);
-}
-/******************main function*****************************/
-int main()
-{
-    String s1("hello");
+	delete[] to_delete;
 
-    String s2(s1);
-    s1 = s2;
+	return *this;
+}
+/****************************************************************************/
+size_t String::Length() const
+{
+	return (strlen(m_str));
+}
+/****************************************************************************/
+const char *String::Cstr() const
+{
+	return (m_str);
+}
+/*****************************Operators**************************************/
+bool operator==(const char *literalstr_, const String& str_)
+{
+	assert(str_);
 
-    cout << "length of string:" << s1.Length()<< endl;
+	return (!strcmp(literalstr_, str_.m_str));
+}
 
-    const char *str= s1.Cstr();
-    cout << "str is: " << str << endl;
+/****************************************************************************/
+bool String::operator>(const String& o_) const
+{
+	return (strcmp(m_str, o_.m_str,r) > 0);
+}
+/****************************************************************************/
+bool String::operator<(const String &o_) const
+{
+	return (strcmp(m_str, o_.m_str,r) < 0);
+}
 
-    return 0;
+/****************************************************************************/
+bool String::operator==(const String& o_) const
+{
+	
+	return (strcmp(m_str, o_.m_str,r) == 0);
+}
+/****************************************************************************/
+std::ostream& operator<<(std::ostream& os_, const String& str_)
+{
+	return os_ << str_.Cstr();
+}
+/****************************************************************************/
+//static
+char* String::AllocAndCopyIMP(const char *str_)
+{
+	assert(str_);
+	// get string length
+	size_t length = strlen(str_) + 1;
+	
+	// allocate new buffer
+	char *dest = new char[length];
+	// copy
+	memcpy(dest, str_, length);
+
+	return dest;
+}
+
 }
