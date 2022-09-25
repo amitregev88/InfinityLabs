@@ -38,6 +38,7 @@ private:
     static char*AllocNcpy(const char *s);
     void Inc();
     void DecNdelete();
+    size_t CountImp();
 
     char *m_str; 
 };

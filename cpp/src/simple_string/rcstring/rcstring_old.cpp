@@ -17,10 +17,8 @@ char * String:: AllocNcpy(const char *s)
     size_t buff_size = strlen(s) + 1 + sizeof(size_t);
 
     char *pool = static_cast<char *>(operator new(buff_size));
-    
-    memset(pool,0,sizeof(size_t));
-    
 
+    memset(pool,0,sizeof(size_t));
 
     return pool + sizeof(size_t);
 }
