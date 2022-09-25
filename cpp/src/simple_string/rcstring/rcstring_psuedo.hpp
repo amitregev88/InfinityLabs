@@ -1,9 +1,11 @@
 #ifndef __RCSTRING__
 #define __RCSTRING__
 
+#include<stddef.h>
+
 class String 
 {
-    public:
+public:
 
     String(const char *);
     String(Stirng& o_); 
@@ -12,12 +14,29 @@ class String
     size_t Length()const;
     const char *Ctor()const;
 
-    private:
+private:
     char *m_str;
     void *operator new(size_t);
     static void DecreaseRefIMP(const char *);
     static void IncreaseRefIMP(const char *);
     char *AllocNcopy(const &String);
+
+    class CharProxy
+    {
+    public:
+
+        explicit CharProxy(String *str_, size_t index);
+        operator char() const; 
+        char operator=(const char);
+        char oprator=(const CharProxy &other_);
+
+    private:
+
+    String *const m_str;
+    const size_t m_idx;
+    }
+
+
   
 
 }
