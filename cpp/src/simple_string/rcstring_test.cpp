@@ -20,8 +20,12 @@ int main()
     cout << "C3 : " << c3.Cstr() << endl;
     cout << "C4 : " << c4.Cstr() << endl;
 
+    c4.Set('E', 1);
+    c4[2] = 'L';
 
+    cout << "C4 : " << c4.Cstr() << endl;
 
+    cout << "C4 : " << c4[4] << endl;
 
     return 0;
 }
