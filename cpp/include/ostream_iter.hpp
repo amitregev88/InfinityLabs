@@ -37,10 +37,10 @@ private:
 
     std:: ostream& m_stream;
 
-}
+};
 /*******************************************************************/
 template<typename T>
-class OstreamIter::Proxy // no assignment.
+class OstreamIter<T>::Proxy // no assignment.
 {
 public:
 
@@ -54,28 +54,28 @@ private:
 
     std:: ostream& m_stream;
 
-}
+};
 /**************************************************/
 template<typename T>
-inline OstreamIter:: OstreamIter(std:: ostream &o_):m_stream(o_)
-{};
+inline OstreamIter<T>:: OstreamIter(std:: ostream &o_):m_stream(o_)
+{}
 /**************************************************/
 template<typename T>
 
-inline OstreamIter<T>& OstreamIter<T>::operator++(){return *this;};
+inline OstreamIter<T>& OstreamIter<T>::operator++(){return *this;}
 
 /****************************************************/
 template<typename T>
 
-inline OstreamIter<T>::Proxy OstreamIter<T>::operator*()
+inline typename OstreamIter<T>::Proxy OstreamIter<T>::operator*()
 {
    return Proxy(m_stream);
 }
 /****************************************************/
 template<typename T>
 
-inline  OstreamIter<T>::Proxy Proxy(std::ostream& o_):m_stream(o_)
-{};
+inline OstreamIter<T>::Proxy::Proxy(std::ostream& o_):m_stream(o_)
+{}
 /***************************************************/
 template<typename T>
 inline const T& OstreamIter<T>::Proxy::operator=(const T& num_)
