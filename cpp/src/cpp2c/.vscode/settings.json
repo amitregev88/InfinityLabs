@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "iostream": "cpp",
+        "functional": "c",
+        "*.tcc": "c",
+        "deque": "c",
+        "string": "c",
+        "vector": "c",
+        "memory_resource": "c",
+        "optional": "c",
+        "memory": "c",
+        "fstream": "c",
+        "istream": "c",
+        "numeric": "c",
+        "ostream": "c",
+        "string_view": "c",
+        "type_traits": "c",
+        "typeinfo": "c",
+        "algorithm": "c"
+    }
+}
