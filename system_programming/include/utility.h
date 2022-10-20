@@ -10,6 +10,9 @@
 
 #include <stdio.h>	/*	perror(), fprintf()	*/
 #include <errno.h>	/*	errno()		*/
+#include <stdlib.h>	/*	exit		*/
+
+
 
 /*************************************************************************************
 
