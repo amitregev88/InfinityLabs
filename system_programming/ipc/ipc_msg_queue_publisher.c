@@ -54,4 +54,3 @@ int main(void)
     printf("message queue: done sending messages.\n");
     return 0;
 }
-
