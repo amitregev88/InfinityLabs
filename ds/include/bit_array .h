@@ -12,6 +12,10 @@
 
 typedef unsigned long bit_arr_ty;
 
+#ifdef ARM
+typedef bit_arr_ty unsigned long long ;
+#endif
+
 /*  0 - 63 is the range of bit index */
 /* bit index -> unsigned char type */
 /*in case */
