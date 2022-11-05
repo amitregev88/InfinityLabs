@@ -192,7 +192,8 @@ int main(int argc, char **argv, char **envp)
     print_info(3).display();
     PublicTransport *array[] = { new Minibus(), new Taxi(), new Minibus() };
 
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i)
+    {
         array[i]->display();
     }
 
