@@ -125,7 +125,7 @@ static int Communicate(int fd)
     char buff[MAX_LEN];
     int ret_stat = 0;
     int bytes_num = 0;
-    char* msg = "LOROTSA!\n";
+    char* msg = "this is msg from server!\n";
     size_t msg_len = strlen(msg) + 1;
 
     struct sockaddr_in client = {0};

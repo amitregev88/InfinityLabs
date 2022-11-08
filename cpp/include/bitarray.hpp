@@ -10,152 +10,164 @@
 #ifndef __BITARRAY_HPP__
 #define __BITARRAY_HPP__
 
-#include <cstddef>     // std::size_t
-#include <string>       // string
+#include <cstddef> // std::size_t
+#include <string>  // string
+#include <algorithm>  // fill
+
 
 namespace ilrd
 {
 
-template<std::size_t NBITS>
-class BitArray
-{   // Generated dtor.
-private:
-    class BitProxy;
-
-public:
-    explicit BitArray();
-
-    BitArray& operator>>=(std::size_t);
-    BitArray& operator<<=(std::size_t);
-    BitArray& operator&=(const BitArray& o_);
-    BitArray& operator^=(const BitArray& o_);
-    BitArray& operator|=(const BitArray& o_);
-
-    bool operator==(const BitArray& o_) const;
-    bool operator!=(const BitArray& o_) const;
-
-    const BitArray operator~() const;
-    const BitArray operator&(const BitArray& o_) const;
-    const BitArray operator|(const BitArray& o_) const;
-    const BitArray operator^(const BitArray& o_) const;
-
-    BitProxy operator[](std::size_t idx_);
-    bool operator[](std::size_t idx_) const;
-
-    BitArray& SetAll();
-    BitArray& UnsetAll();
-    std::size_t CountSet() const;
-    std::string ToString();
-
-private:
-    std::size_t m_array[NBITS / 64 + ((NBITS % 64) ? (1) : (0))];
-
-    bool Set(std::size_t);
-    bool Reset(std::size_t);
-    bool Get(std::size_t);
-
-    class BitProxy
-    {
-    public:
-        explicit BitProxy(BitArray&, std::size_t);
-
-        operator bool();
-        bool operator=(bool);
-        bool operator=(const BitProxy&);
-        // To add - operator ~...
+    template <std::size_t NBITS>
+    class BitArray
+    { // Generated dtor.
     private:
-        BitArray *const m_array;
-        const std::size_t m_idx;
-        m_arri;
-        m_biti;
-    }; // class BitProxy
-};
+        class BitProxy;
 
-template<std::size_t NBITS>
-bool BitArray<NBITS>:: Set(std::size_t idx_)
-{
-   
+    public:
+        explicit BitArray();
 
-       /*  m_arri = m_idx / 64;
+        BitArray &operator>>=(std::size_t);
+        BitArray &operator<<=(std::size_t);
+        BitArray &operator&=(const BitArray &o_);
+        BitArray &operator^=(const BitArray &o_);
+        BitArray &operator|=(const BitArray &o_);
 
-    m_biti = m_idx %64; */
-} 
-   NBITS/ 
-    m_array[]
+        bool operator==(const BitArray &o_) const;
+        bool operator!=(const BitArray &o_) const;
+
+        const BitArray operator~() const;
+        const BitArray operator&(const BitArray &o_) const;
+        const BitArray operator|(const BitArray &o_) const;
+        const BitArray operator^(const BitArray &o_) const;
+
+        BitProxy operator[](std::size_t idx_);
+        bool operator[](std::size_t idx_) const;
+
+        BitArray &SetAll();
+        BitArray &UnsetAll();
+        std::size_t CountSet() const;
+        std::string ToString();
+
+    private:
+        std::size_t m_array[NBITS / 64 + ((NBITS % 64) ? (1) : (0))];
+
+        bool Set(std::size_t);
+        bool Reset(std::size_t);
+        bool Get(std::size_t);
+        /*******/
+        std::size_t ArrSize();
+        /******/
+
+        class BitProxy
+        {
+        public:
+            explicit BitProxy(BitArray &, std::size_t);
+
+            operator bool();
+            bool operator=(bool);
+            bool operator=(const BitProxy &);
+            // To add - operator ~...
+        private:
+            BitArray *const m_array;
+            const std::size_t m_idx;
+            m_arri;
+            m_biti;
+        }; // class BitProxy
+    };
+    /***************************************************************/
+    template <std::size_t NBITS>
+    std::size_t BitArray<NBITS>::ArrSize()
+    {
+        return sizeof(m_array) / sizeof(std::size_t);
+    }
 
 
+    template <std::size_t NBITS>
+    BitArray<NBITS>::BitArray() 
+    {
+        std::fill(m_array, m_array + ArrSize, 0);
+    }
+
+    template <std::size_t NBITS>
+    BitArray &operator&=(const BitArray &o_);
+
+    {
+        m_array >>= 
+
+    }
+
+
+    template <std::size_t NBITS>
+
+    BitArray<NBITS> &BitArray<NBITS>::SetAll()
+    {
+
+        /* set bits in all bytes to 1 */
+        fill_n(m_array, NBITS, 1);
+    }
+
+    template <std::size_t NBITS>
+    BitArray<NBITS> &BitArray<NBITS>::UnsetAll()
+    {
+        /* set bits in all bytes to 0 */
+        fill_n(m_array, NBITS, 0);
+    }
+
+    template <std::size_t NBITS>
+    bool BitArray<NBITS>::Set(std::size_t idx_)
+    {
+
+        /*  m_arri = m_idx / 64;
+     m_biti = m_idx %64; */
+
+        if (NBITS <= idx_)
+        {
+            return 0; /* bit out of range */
+        }
+
+        m_array[BIT_CHAR(bit)] |= BIT_IN_CHAR(bit);
+    }
 
 }
-    bool Reset(std::size_t);
-    bool Get(std::size_t);
+bool Reset(std::size_t);
+bool Get(std::size_t);
 
+template <std::size_t NBITS>
+BitArray<NBITS>::BitProxy::BitProxy(BitArray &arr_, std::size_t idx_) : m_array(arr_), m_idx(idx_)
+{
+}
 
+template <std::size_t NBITS>
+BitArray<NBITS>::BitProxy::BitProxy(BitArray &arr_, std::size_t idx_) : m_array(arr_), m_idx(idx_)
+{
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-template<std::size_t NBITS>
-BitArray<NBITS>::BitArray(): m_array()
-{}
-
-template<std::size_t NBITS>
-BitArray<NBITS>::BitProxy::BitProxy(BitArray& arr_, std::size_t idx_):m_array(arr_), m_idx(idx_) 
-{}
-
-
-template<std::size_t NBITS>
-BitArray<NBITS>::BitProxy::BitProxy(BitArray& arr_, std::size_t idx_):m_array(arr_), m_idx(idx_) 
-{}
-
-
-template<std::size_t NBITS>
+template <std::size_t NBITS>
 BitArray<NBITS>::BitProxy::operator bool()
 {
-    
-    m_array=
+
+    m_array =
     /*  m_arri = m_idx / 64;
 
     m_biti = m_idx %64; */
-} 
-
-
-
-
-
-template<std::size_t NBITS>
-BitArray& BitArray<NBITS>:: operator>>=(std::size_t)
-{}
-
-template<std::size_t NBITS>
- BitArray<NBITS>:: operator[](std::size_t idx_)
-{
-
-
-
 }
 
-template<std::size_t NBITS>
-BitArray& BitArray<NBITS>:: operator>>=(std::size_t);
+template <std::size_t NBITS>
+BitArray &BitArray<NBITS>::operator>>=(std::size_t)
+{
+}
 
+template <std::size_t NBITS>
+BitArray<NBITS>::operator[](std::size_t idx_)
+{
+}
 
-
-
-
+template <std::size_t NBITS>
+BitArray &BitArray<NBITS>::operator>>=(std::size_t);
 
 } // namespace ilrd
 
-
-
-
-#endif //	ifndef __BITARRAY_HPP__									
+#endif //	ifndef __BITARRAY_HPP__
 
 /*********************************End Of Header******************************/
