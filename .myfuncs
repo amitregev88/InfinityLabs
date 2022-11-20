@@ -11,6 +11,10 @@ alias gob='gcc -c'
 # Valgrind alias
  alias vlg='valgrind --leak-check=yes --track-origins=yes'
  
+ # nice alias
+
+ alias dragon='fortune | cowsay -f dragon| lolcat'
+ 
  
  # C++ Compilation aliases:
 alias gd+='g++ -std=c++11 -pedantic-errors -Wall -Wextra -g'
@@ -20,3 +24,6 @@ alias pc8='g++ -std=c++98 -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
 alias cpd1nw='g++ -std=c++11 -Wall -Wextra -g'
 alias cpd8nw='g++ -std=c++98 -Wall -Wextra -g'
 #
+
+
+

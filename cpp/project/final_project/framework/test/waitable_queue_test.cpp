@@ -8,7 +8,7 @@ using namespace ilrd;
 int main()
 {
 
-    WaitQueue<std::queue<int>> que;
+    WaitableQueue<std::queue<int>> que;
     int n;
 
     que.Push(4);

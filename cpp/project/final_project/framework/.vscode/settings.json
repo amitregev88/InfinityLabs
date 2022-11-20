@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "thread": "cpp",
+        "limits": "cpp",
+        "chrono": "cpp"
+    }
+}

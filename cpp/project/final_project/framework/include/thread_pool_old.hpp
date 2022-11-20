@@ -4,7 +4,7 @@
 /*	Date: 		06/11/2022													  */
 /*	Name: 		ILRD25      												  */
 /*	Reviewer:	Binyamin													  */
-/*	Version: 	1.1												    		  */
+/*	Version: 	1.1														  */
 /******************************************************************************/
 
 #ifndef __THREAD_POOL_HPP__
@@ -14,12 +14,11 @@
 #include <queue>    //queue
 #include <thread>   //thread
 #include <condition_variable>      //condition_variable
-#include <functional>      //function
+#include <functional>      
 
-#include <boost/thread.hpp>
-#include <boost/chrono.hpp>
 
 #include "waitable_queue.hpp"
+
 
 
 namespace ilrd
@@ -60,23 +59,15 @@ public:
     void AddTask(std::function<void()> const& action, int priority = MEDIUM); 
     void Run(); 
     void Pause();
-    bool Stop(boost::chrono::milliseconds ms);
+    void Stop();
     void SetNumOfThreads(std::size_t numOfThreads_);
 
 private:
-
-    static void ThreadJob(ThreadPool *this_ , std::size_t thread_i_stop_);
-    void CreateThreads(size_t numOfThreads_, int priority_);
-    std:: size_t HowMuchThreadsAvailibale() const;
-    void SetNumOfThreadsToRemove(size_t num_of_th_);
-    void AddDummyTasks();
-
-
-    std::vector<boost::thread> m_threads;
-    std::vector<bool> m_threads_should_remove;
-    std::mutex m_run_task_guard;
-    bool m_should_stop;
-    bool m_should_pause;
+    void ThreadJob();
+    void CreateStdThread(size_t numOfThreads_);
+    std::vector<std::thread> m_threads;
+    std:: size_t m_should_stop;
+    std:: size_t m_should_pause;
     WaitableQueue<PQUEWRAPPER<Task> >  m_waitQue; 
     std::condition_variable m_cv;
     enum PRIORITY {LOW, MEDIUM, HIGH};
@@ -93,7 +84,7 @@ public:
     ~Task()noexcept;
     Task(const Task &o_);
     Task& operator=(const Task &o_);
-    void operator()() const;
+    void operator()();
     bool operator<(const Task &o_) const;
     
 

@@ -20,22 +20,23 @@ namespace ilrd
 {
 
     template<class Queue>
-    class WaitQueue
+    class WaitableQueue
     {
     public:
 
-        ~WaitQueue() = default;
-        explicit WaitQueue() = default;
-        WaitQueue(WaitQueue&) = delete; 
-        WaitQueue& operator=(WaitQueue&) = delete; 
+        ~WaitableQueue() = default;
+        explicit WaitableQueue() = default;
+        WaitableQueue(WaitableQueue&) = delete; 
+        WaitableQueue& operator=(WaitableQueue&) = delete; 
 
         void Push(const typename Queue::value_type& Data);
-        void Pop(typename Queue::value_type& _out);
-        bool Pop(typename Queue::value_type& _out, std::chrono::milliseconds); //pop timeout
+        void Pop(typename Queue::reference _out);
+        bool Pop(typename Queue::reference _out, std::chrono::milliseconds); //pop timeout
         
     private:
+        using locking =  std::unique_lock<std::mutex>;
         std::mutex m_guard;
-        std::condition_variable m_cv;
+        std::condition_variable m_que_no_empty;
         Queue m_queue;
      
     };
@@ -44,45 +45,43 @@ namespace ilrd
 
 
 template<class Queue>
-void WaitQueue<Queue>:: Push(const typename Queue::value_type& data)
+void WaitableQueue<Queue>:: Push(const typename Queue::value_type& data)
 {
-    std::unique_lock<std::mutex>lock(m_guard);
+    locking lock(m_guard);
     m_queue.push(data);
-    m_cv.notify_one();                                                                                                                                                                                                                                                                                                                                                                      
+    m_que_no_empty.notify_one();                                                                                                                                                                                                                                                                                                                                                                      
 }
-
 
 template<class Queue>
-void WaitQueue<Queue>:: Pop(typename Queue::value_type& _out)
+void WaitableQueue<Queue>:: Pop(typename Queue::reference _out)
 {   
-    std::unique_lock<std::mutex>lock(m_guard);
-    while(m_queue.empty())
-    {
-        m_cv.wait(lock);
-    }
+    locking lock(m_guard);
+
+    m_que_no_empty.wait(lock,[this]{return !m_queue.empty();});
     _out = m_queue.front(); 
     m_queue.pop();   
 }
 
-/* template<class Queue>
-bool WaitQueue<Queue>:: Pop(typename Queue::value_type& _out, std::chrono::milliseconds)
+template<class Queue>
+bool WaitableQueue<Queue>:: Pop(typename Queue::reference _out, std::chrono::milliseconds ms)
 {
-    std::unique_lock<std::mutex>lock(m_guard);
-    while(m_queue.empty())
+    locking lock(m_guard);
+
+    bool res = m_que_no_empty.wait_for(lock, ms, [this]{return !m_queue.empty();});
+
+    if(!res)
     {
-        m_cv.wait_for();
+        return false;
     }
     _out = m_queue.front(); 
-    m_queue.pop();   
+    m_queue.pop();
 
-
-
-} */
+    return true;
+} 
 
 } // namespace ilrd
 
 #endif //	ifndef __WAITABLE_QUEUE_HPP__
-
 /*********************************End Of Header******************************/
 
 
