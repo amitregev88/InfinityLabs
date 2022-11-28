@@ -52,12 +52,12 @@ class ThreadPool
 
 public:
 
-    explicit ThreadPool(std::size_t numOfThreads_ , int nice_);
+    explicit ThreadPool(std::size_t numOfThreads_ , int nice_ = 0);
     ThreadPool& operator = (const ThreadPool& o_)= delete;
     ThreadPool(const ThreadPool& o_)= delete;
     ~ThreadPool()noexcept;
     
-    void AddTask(std::function<void()> const& action, int priority = MEDIUM); 
+    void AddTask(std::function<void()> const& action, int priority); 
     void Run(); 
     void Pause();
     bool Stop(boost::chrono::milliseconds ms);
@@ -78,9 +78,8 @@ private:
     bool m_should_stop;
     bool m_should_pause;
     WaitableQueue<PQUEWRAPPER<Task> >  m_waitQue; 
-    std::condition_variable m_cv;
-    enum PRIORITY {LOW, MEDIUM, HIGH};
-        
+    std::condition_variable m_cv;   
+         
 };
 
 
@@ -88,14 +87,14 @@ private:
 class Task
 {
 public:
-    Task() : m_func(), m_priority(){}
-    explicit Task(std::function<void()> const& action_, int priority);
-    ~Task()noexcept;
-    Task(const Task &o_);
-    Task& operator=(const Task &o_);
+    explicit Task(std::function<void()> const& action_, int priority =  0);
+    ~Task()noexcept = default;
+    Task(const Task &o_) = default;
+    Task& operator=(const Task &o_) = default;
+    
     void operator()() const;
     bool operator<(const Task &o_) const;
-    
+        
 
 private:
     std::function<void()> m_func;

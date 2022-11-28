@@ -35,7 +35,7 @@ public:
     void RemoveSubscription();
 
 private:
-    std::function<void(EVENT)> m_onEvent;
+    std::function<void(EVENT)> m_onEvent;   
     std::function<void()> m_onDeath;
     Dispatcher<EVENT> &m_dispatcher;
 
