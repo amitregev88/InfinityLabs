@@ -13,7 +13,6 @@
 #include "utility.hpp"
  #include "rcstring.hpp"
 
-
 namespace ilrd
 {
 

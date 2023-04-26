@@ -19,7 +19,7 @@
 #include <pthread.h>   /*pthread_create , pyhread_join*/
 #include <unistd.h>    /* getppid, fork*/
 #include <stdatomic.h> /*atomic_load*/
-#include <sys/wait.h>   /*wait*/
+#include <sys/wait.h>  /*wait*/
 
 #include "wd.h"
 #include "wd_private_api.h"
@@ -31,7 +31,7 @@
 #define MAX_DIGITS 20
 /****************************************************************************/
 /*                          enums                                           */
-/****************************************************************************/  
+/****************************************************************************/
 enum
 {
     SUCCESS = 0,
@@ -68,7 +68,7 @@ static char **AllocArgv(mmi_args_ty *info);
 static void *PreapeThreadNCallWD(mmi_args_ty *data);
 static int DisableEnableMasking(sigset_t *signalset, size_t set_mask);
 static void Sighandler_SigArrived(int sig_num, siginfo_t *infom, void *param);
-static void Sighandler_LetMeDie(int sig_num, siginfo_t *infom, void *param);			
+static void Sighandler_LetMeDie(int sig_num, siginfo_t *infom, void *param);
 static void Set_G_VarAccordingToParentStatus(size_t max_of_misses);
 static int CheckIfAliveNSendPing(sched_signal_data_ty *data);
 static int ForkNExec(char **argv);
@@ -97,14 +97,14 @@ int MMI(const size_t max_misses, const time_t interval, char *argv[])
     /* masking SIGUSR1 and SIGUSR2*/
     DisableEnableMasking(&signalmask, ENABLE);
 
-    /*create thread for comunicate with WatchDog proceess 
+    /*create thread for comunicate with WatchDog proceess
     and will revive him if needed */
     pthread_create(&g_wd_thread, NULL, (thread_routine_ty)PreapeThreadNCallWD, &info);
 
     /* waiting for WD thread to be created */
-    while (!g_is_other_ready) 
+    while (!g_is_other_ready)
     {
-        if(time(NULL) > deadline)
+        if (time(NULL) > deadline)
         {
             DisableEnableMasking(&signalmask, DISABLE);
             return FAILURE;
@@ -134,12 +134,11 @@ static char **AllocArgv(mmi_args_ty *info)
     argv_wd[0] = WATCHDOG_PATH;
 
     argv_wd[1] = (char *)malloc(sizeof(char) * MAX_DIGITS);
-    sprintf(argv_wd[1],"%lu", info->max_of_failures); /*size_t to char*/
+    sprintf(argv_wd[1], "%lu", info->max_of_failures); /*size_t to char*/
 
     argv_wd[2] = (char *)malloc(sizeof(char) * MAX_DIGITS);
-    sprintf(argv_wd[2],"%lu", info->interval);
+    sprintf(argv_wd[2], "%lu", info->interval);
 
-    
     for (i = 0; i < counter_args; ++i)
     {
         argv_wd[i + 3] = info->argv[i];
@@ -159,9 +158,9 @@ static void *PreapeThreadNCallWD(mmi_args_ty *data)
     alloc_argv = AllocArgv(data);
 
     WatchDog(data->max_of_failures, data->interval, alloc_argv);
-    
+
     free(alloc_argv[1]);
-    free(alloc_argv[2]);  
+    free(alloc_argv[2]);
     free(alloc_argv);
 
     return NULL;
@@ -205,20 +204,21 @@ static int DisableEnableMasking(sigset_t *signalset, size_t set_mask)
     sigemptyset(signalset);
     sigaddset(signalset, SIGUSR1);
     sigaddset(signalset, SIGUSR2);
+    int res;
 
     if (set_mask == 0)
     {
-        sigprocmask(SIG_UNBLOCK, signalset, NULL);
+        res = sigprocmask(SIG_UNBLOCK, signalset, NULL);
     }
     else
     {
-        sigprocmask(SIG_BLOCK, signalset, NULL);
+        res = sigprocmask(SIG_BLOCK, signalset, NULL);
     }
 
-    return SUCCESS;
+    return res;
 }
 /****************************************************************************/
-/*              Sighandler_SigArrived -  SIGUSR1 handler - function definition      */                          
+/*              Sighandler_SigArrived -  SIGUSR1 handler - function definition      */
 /****************************************************************************/
 static void Sighandler_SigArrived(int sig_num, siginfo_t *infom, void *param)
 {
@@ -303,7 +303,6 @@ static int ForkNExec(char **argv)
 
     __atomic_store_n(&g_is_other_ready, 0, __ATOMIC_SEQ_CST);
 
-    
     /*char to int*/
     sprintf(curr_pid, "%d", getpid());
     setenv("WD_PID", curr_pid, 1);
@@ -311,23 +310,21 @@ static int ForkNExec(char **argv)
     /*update pid_wd_env in the struct*/
     pid = fork();
 
-
     /*incase is a child process */
     if (0 == pid)
-    {   
+    {
         printf("process ID ->> %d, created by process ID: %d\n", getpid(), g_other_pid);
         fflush(stdout);
-    
+
         __atomic_store_n(&g_is_other_ready, 1, __ATOMIC_SEQ_CST);
 
         execv(argv[0], argv);
 
         puts("exec fail");
     }
-    
+
     /*update the g_other_pid to WD_PID*/
     __atomic_store_n(&g_other_pid, pid, __ATOMIC_SEQ_CST);
-
 
     return SUCCESS;
 }
@@ -337,9 +334,9 @@ static int ForkNExec(char **argv)
 int DNR(void)
 {
     __atomic_store_n(&g_should_stop, 1, __ATOMIC_SEQ_CST);
-    
+
     kill(g_other_pid, SIGUSR2);
-    
+
     pthread_join(g_wd_thread, NULL);
 
     return SUCCESS;

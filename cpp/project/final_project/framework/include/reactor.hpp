@@ -15,6 +15,8 @@
 #include <functional> // std::function
 #include <vector>  //vector
 #include <atomic>
+#include <sys/select.h>
+
 
 namespace ilrd
 {
@@ -80,16 +82,90 @@ void Reactor<Selector>::Stop()
 {
     m_shouldStop.store(true);
 }
+/***************************************/
+void Selector::SplitVector(std::vector<FdNMode> &fdsAndModes_ ,
+                               std::vector<int> &fds_, std::vector<int> &modes_)
+{
+    for (auto fdmode_ : fdsAndModes_)
+    {
+        fds_.push_back(fdmode_.first);
+        modes_.push_back(fdmode_.second);
+    }
+}
+
 /*****************************************************/
+int Selector::Listen(std::vector<FdNMode> &fdsAndModes_)
+{
+    std::vector<int> fds;
+    std::vector<int> modes;
+    fd_set read;
+    fd_set write;
+    fd_set execute;
+
+
+
+
+    Setfd()
+
+
+
+
+
+
+}
+
+
+static void Setfd(fd_set &fds_)
+{
+    FD_ZERO(&fds_);
+    FD_SET(0, &fds_);
+}
+
+
+
+
 template<typename Selector>
 void Reactor<Selector>::Run()
 {
+    std::vector<FdNMode> fds_listen;
+    
+
+    std::transform(m_fdVNmodeToFunc.begin(),m_fdVNmodeToFunc.end(),
+    std::inserter(fds_listen.begin(),fds_listen.end()),[](const auto iter) 
+    { return iter.first;});
+   
+    
     if (true == m_shouldStop)
     {
         return;
     }
 
+    m_shouldStop(0);
+
+    while(!m_shouldStop)
+    {
+
+        std::vector<FdNMode>runner(m_selector.Listen(fdsListen));
     
+      
+      
+      select -->fd ready
+      serach fd in map 
+
+      handler exec 
+
+
+
+
+
+
+    } 
+
+
+    
+
+    
+
 
 }
 

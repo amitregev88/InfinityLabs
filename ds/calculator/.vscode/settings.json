@@ -2,6 +2,12 @@
     "files.associations": {
         "calculator.h": "c",
         "cctype": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "streambuf": "c",
+        "atomic": "c",
+        "*.tcc": "c",
+        "compare": "c",
+        "numeric": "c",
+        "cmath": "c"
     }
 }
